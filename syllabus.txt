@@ -1,0 +1,43 @@
+# java-learn-digest 課綱：目標 = 已有基本程式/Groovy 經驗，系統性學會用 Spring Boot 開發後端 REST API
+# 一行一主題，# 為註解/分章。每天教「目前主題的下一小步」，主題走完才換下一行。
+# 想跳過某主題，直接把那行刪掉或加 # 註解掉即可。
+
+# ── M1 Spring 核心：容器與依賴注入 ──
+IoC 與依賴注入：為什麼不要自己 new
+Bean 是什麼：@Component / @Service / @Repository
+建構子注入 vs 欄位注入 vs setter 注入
+@Configuration 與 @Bean：手動定義 Bean
+Bean 的 scope 與生命週期
+@Autowired、@Qualifier 與多個候選 Bean 的解析
+@Value 與 application.properties 讀設定
+Profiles：dev / prod 用不同設定
+
+# ── M2 Spring Boot：少寫設定就能跑 ──
+@SpringBootApplication 與自動組態的原理
+Starter 依賴：spring-boot-starter-web 幫你帶了什麼
+application.yml 結構與設定優先序
+內嵌 Tomcat 與 main() 啟動流程
+
+# ── M3 Web 層：寫出 REST API ──
+@RestController 與 @RequestMapping 家族
+路徑參數、查詢參數、@RequestBody
+DTO 與 entity 為什麼要分開
+Bean Validation：@Valid 與 @NotNull
+統一例外處理：@RestControllerAdvice
+
+# ── M4 資料層：存進資料庫 ──
+Spring Data JPA 與 Repository 介面
+Entity 對應：@Entity / @Id / 關聯
+衍生查詢 vs @Query
+交易：@Transactional 的邊界與陷阱
+
+# ── M5 測試 ──
+單元測試 vs @SpringBootTest 整合測試
+MockMvc 測 Controller
+@DataJpaTest 等測試切片
+
+# ── M6 上 production 前該懂的 ──
+Actuator：健康檢查與指標
+設定外部化與機密管理
+Logging 與結構化日誌
+Spring Security 入門：認證與授權概念
