@@ -36,6 +36,14 @@ def test_parse_rejects_non_json():
         ar.parse_result("這不是 JSON")
 
 
+def test_parse_accepts_raw_newlines_in_html():
+    # claude 常把 html 值排成多行（字串內含原始換行）；strict=False 才收得下
+    text = '{"html": "<div>\n  <p>hi</p>\n</div>", "topic_complete": false, "today_summary": "s", "archive_markdown": "## x"}'
+    res = ar.parse_result(text)
+    assert "<p>hi</p>" in res["html"]
+    assert "\n" in res["html"]
+
+
 def test_commit_writes_archive_and_advances_state(tmp_path):
     syl = tmp_path / "syllabus.txt"
     syl.write_text("主題甲\n主題乙\n", encoding="utf-8")

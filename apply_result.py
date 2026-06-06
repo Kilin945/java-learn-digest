@@ -28,7 +28,9 @@ def parse_result(text):
             lines = lines[:-1]
         s = "\n".join(lines).strip()
     try:
-        data = json.loads(s)
+        # strict=False 允許字串內含原始換行/Tab —— claude 常把 html 值排成多行，
+        # 嚴格 JSON 會視為「非法控制字元」而拒收。
+        data = json.loads(s, strict=False)
     except (json.JSONDecodeError, ValueError) as e:
         raise ValueError(f"輸出不是合法 JSON：{e}")
     if not isinstance(data, dict):
