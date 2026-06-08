@@ -8,6 +8,7 @@ launchd 多時段觸發 → 已寄過？(marker) 秒跳過
   → build_lesson.py 依 progress.json 找出今日主題與第幾步、撈昨日重點
   → claude -p（prompt_daily）→ 回傳 JSON（html + 今日重點 + markdown 存檔）
   → apply_result.py 驗證 → send_email.py 寄出 → 成功才推進度、寫 lessons/<date>.md、打 marker
+  → sync_notion.py 把該課建成 Notion「Spring 學習筆記」底下的子頁面（去重、失敗不影響信）
 週日另寄「本週回顧」。
 ```
 
@@ -21,8 +22,18 @@ launchd 多時段觸發 → 已寄過？(marker) 秒跳過
 ## 課綱
 編輯 `syllabus.txt`（一行一主題，`#` 為註解/分章）。想跳過某主題就刪掉或註解該行。
 
-## 把課歸檔到 Notion（半自動）
-每天的課會存一份 markdown 在 `lessons/`。要歸檔時開 Claude Code 說「把 lessons/ 最近的課歸檔到 Notion」即可（互動情境下 Notion 才可用，排程流程不碰 Notion）。
+## 自動同步到 Notion
+每天寄信成功後，`sync_notion.py` 會把該課建成 Notion「Spring 學習筆記」頁面底下的一個**子頁面**（標題＝`日期 · 主題`）。內建去重：同日已存在就跳過，重跑安全。背景排程用不了互動式 Notion MCP，所以走 **Notion 內部整合 (internal integration) + REST API**。
+
+一次性設定：
+1. 到 <https://www.notion.so/my-integrations> → New integration（internal）→ 複製 token（`ntn_...`）。
+2. 打開 Notion「Spring 學習筆記」頁面 → 右上 `•••` → Connections → 加入剛建的整合（**沒分享頁面，API 會 404**）。
+3. 把 token 存進 Keychain：
+   `security add-generic-password -a "$GMAIL_USER" -s "java-learn-notion" -w`
+4. `config.env` 填 `NOTION_PARENT_PAGE_ID`（「Spring 學習筆記」頁面 ID）。
+5. 測試：`python3 sync_notion.py --md lessons/<date>.md --date <date>`
+
+不設 `NOTION_PARENT_PAGE_ID` / token 則略過同步（不影響寄信）。
 
 ## 檔案
 | 檔案 | 作用 |
@@ -31,6 +42,7 @@ launchd 多時段觸發 → 已寄過？(marker) 秒跳過
 | `build_lesson.py` | 依進度組 claude 的輸入 |
 | `apply_result.py` | 解析結果、寄成功才更新進度與存檔 |
 | `send_email.py` | Gmail SMTP 寄信 |
+| `sync_notion.py` | 把 `lessons/<date>.md` 同步成 Notion 子頁面（REST API、去重） |
 | `run_learn.sh` | 主流程 |
 | `prompt_daily.txt` / `prompt_weekly.txt` | claude 指令 |
 | `state/` | 進度、歷史、marker |
