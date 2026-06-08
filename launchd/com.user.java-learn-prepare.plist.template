@@ -2,7 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Label</key><string>com.user.java-learn-weekly</string>
+  <key>Label</key><string>com.user.java-learn-prepare</string>
+  <!-- 慢：沒備妥就用 claude 產好「下一篇」進 outbox。無時間壓力、無 marker。 -->
   <key>ProgramArguments</key>
   <array>
     <string>/usr/bin/caffeinate</string>
@@ -10,12 +11,15 @@
     <string>-s</string>
     <string>/bin/zsh</string>
     <string>__PROJECT_DIR__/run_learn.sh</string>
-    <string>weekly</string>
+    <string>prepare</string>
   </array>
+  <!-- 開機/登入就補產一次（你打開電腦時就把明天的備好）。 -->
+  <key>RunAtLoad</key><true/>
+  <!-- 白天再補產幾次當後盾（outbox 已備妥就秒跳過）。 -->
   <key>StartCalendarInterval</key>
   <array>
-    <dict><key>Weekday</key><integer>0</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>0</integer></dict>
-    <dict><key>Weekday</key><integer>0</integer><key>Hour</key><integer>13</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Hour</key><integer>13</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Hour</key><integer>20</integer><key>Minute</key><integer>0</integer></dict>
   </array>
   <key>StandardOutPath</key><string>__PROJECT_DIR__/launchd.out.log</string>
   <key>StandardErrorPath</key><string>__PROJECT_DIR__/launchd.err.log</string>
