@@ -44,6 +44,29 @@ def test_parse_accepts_raw_newlines_in_html():
     assert "\n" in res["html"]
 
 
+def test_outbox_save_load_clear_roundtrip(tmp_path):
+    p = str(tmp_path / "state" / "outbox.json")
+    payload = {"kind": "lesson", "index": 0, "step": 2, "result": VALID}
+    ar.save_outbox(p, payload)
+    assert ar.load_outbox(p) == payload
+    ar.clear_outbox(p)
+    assert ar.load_outbox(p) is None
+    ar.clear_outbox(p)  # 再清一次不應出錯
+
+
+def test_outbox_ready_matches_current_progress():
+    progress = {"current_index": 0, "step": 2}
+    ok = {"kind": "lesson", "index": 0, "step": 2, "result": VALID}
+    assert ar.outbox_ready(ok, progress) is True
+    # 步數對不上 → 不算備妥（避免寄到過時內容）
+    assert ar.outbox_ready({"kind": "lesson", "index": 0, "step": 1, "result": VALID}, progress) is False
+    # 主題對不上
+    assert ar.outbox_ready({"kind": "lesson", "index": 1, "step": 2, "result": VALID}, progress) is False
+    # 沒內容
+    assert ar.outbox_ready(None, progress) is False
+    assert ar.outbox_ready({"kind": "lesson", "index": 0, "step": 2}, progress) is False
+
+
 def test_commit_writes_archive_and_advances_state(tmp_path):
     syl = tmp_path / "syllabus.txt"
     syl.write_text("主題甲\n主題乙\n", encoding="utf-8")

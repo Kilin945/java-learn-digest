@@ -1,8 +1,11 @@
 #!/bin/zsh
-# 學習信寄送：由 launchd 觸發，可共用每日/每週。
-# 用法：run_learn.sh [kind] [prompt檔] [主旨前綴]
-#   kind = daily(預設) | weekly
-# 可靠性：每週期只成功寄一次（state/ 下的 marker 去重）；失敗只記 log、不寄垃圾、待補跑。
+# 學習信：產生(prepare) 與 寄出(send) 解耦，讓寄出能塞進闔蓋喚醒的數十秒時間窗。
+# 用法：run_learn.sh [mode]
+#   prepare  慢：若 outbox 未備妥，用 claude 產好「下一篇」存進 outbox（無時間壓力、無 marker）
+#   send     快：marker 未命中且 outbox 備妥 → 寄出 → 成功才推進度＋清 outbox＋打 marker
+#   daily    一次做完：prepare 再 send（手動測試／舊排程相容用）
+#   weekly   每週回顧（即時產生即時寄，不經 outbox、不動進度）
+# 可靠性：每週期只成功寄一次（marker 去重）；失敗只記 log、不寄垃圾、待補跑。
 
 set -u
 DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -21,14 +24,9 @@ CLAUDE="${CLAUDE_BIN:-$HOME/.local/bin/claude}"
 PYTHON="${PYTHON_BIN:-/opt/homebrew/bin/python3}"
 MODEL="${CLAUDE_MODEL:-sonnet}"
 
-KIND="${1:-daily}"
-if [ "$KIND" = "weekly" ]; then
-  PROMPT_FILE="${2:-prompt_weekly.txt}"
-  SUBJECT_PREFIX="${3:-每週 Java/Spring Boot 回顧}"
-else
-  PROMPT_FILE="${2:-prompt_daily.txt}"
-  SUBJECT_PREFIX="${3:-每日 Java/Spring Boot}"
-fi
+MODE="${1:-daily}"
+SUBJECT_DAILY="每日 Java/Spring Boot"
+SUBJECT_WEEKLY="每週 Java/Spring Boot 回顧"
 
 MAX_TRIES=3
 CLAUDE_TIMEOUT=600
@@ -38,13 +36,10 @@ export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$LOG"; }
 notify() { /usr/bin/osascript -e "display notification \"$2\" with title \"$1\" sound name \"Basso\"" >/dev/null 2>&1; }
 
-period_key() { [ "$KIND" = "weekly" ] && date +%G-W%V || date +%F; }
-MARKER="$STATE_DIR/${KIND}-$(period_key)"
+MARKER_DAILY="$STATE_DIR/daily-$(date +%F)"
+MARKER_WEEKLY="$STATE_DIR/weekly-$(date +%G-W%V)"
 
-if [ -f "$MARKER" ]; then
-  log "SKIP: [$SUBJECT_PREFIX] 本週期已寄過（$(basename "$MARKER")），跳過。"
-  exit 0
-fi
+DONE_HTML='<div style="font-family:-apple-system,sans-serif;max-width:680px;margin:0 auto;color:#16213e;"><div style="font-size:20px;font-weight:800;">🎉 你已完成整份課綱！</div><p style="font-size:14px;line-height:1.7;color:#3b424f;">恭喜走完所有主題。可以編輯 syllabus.txt 加新主題，或開始循環複習。</p></div>'
 
 wait_for_network() {
   local i=0
@@ -80,67 +75,119 @@ looks_like_html() {  # 給每週用：像 HTML 且不含錯誤字樣
   return 0
 }
 
-echo "===== $(date '+%Y-%m-%d %H:%M:%S') 開始 [$SUBJECT_PREFIX] (kind=$KIND) =====" >> "$LOG"
-BASE_PROMPT="$(cat "$DIR/$PROMPT_FILE")"
+send_html() {  # $1=html $2=主旨前綴 ；回傳寄信 rc
+  local html="$1" subject="$2"
+  local out rc
+  out="$(echo "$html" | "$PYTHON" "$DIR/send_email.py" "$subject" 2>&1)"; rc=$?
+  echo "$out" >> "$LOG"
+  if [ $rc -ne 0 ]; then
+    local reason="$(echo "$out" | grep -iE 'error' | tail -1 | tr -d '"\\' | cut -c1-180)"
+    [ -z "$reason" ] && reason="請查看 run.log"
+    notify "⚠️ 學習信寄送失敗" "$subject：$reason"
+    log "NOTIFY: 寄送失敗。原因：$reason"
+  fi
+  return $rc
+}
 
-# ── 組 context（每日可能回報 FINISHED）──
-if ! wait_for_network; then
-  echo "===== $(date '+%Y-%m-%d %H:%M:%S') 結束 (網路未就緒待補跑) =====" >> "$LOG"; exit 1
-fi
-CTX="$("$PYTHON" "$DIR/build_lesson.py" "$KIND" 2>>"$LOG")"
+# ── 慢：產好「下一篇」存進 outbox ──
+do_prepare() {
+  if "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>/dev/null; then
+    log "INFO: outbox 已備妥，略過產生。"
+    return 0
+  fi
+  if ! wait_for_network; then return 1; fi
+  local ctx
+  ctx="$("$PYTHON" "$DIR/build_lesson.py" daily 2>>"$LOG")"
+  if print -r -- "$ctx" | grep -q '^STATUS: FINISHED'; then
+    log "INFO: 課綱已全部完成，無需產生。"
+    return 0
+  fi
+  local base prompt tmp out attempt=1
+  base="$(cat "$DIR/prompt_daily.txt")"
+  tmp="$(mktemp -t java-learn)"
+  while [ $attempt -le $MAX_TRIES ]; do
+    prompt="$base"$'\n\n=== 今日課程資料 ===\n'"$ctx"
+    run_claude "$prompt" "$tmp"; local crc=$?
+    out="$(cat "$tmp")"
+    if [ $crc -eq 0 ] && echo "$out" | "$PYTHON" "$DIR/apply_result.py" --to-outbox >>"$LOG" 2>&1; then
+      log "INFO: 第 $attempt 次產生並存進 outbox 成功。"
+      rm -f "$tmp"; return 0
+    fi
+    log "WARN: 第 $attempt/$MAX_TRIES 次產生失敗 (rc=$crc, 長度=${#out})，30s 後重試。"
+    attempt=$((attempt+1)); [ $attempt -le $MAX_TRIES ] && sleep 30
+  done
+  rm -f "$tmp"
+  log "WARN: 產生 outbox 失敗，待下次補產（不影響已備妥的內容）。"
+  return 1
+}
 
-if [ "$KIND" = "daily" ] && print -r -- "$CTX" | grep -q '^STATUS: FINISHED'; then
-  DONE_HTML='<div style="font-family:-apple-system,sans-serif;max-width:680px;margin:0 auto;color:#16213e;"><div style="font-size:20px;font-weight:800;">🎉 你已完成整份課綱！</div><p style="font-size:14px;line-height:1.7;color:#3b424f;">恭喜走完所有主題。可以編輯 syllabus.txt 加新主題，或開始循環複習。</p></div>'
-  SEND_OUT="$(echo "$DONE_HTML" | "$PYTHON" "$DIR/send_email.py" "Java/Spring Boot 課綱完成" 2>&1)"; RC=$?
-  echo "$SEND_OUT" >> "$LOG"
-  [ $RC -eq 0 ] && date '+%Y-%m-%d %H:%M:%S' > "$MARKER" && log "INFO: 課綱已完成，寄出完成通知。"
-  echo "===== $(date '+%Y-%m-%d %H:%M:%S') 結束 (rc=$RC, 課綱完成) =====" >> "$LOG"; exit $RC
-fi
+# ── 快：把 outbox 備妥的內容寄出 ──
+do_send() {
+  [ -f "$MARKER_DAILY" ] && { log "SKIP: 今日已寄過（$(basename "$MARKER_DAILY")）。"; return 0; }
+  if ! wait_for_network; then return 1; fi
 
-# ── 呼叫 claude（重試）──
-TMP_OUT="$(mktemp -t java-learn)"
-RAW=""
-attempt=1
-while [ $attempt -le $MAX_TRIES ]; do
-  PROMPT="$BASE_PROMPT"$'\n\n=== 今日課程資料 ===\n'"$CTX"
-  run_claude "$PROMPT" "$TMP_OUT"; crc=$?
-  OUT="$(cat "$TMP_OUT")"
-  if [ "$KIND" = "daily" ]; then
-    # 每日：用 apply_result 驗證模式解析出 html（不動狀態）
-    if [ $crc -eq 0 ] && HTML="$(echo "$OUT" | "$PYTHON" "$DIR/apply_result.py" 2>>"$LOG")" && [ -n "$HTML" ]; then
-      RAW="$OUT"; log "INFO: 第 $attempt 次成功解析。"; break
+  if "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>/dev/null; then
+    local html
+    html="$("$PYTHON" "$DIR/apply_result.py" --outbox-html 2>>"$LOG")"
+    if send_html "$html" "$SUBJECT_DAILY"; then
+      "$PYTHON" "$DIR/apply_result.py" --commit-outbox >>"$LOG" 2>&1 \
+        || log "WARN: outbox 推進度失敗（信已寄出）。"
+      date '+%Y-%m-%d %H:%M:%S' > "$MARKER_DAILY"
+      log "INFO: 已寄出備妥內容、推進度並標記 $(basename "$MARKER_DAILY")。"
+      # commit 後 lessons/<today>.md 已寫好 → 同步成 Notion 子頁（去重、失敗不影響信）
+      _today="$(date +%F)"
+      if "$PYTHON" "$DIR/sync_notion.py" --md "$DIR/lessons/$_today.md" --date "$_today" >>"$LOG" 2>&1; then
+        log "INFO: 已同步 $_today 到 Notion。"
+      else
+        log "WARN: Notion 同步失敗（信已寄出、進度已推），可稍後手動補：python3 sync_notion.py --md lessons/$_today.md --date $_today"
+      fi
+    fi
+    return 0
+  fi
+
+  # outbox 未備妥：若課綱已完成 → 寄完成通知；否則先略過待 prepare 補上
+  local ctx
+  ctx="$("$PYTHON" "$DIR/build_lesson.py" daily 2>>"$LOG")"
+  if print -r -- "$ctx" | grep -q '^STATUS: FINISHED'; then
+    if send_html "$DONE_HTML" "Java/Spring Boot 課綱完成"; then
+      date '+%Y-%m-%d %H:%M:%S' > "$MARKER_DAILY"
+      log "INFO: 課綱已完成，寄出完成通知並標記。"
     fi
   else
-    if [ $crc -eq 0 ] && looks_like_html "$OUT"; then
-      HTML="$OUT"; RAW="$OUT"; log "INFO: 第 $attempt 次成功。"; break
-    fi
+    log "INFO: outbox 尚未備妥，本時段先略過（待 prepare 補上後的時段再寄）。"
   fi
-  log "WARN: 第 $attempt/$MAX_TRIES 次失敗 (rc=$crc, 長度=${#OUT})，30s 後重試。"
-  attempt=$((attempt+1)); [ $attempt -le $MAX_TRIES ] && sleep 30
-done
-rm -f "$TMP_OUT"
+}
 
-if [ -z "$RAW" ]; then
-  echo "===== $(date '+%Y-%m-%d %H:%M:%S') 結束 (rc=1, 失敗待補跑) =====" >> "$LOG"; exit 1
-fi
-
-# ── 寄信 ──
-SEND_OUT="$(echo "$HTML" | "$PYTHON" "$DIR/send_email.py" "$SUBJECT_PREFIX" 2>&1)"; RC=$?
-echo "$SEND_OUT" >> "$LOG"
-if [ $RC -eq 0 ]; then
-  date '+%Y-%m-%d %H:%M:%S' > "$MARKER"
-  if [ "$KIND" = "daily" ]; then
-    # 寄成功才推進度＋寫存檔（把同一份 claude 輸出餵 --commit）
-    if ! echo "$RAW" | "$PYTHON" "$DIR/apply_result.py" --commit >>"$LOG" 2>&1; then
-      log "WARN: 進度更新失敗（信已寄出，明天可能重複同一步）。"
-    fi
+# ── 每週回顧：即時產生即時寄（不經 outbox、不動進度）──
+do_weekly() {
+  [ -f "$MARKER_WEEKLY" ] && { log "SKIP: 本週已寄過（$(basename "$MARKER_WEEKLY")）。"; return 0; }
+  if ! wait_for_network; then return 1; fi
+  local ctx base prompt tmp out attempt=1 html=""
+  ctx="$("$PYTHON" "$DIR/build_lesson.py" weekly 2>>"$LOG")"
+  base="$(cat "$DIR/prompt_weekly.txt")"
+  tmp="$(mktemp -t java-learn)"
+  while [ $attempt -le $MAX_TRIES ]; do
+    prompt="$base"$'\n\n=== 本週課程資料 ===\n'"$ctx"
+    run_claude "$prompt" "$tmp"; local crc=$?
+    out="$(cat "$tmp")"
+    if [ $crc -eq 0 ] && looks_like_html "$out"; then html="$out"; break; fi
+    log "WARN: 第 $attempt/$MAX_TRIES 次每週產生失敗 (rc=$crc)，30s 後重試。"
+    attempt=$((attempt+1)); [ $attempt -le $MAX_TRIES ] && sleep 30
+  done
+  rm -f "$tmp"
+  [ -z "$html" ] && { log "WARN: 每週內容產生失敗，待補跑。"; return 1; }
+  if send_html "$html" "$SUBJECT_WEEKLY"; then
+    date '+%Y-%m-%d %H:%M:%S' > "$MARKER_WEEKLY"
+    log "INFO: 已寄出每週回顧並標記。"
   fi
-  log "INFO: 已寄出並標記 $(basename "$MARKER")。"
-else
-  REASON="$(echo "$SEND_OUT" | grep -iE 'error' | tail -1 | tr -d '"\\' | cut -c1-180)"
-  [ -z "$REASON" ] && REASON="請查看 run.log"
-  notify "⚠️ 學習信寄送失敗" "$SUBJECT_PREFIX：$REASON"
-  log "NOTIFY: 寄送失敗。原因：$REASON"
-fi
-echo "===== $(date '+%Y-%m-%d %H:%M:%S') 結束 (rc=$RC) =====" >> "$LOG"
-exit $RC
+}
+
+echo "===== $(date '+%Y-%m-%d %H:%M:%S') 開始 [mode=$MODE] =====" >> "$LOG"
+case "$MODE" in
+  prepare) do_prepare ;;
+  send)    do_send ;;
+  daily)   [ -f "$MARKER_DAILY" ] && { log "SKIP: 今日已寄過。"; } || { do_prepare; do_send; } ;;
+  weekly)  do_weekly ;;
+  *)       log "ERROR: 未知 mode：$MODE（可用 prepare|send|daily|weekly）"; exit 2 ;;
+esac
+echo "===== $(date '+%Y-%m-%d %H:%M:%S') 結束 [mode=$MODE] =====" >> "$LOG"
