@@ -1,0 +1,74 @@
+name: daily-send
+# 雲端只負責「寄出」：把本機 prepare 備好、push 上來的 outbox 寄出，
+# 再把進度/marker/課程檔 commit 回 repo。產生課程（claude）仍在本機。
+on:
+  schedule:
+    - cron: '0 0 * * *'    # 08:00 GMT+8
+    - cron: '30 4 * * *'   # 12:30 GMT+8（補寄）
+    - cron: '0 11 * * *'   # 19:00 GMT+8（補寄）
+  workflow_dispatch:       # 允許手動觸發
+    inputs:
+      test_send:
+        description: '只寄一封測試信驗證雲端 SMTP（不動進度/outbox/marker）'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write          # 需要把進度推回 repo
+
+concurrency:
+  group: daily-send        # 同時間只跑一個，避免推送打架
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Taipei
+      GMAIL_USER: ${{ secrets.GMAIL_USER }}
+      MAIL_TO: ${{ secrets.MAIL_TO }}
+      GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_PARENT_PAGE_ID: ${{ secrets.NOTION_PARENT_PAGE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 雲端 SMTP 測試信（手動觸發且勾選 test_send 時）
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.test_send }}
+        run: |
+          set -euo pipefail
+          printf '<div style="font-family:-apple-system,sans-serif"><h3>雲端寄信測試 ✅</h3><p>這封信由 GitHub Actions（免費雲端）寄出，證明 SMTP 路徑正常。不影響任何進度或課程。</p></div>' \
+            | python3 send_email.py "雲端寄信測試"
+          echo "測試信已寄出。"
+
+      - name: 寄出今天備妥的課（若有）
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}
+        run: |
+          set -euo pipefail
+          MARKER="state/daily-$(date +%F)"
+          if [ -f "$MARKER" ]; then echo "今日已寄過（$MARKER），略過。"; exit 0; fi
+          if ! python3 apply_result.py --outbox-ready; then
+            echo "outbox 尚未備妥（本機 prepare 還沒 push 上來），本次略過。"; exit 0
+          fi
+          TODAY="$(date +%F)"
+          python3 apply_result.py --outbox-html | python3 send_email.py "每日 Java/Spring Boot"
+          python3 apply_result.py --commit-outbox
+          date '+%Y-%m-%d %H:%M:%S' > "$MARKER"
+          echo "已寄出並標記 $MARKER"
+          python3 sync_notion.py --md "lessons/$TODAY.md" --date "$TODAY" \
+            || echo "Notion 同步失敗（信已寄出），略過。"
+
+      - name: 把進度/marker/課程檔推回 repo
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}
+        run: |
+          set -euo pipefail
+          git config user.name "java-learn-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add state lessons
+          if git diff --cached --quiet; then echo "無變更可推。"; exit 0; fi
+          git commit -m "chore: 雲端寄出並更新進度 $(date +%F)"
+          git pull --rebase --autostash
+          git push

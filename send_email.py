@@ -40,12 +40,19 @@ def load_config():
 
 
 def get_app_password(gmail_user, service):
+    # 雲端（GitHub Actions）讀不到 macOS Keychain，優先吃環境變數；本機則回退 Keychain。
+    env_pw = os.environ.get("GMAIL_APP_PASSWORD")
+    if env_pw:
+        return env_pw.strip()
     try:
         out = subprocess.run(
             ["security", "find-generic-password", "-a", gmail_user, "-s", service, "-w"],
             check=True, capture_output=True, text=True,
         )
         return out.stdout.strip()
+    except FileNotFoundError:
+        print("ERROR: 找不到 security 指令且未設 GMAIL_APP_PASSWORD 環境變數。", file=sys.stderr)
+        sys.exit(3)
     except subprocess.CalledProcessError as e:
         print(f"ERROR: 無法從 Keychain 讀取密碼: {e.stderr.strip()}", file=sys.stderr)
         sys.exit(3)

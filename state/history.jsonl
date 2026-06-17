@@ -1,0 +1,10 @@
+{"date": "2026-06-07", "topic": "IoC 與依賴注入：為什麼不要自己 new", "step": 1, "summary": "自己用 `new` 建立物件會造成緊耦合（tight coupling），讓程式難以替換依賴或進行測試，Spring IoC 的核心動機就是把物件建立的控制權交給框架統一管理"}
+{"date": "2026-06-07", "topic": "IoC 與依賴注入：為什麼不要自己 new", "step": 2, "summary": "在 class 上加 @Component 讓 Spring 建立並管理物件（Bean），透過建構子注入讓 Spring 自動把依賴傳入，不再需要自己 new"}
+{"date": "2026-06-08", "topic": "IoC 與依賴注入：為什麼不要自己 new", "step": 3, "summary": "@Service、@Repository、@RestController 是 @Component 的語意分身，分別代表業務邏輯層、資料存取層、控制層，三層透過建構子注入串聯，形成分層架構（layered architecture）。"}
+{"date": "2026-06-09", "topic": "IoC 與依賴注入：為什麼不要自己 new", "step": 4, "summary": "注入介面而非具體類別（Inject the Interface, Not the Class）——Controller 只依賴 Interface，Spring 負責決定傳入哪個實作，換實作時呼叫方一行不用改。"}
+{"date": "2026-06-10", "topic": "IoC 與依賴注入：為什麼不要自己 new", "step": 5, "summary": "當多個 Bean 實作同一個介面時，用 @Primary 設預設首選、用 @Qualifier(\"beanName\") 在注入點點名指定，Spring 就知道要注入哪一個。"}
+{"date": "2026-06-11", "topic": "IoC 與依賴注入：為什麼不要自己 new", "step": 6, "summary": "Spring Bean 預設是 Singleton（全 App 共用一個實例）；加上 @Scope(\"prototype\") 後每次注入都建立全新物件——無狀態的 Service 用 Singleton，需要獨立狀態的物件用 Prototype。"}
+{"date": "2026-06-12", "topic": "IoC 與依賴注入：為什麼不要自己 new", "step": 7, "summary": "第三方 class 無法加 @Component 時，在 @Configuration 類別裡用 @Bean 方法手動登記，Spring 啟動後執行該方法並把回傳物件收進 IoC 容器，使用方照常建構子注入。"}
+{"date": "2026-06-15", "topic": "Bean 是什麼：@Component / @Service / @Repository", "step": 1, "summary": "Bean 是 Spring 幫你管理的 Java 物件；在 class 上加 @Component，Spring 啟動時的 Component Scan 就會自動建立實例並存進 IoC 容器。"}
+{"date": "2026-06-16", "topic": "Bean 是什麼：@Component / @Service / @Repository", "step": 2, "summary": "@Service 與 @Repository 都是 @Component 的職責標籤特化版：前者標示業務邏輯層，後者標示資料存取層且附帶例外轉換機制；Spring 三層架構（Controller → Service → Repository）靠這三個 annotation 讓各層職責一目了然。"}
+{"date": "2026-06-17", "topic": "建構子注入 vs 欄位注入 vs setter 注入", "step": 1, "summary": "@Autowired 欄位注入是最直覺的 DI 寫法，但因不可標 final、測試困難、隱藏依賴三個缺點，Spring 官方已不推薦使用。"}

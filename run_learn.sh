@@ -36,6 +36,22 @@ export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$LOG"; }
 notify() { /usr/bin/osascript -e "display notification \"$2\" with title \"$1\" sound name \"Basso\"" >/dev/null 2>&1; }
 
+# 雲端寄信模式：用 git 當同步通道。prepare 前先 pull 取得雲端推進的進度，
+# 備好下一篇後 push 上去給雲端寄。REPO_SYNC=0 可關掉（純本機模式）。
+REPO_SYNC="${REPO_SYNC:-1}"
+git_pull() {
+  [ "$REPO_SYNC" = 1 ] || return 0
+  git -C "$DIR" pull --rebase --autostash >>"$LOG" 2>&1 || log "WARN: git pull 失敗（用本機現況續跑）。"
+}
+git_push_state() {
+  [ "$REPO_SYNC" = 1 ] || return 0
+  git -C "$DIR" add state lessons >>"$LOG" 2>&1 || true
+  git -C "$DIR" diff --cached --quiet && return 0
+  git -C "$DIR" commit -m "chore: 本機備妥下一篇 $(date +%F)" >>"$LOG" 2>&1 || true
+  git -C "$DIR" pull --rebase --autostash >>"$LOG" 2>&1 || true
+  git -C "$DIR" push >>"$LOG" 2>&1 || log "WARN: git push 失敗（下次再試）。"
+}
+
 MARKER_DAILY="$STATE_DIR/daily-$(date +%F)"
 MARKER_WEEKLY="$STATE_DIR/weekly-$(date +%G-W%V)"
 
@@ -91,6 +107,7 @@ send_html() {  # $1=html $2=主旨前綴 ；回傳寄信 rc
 
 # ── 慢：產好「下一篇」存進 outbox ──
 do_prepare() {
+  git_pull   # 先同步雲端寄出後推進的進度，避免重複備同一篇
   if "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>/dev/null; then
     log "INFO: outbox 已備妥，略過產生。"
     return 0
@@ -111,6 +128,7 @@ do_prepare() {
     out="$(cat "$tmp")"
     if [ $crc -eq 0 ] && echo "$out" | "$PYTHON" "$DIR/apply_result.py" --to-outbox >>"$LOG" 2>&1; then
       log "INFO: 第 $attempt 次產生並存進 outbox 成功。"
+      git_push_state   # 把備好的 outbox 推給雲端寄出
       rm -f "$tmp"; return 0
     fi
     log "WARN: 第 $attempt/$MAX_TRIES 次產生失敗 (rc=$crc, 長度=${#out})，30s 後重試。"

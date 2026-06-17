@@ -1,0 +1,19 @@
+{
+  "current_index": 2,
+  "step": 2,
+  "covered": [
+    "@Autowired 欄位注入是最直覺的 DI 寫法，但因不可標 final、測試困難、隱藏依賴三個缺點，Spring 官方已不推薦使用。"
+  ],
+  "completed_topics": [
+    {
+      "topic": "IoC 與依賴注入：為什麼不要自己 new",
+      "finished": "2026-06-12",
+      "steps": 7
+    },
+    {
+      "topic": "Bean 是什麼：@Component / @Service / @Repository",
+      "finished": "2026-06-16",
+      "steps": 2
+    }
+  ]
+}
