@@ -4,8 +4,8 @@ name: daily-send
 on:
   schedule:
     - cron: '0 0 * * *'    # 08:00 GMT+8
-    - cron: '30 4 * * *'   # 12:30 GMT+8（補寄）
-    - cron: '0 11 * * *'   # 19:00 GMT+8（補寄）
+    - cron: '0 2 * * *'    # 10:00 GMT+8（補寄）
+    - cron: '0 4 * * *'    # 12:00 GMT+8（補寄）
   workflow_dispatch:       # 允許手動觸發
     inputs:
       test_send:
