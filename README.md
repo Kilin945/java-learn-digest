@@ -3,14 +3,29 @@
 每天早上自動寄一封 5 分鐘可讀完的 Java / Spring Boot 學習信：依 `syllabus.txt` 課綱「一個主題拆成數小步、一天走一步」循序漸進，並用昨日複習做主動回想。沿用 macOS launchd 排程 → `claude -p` 依進度寫課 → Gmail SMTP 寄信。
 
 ## 運作
+產生（prepare）在本機、寄出（send）在雲端，用 git 當同步通道，寄信不再靠筆電醒著。
 ```
-launchd 多時段觸發 → 已寄過？(marker) 秒跳過
+本機 launchd（prepare，需要 claude）：
+  git pull（取得雲端推進的進度）
   → build_lesson.py 依 progress.json 找出今日主題與第幾步、撈昨日重點
-  → claude -p（prompt_daily）→ 回傳 JSON（html + 今日重點 + markdown 存檔）
-  → apply_result.py 驗證 → send_email.py 寄出 → 成功才推進度、寫 lessons/<date>.md、打 marker
-  → sync_notion.py 把該課建成 Notion「Spring 學習筆記」底下的子頁面（去重、失敗不影響信）
-週日另寄「本週回顧」。
+  → claude -p（prompt_daily）→ 回傳 JSON → apply_result.py --to-outbox 存進 outbox
+  → git push（把備好的下一篇推上 GitHub）
+
+GitHub Actions（send，免費雲端 cron，見 .github/workflows/daily-send.yml）：
+  marker 命中？秒跳過 → apply_result.py --outbox-html → send_email.py 寄出
+  → apply_result.py --commit-outbox 推進度、寫 lessons/<date>.md、打 marker
+  → sync_notion.py 建 Notion 子頁面（去重、失敗不影響信）→ git push 把進度推回 repo
 ```
+本機仍保留「本週回顧」(weekly) 排程（同樣需要 claude）。
+> 限制：outbox 一次只備「下一篇」；若筆電連續多天關著、prepare 沒機會補產，
+> 雲端寄完庫存就會斷。要根治多日離線需把 outbox 改成小佇列（待辦）。
+
+### 雲端寄信設定（GitHub Actions）
+1. repo 推上 GitHub（**私有**，因為 `state/`、`lessons/` 會進版控）。
+2. 設 5 個 repo secrets：`GMAIL_USER`、`MAIL_TO`、`NOTION_PARENT_PAGE_ID`、
+   `GMAIL_APP_PASSWORD`（= Keychain 的 app password）、`NOTION_TOKEN`。
+3. 手動測試：Actions → daily-send → Run workflow → 勾 `test_send`（只寄測試信、不動狀態）。
+4. 排程：每天 08:00 / 12:30 / 19:00（GMT+8）各試一次，marker 去重只寄一次。
 
 ## 安裝
 1. `cp config.env.example config.env`，填入 `GMAIL_USER`、`MAIL_TO`、`LEARN_GOAL`。

@@ -72,5 +72,3 @@ jobs:
           git commit -m "chore: 雲端寄出並更新進度 $(date +%F)"
           git pull --rebase --autostash
           git push
-
-# (touch to trigger Actions indexing)
