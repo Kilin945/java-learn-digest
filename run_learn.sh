@@ -179,7 +179,41 @@ do_send() {
   fi
 }
 
-# ── 每週回顧：即時產生即時寄（不經 outbox、不動進度）──
+# ── 每週回顧：備稿（產好存進 weekly outbox，給雲端週六寄）──
+# 跟每日信同理：產生靠本機 claude、寄出靠雲端，週報不再依賴週末筆電醒著。
+# 回顧範圍與週身分證（WEEK_ID）由 build_lesson.py 釘在「最近的週五」，晚產也不位移。
+do_prepare_weekly() {
+  git_pull
+  local out wk ctx
+  out="$("$PYTHON" "$DIR/build_lesson.py" weekly 2>>"$LOG")"
+  wk="$(print -r -- "$out" | sed -n 's/^WEEK_ID: //p' | head -1)"
+  [ -z "$wk" ] && { log "WARN: 取不到 WEEK_ID，略過週報備稿。"; return 1; }
+  ctx="$(print -r -- "$out" | grep -v '^WEEK_ID:')"
+  if [ -f "$STATE_DIR/weekly_outbox.html" ] && [ "$(cat "$STATE_DIR/weekly_outbox.week" 2>/dev/null)" = "$wk" ]; then
+    log "INFO: 週報已備妥（$wk），略過。"; return 0
+  fi
+  [ -f "$STATE_DIR/weekly-$wk" ] && { log "INFO: 週報已寄過（$wk），略過備稿。"; return 0; }
+  if ! wait_for_network; then return 1; fi
+  local base prompt tmp cout attempt=1 html=""
+  base="$(cat "$DIR/prompt_weekly.txt")"
+  tmp="$(mktemp -t java-learn)"
+  while [ $attempt -le $MAX_TRIES ]; do
+    prompt="$base"$'\n\n=== 本週課程資料 ===\n'"$ctx"
+    run_claude "$prompt" "$tmp"; local crc=$?
+    cout="$(cat "$tmp")"
+    if [ $crc -eq 0 ] && looks_like_html "$cout"; then html="$cout"; break; fi
+    log "WARN: 第 $attempt/$MAX_TRIES 次週報備稿失敗 (rc=$crc)，30s 後重試。"
+    attempt=$((attempt+1)); [ $attempt -le $MAX_TRIES ] && sleep 30
+  done
+  rm -f "$tmp"
+  [ -z "$html" ] && { log "WARN: 週報備稿產生失敗，待下次補產。"; return 1; }
+  print -r -- "$html" > "$STATE_DIR/weekly_outbox.html"
+  print -r -- "$wk"   > "$STATE_DIR/weekly_outbox.week"
+  git_push_state
+  log "INFO: 週報已備稿（$wk），待雲端週六寄出。"
+}
+
+# ── 每週回顧：即時產生即時寄（不經 outbox、不動進度）。手動 / 備援用 ──
 do_weekly() {
   [ -f "$MARKER_WEEKLY" ] && { log "SKIP: 本週已寄過（$(basename "$MARKER_WEEKLY")）。"; return 0; }
   if ! wait_for_network; then return 1; fi
@@ -205,10 +239,11 @@ do_weekly() {
 
 echo "===== $(date '+%Y-%m-%d %H:%M:%S') 開始 [mode=$MODE] =====" >> "$LOG"
 case "$MODE" in
-  prepare) do_prepare ;;
-  send)    do_send ;;
-  daily)   [ -f "$MARKER_DAILY" ] && { log "SKIP: 今日已寄過。"; } || { do_prepare; do_send; } ;;
-  weekly)  do_weekly ;;
-  *)       log "ERROR: 未知 mode：$MODE（可用 prepare|send|daily|weekly）"; exit 2 ;;
+  prepare)         do_prepare ;;
+  send)            do_send ;;
+  prepare-weekly)  do_prepare_weekly ;;
+  daily)           [ -f "$MARKER_DAILY" ] && { log "SKIP: 今日已寄過。"; } || { do_prepare; do_send; } ;;
+  weekly)          do_weekly ;;
+  *)               log "ERROR: 未知 mode：$MODE（可用 prepare|send|prepare-weekly|weekly）"; exit 2 ;;
 esac
 echo "===== $(date '+%Y-%m-%d %H:%M:%S') 結束 [mode=$MODE] =====" >> "$LOG"

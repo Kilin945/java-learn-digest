@@ -12,6 +12,10 @@ on:
         description: '只寄一封測試信驗證雲端 SMTP（不動進度/outbox/marker）'
         type: boolean
         default: false
+      force_weekly:
+        description: '不分平日假日，立刻寄出已備妥的週報來測試（不打 marker）'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -69,6 +73,24 @@ jobs:
           echo "已寄出並標記 $MARKER"
           python3 sync_notion.py --md "lessons/$TODAY.md" --date "$TODAY" \
             || echo "Notion 同步失敗（信已寄出），略過。"
+
+      - name: 週六寄出本週回顧（若本機已備稿）
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}
+        run: |
+          set -euo pipefail
+          FORCE="${{ github.event_name == 'workflow_dispatch' && inputs.force_weekly }}"
+          DW="$(cat state/weekly_outbox.week 2>/dev/null || true)"
+          if [ -z "$DW" ] || [ ! -f state/weekly_outbox.html ]; then echo "週報尚未備妥，略過。"; exit 0; fi
+          WMARK="state/weekly-$DW"
+          if [ "$FORCE" != "true" ] && [ -f "$WMARK" ]; then echo "本週週報已寄（$WMARK），略過。"; exit 0; fi
+          if [ "$FORCE" != "true" ]; then
+            TW="$(date +%G-W%V)"; DOW="$(date +%u)"
+            if [ "$DW" = "$TW" ] && [ "$DOW" -lt 6 ]; then echo "未到週六，略過週報。"; exit 0; fi
+          fi
+          cat state/weekly_outbox.html | python3 send_email.py "每週 Java/Spring Boot 回顧"
+          if [ "$FORCE" = "true" ]; then echo "force 測試寄出完成，不打 marker。"; exit 0; fi
+          date '+%Y-%m-%d %H:%M:%S' > "$WMARK"
+          echo "已寄出週報並標記 $WMARK"
 
       - name: 把進度/marker/課程檔推回 state 分支
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}

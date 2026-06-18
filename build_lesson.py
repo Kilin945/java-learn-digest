@@ -11,7 +11,7 @@ goal 取自環境變數 LEARN_GOAL。配色取自一年中的第幾天。
 import os
 import sys
 import argparse
-from datetime import date
+from datetime import date, timedelta
 
 import state_store as ss
 from palette import daily_color
@@ -86,8 +86,14 @@ def main(argv=None):
         ))
     else:
         history = ss.load_history(args.history)
-        rows = ss.recent_history(history, today_s, days=7)
-        print(format_weekly_context(goal=goal, rows=rows, color=color, today=today_s))
+        # 以「最近的週五」為切割點：不管在週五/六/日哪天產，視窗都釘在同一個週五。
+        report_friday = today - timedelta(days=(today.weekday() - 4) % 7)
+        # 回顧那個週五往前 7 天 = 上週六~該週五，共 7 篇。
+        rows = ss.recent_history(history, report_friday.isoformat(), days=7)
+        # 這份週報屬於哪一週（ISO 年-週），給 marker / outbox 標記用。
+        week_id = report_friday.strftime("%G-W%V")
+        print(f"WEEK_ID: {week_id}")
+        print(format_weekly_context(goal=goal, rows=rows, color=color, today=report_friday.isoformat()))
 
 
 if __name__ == "__main__":
