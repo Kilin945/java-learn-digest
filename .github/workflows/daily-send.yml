@@ -1,12 +1,12 @@
 name: daily-send
-# 雲端只負責「寄出」：把本機 prepare 備好、push 上來的 outbox 寄出，
-# 再把進度/marker/課程檔 commit 回 repo。產生課程（claude）仍在本機。
+# 雲端只負責「寄出」：程式碼取自 master、每日紀錄取自獨立的 state 分支，
+# 寄完只把紀錄推回 state 分支（master 永遠不被每日紀錄碰）。產生課程（claude）仍在本機。
 on:
   schedule:
-    - cron: '0 0 * * *'    # 08:00 GMT+8
-    - cron: '0 2 * * *'    # 10:00 GMT+8（補寄）
-    - cron: '0 4 * * *'    # 12:00 GMT+8（補寄）
-  workflow_dispatch:       # 允許手動觸發
+    - cron: '55 23 * * *'   # 07:55 GMT+8
+    - cron: '55 1 * * *'    # 09:55 GMT+8（補寄）
+    - cron: '55 3 * * *'    # 11:55 GMT+8（補寄）
+  workflow_dispatch:
     inputs:
       test_send:
         description: '只寄一封測試信驗證雲端 SMTP（不動進度/outbox/marker）'
@@ -14,10 +14,10 @@ on:
         default: false
 
 permissions:
-  contents: write          # 需要把進度推回 repo
+  contents: write
 
 concurrency:
-  group: daily-send        # 同時間只跑一個，避免推送打架
+  group: daily-send
   cancel-in-progress: false
 
 jobs:
@@ -31,10 +31,19 @@ jobs:
       NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
       NOTION_PARENT_PAGE_ID: ${{ secrets.NOTION_PARENT_PAGE_ID }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4          # 程式碼（master）→ 工作目錄
+      - uses: actions/checkout@v4          # 每日紀錄（state 分支）→ _state/
+        with:
+          ref: state
+          path: _state
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: 接上 state 分支資料（symlink，讓程式照常讀 state/ 與 lessons/）
+        run: |
+          ln -sfn _state/state state
+          ln -sfn _state/lessons lessons
 
       - name: 雲端 SMTP 測試信（手動觸發且勾選 test_send 時）
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.test_send }}
@@ -61,14 +70,15 @@ jobs:
           python3 sync_notion.py --md "lessons/$TODAY.md" --date "$TODAY" \
             || echo "Notion 同步失敗（信已寄出），略過。"
 
-      - name: 把進度/marker/課程檔推回 repo
+      - name: 把進度/marker/課程檔推回 state 分支
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}
         run: |
           set -euo pipefail
+          cd _state                       # 這裡停在 state 分支
           git config user.name "java-learn-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add state lessons
+          git add -A
           if git diff --cached --quiet; then echo "無變更可推。"; exit 0; fi
-          git commit -m "chore: 雲端寄出並更新進度 $(date +%F)"
+          git commit -m "chore(state): 雲端寄出並更新進度 $(date +%F)"
           git pull --rebase --autostash
-          git push
+          git push                        # 推回 state 分支，master 不受影響

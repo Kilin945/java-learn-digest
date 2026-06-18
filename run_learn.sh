@@ -36,20 +36,23 @@ export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$LOG"; }
 notify() { /usr/bin/osascript -e "display notification \"$2\" with title \"$1\" sound name \"Basso\"" >/dev/null 2>&1; }
 
-# 雲端寄信模式：用 git 當同步通道。prepare 前先 pull 取得雲端推進的進度，
-# 備好下一篇後 push 上去給雲端寄。REPO_SYNC=0 可關掉（純本機模式）。
+# 雲端寄信模式：用 git 當同步通道，但「紀錄」放獨立的 state 分支，
+# 透過旁邊的 worktree（預設 ../java-learn-state）讀寫，master 只剩開發、不被每日紀錄洗版。
+# prepare 前先 pull 取得雲端推進的進度，備好下一篇後 push 上去給雲端寄。
+# REPO_SYNC=0 可關掉（純本機模式）；STATE_WT 可覆寫 worktree 路徑。
 REPO_SYNC="${REPO_SYNC:-1}"
+STATE_WT="${STATE_WT:-$(dirname "$DIR")/java-learn-state}"
 git_pull() {
   [ "$REPO_SYNC" = 1 ] || return 0
-  git -C "$DIR" pull --rebase --autostash >>"$LOG" 2>&1 || log "WARN: git pull 失敗（用本機現況續跑）。"
+  git -C "$STATE_WT" pull --rebase --autostash >>"$LOG" 2>&1 || log "WARN: git pull 失敗（用本機現況續跑）。"
 }
 git_push_state() {
   [ "$REPO_SYNC" = 1 ] || return 0
-  git -C "$DIR" add state lessons >>"$LOG" 2>&1 || true
-  git -C "$DIR" diff --cached --quiet && return 0
-  git -C "$DIR" commit -m "chore: 本機備妥下一篇 $(date +%F)" >>"$LOG" 2>&1 || true
-  git -C "$DIR" pull --rebase --autostash >>"$LOG" 2>&1 || true
-  git -C "$DIR" push >>"$LOG" 2>&1 || log "WARN: git push 失敗（下次再試）。"
+  git -C "$STATE_WT" add -A >>"$LOG" 2>&1 || true
+  git -C "$STATE_WT" diff --cached --quiet && return 0
+  git -C "$STATE_WT" commit -m "chore: 本機備妥下一篇 $(date +%F)" >>"$LOG" 2>&1 || true
+  git -C "$STATE_WT" pull --rebase --autostash >>"$LOG" 2>&1 || true
+  git -C "$STATE_WT" push >>"$LOG" 2>&1 || log "WARN: git push 失敗（下次再試）。"
 }
 
 MARKER_DAILY="$STATE_DIR/daily-$(date +%F)"
