@@ -1,8 +1,9 @@
 {
   "current_index": 2,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "@Autowired 欄位注入是最直覺的 DI 寫法，但因不可標 final、測試困難、隱藏依賴三個缺點，Spring 官方已不推薦使用。"
+    "@Autowired 欄位注入是最直覺的 DI 寫法，但因不可標 final、測試困難、隱藏依賴三個缺點，Spring 官方已不推薦使用。",
+    "建構子注入透過 final 欄位強制依賴不可變，是 Spring 官方最推薦的 DI 方式；Spring 4.3+ 唯一建構子可省略 @Autowired。"
   ],
   "completed_topics": [
     {
