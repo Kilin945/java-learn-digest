@@ -16,7 +16,7 @@ GitHub Actions（send，免費雲端 cron，見 .github/workflows/daily-send.yml
   → apply_result.py --commit-outbox 推進度、寫 lessons/<date>.md、打 marker
   → sync_notion.py 建 Notion 子頁面（去重、失敗不影響信）→ git push 把進度推回 repo
 ```
-本機仍保留「本週回顧」(weekly) 排程（同樣需要 claude）。
+**每週回顧（weekly，同架構）**：本機**週五**備稿（`prepare-weekly`：build_lesson.py 把回顧視窗釘在「上週六~週五」7 篇 → claude → 存 weekly outbox → push state 分支），雲端**週六**早上跟每日信同時段寄出（`weekly-<ISO週>` marker 一週只寄一次）。週五沒開機有週六/日/週一備援，整週末沒開則下週一補產、雲端隔天補寄，內容永遠是完整的「週六~週五」那一週。
 > 限制：outbox 一次只備「下一篇」；若筆電連續多天關著、prepare 沒機會補產，
 > 雲端寄完庫存就會斷。要根治多日離線需把 outbox 改成小佇列（待辦）。
 
@@ -25,7 +25,7 @@ GitHub Actions（send，免費雲端 cron，見 .github/workflows/daily-send.yml
 2. 設 5 個 repo secrets：`GMAIL_USER`、`MAIL_TO`、`NOTION_PARENT_PAGE_ID`、
    `GMAIL_APP_PASSWORD`（= Keychain 的 app password）、`NOTION_TOKEN`。
 3. 手動測試：Actions → daily-send → Run workflow → 勾 `test_send`（只寄測試信、不動狀態）。
-4. 排程：每天 08:00 / 12:30 / 19:00（GMT+8）各試一次，marker 去重只寄一次。
+4. 排程（GMT+8，marker 去重一週期只寄一次）：每日 07:55 / 08:55 / 10:25 / 11:55 / 13:55；每週回顧週六同時段寄出。
 
 ## 安裝
 1. `cp config.env.example config.env`，填入 `GMAIL_USER`、`MAIL_TO`、`LEARN_GOAL`。

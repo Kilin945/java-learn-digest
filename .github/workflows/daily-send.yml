@@ -2,10 +2,12 @@ name: daily-send
 # 雲端只負責「寄出」：程式碼取自 master、每日紀錄取自獨立的 state 分支，
 # 寄完只把紀錄推回 state 分支（master 永遠不被每日紀錄碰）。產生課程（claude）仍在本機。
 on:
-  schedule:
+  schedule:                 # 比照新聞 5 時段、各提早 5 分避開雲端整點壅塞
     - cron: '55 23 * * *'   # 07:55 GMT+8
-    - cron: '55 1 * * *'    # 09:55 GMT+8（補寄）
+    - cron: '55 0 * * *'    # 08:55 GMT+8（補寄）
+    - cron: '25 2 * * *'    # 10:25 GMT+8（補寄）
     - cron: '55 3 * * *'    # 11:55 GMT+8（補寄）
+    - cron: '55 5 * * *'    # 13:55 GMT+8（補寄）
   workflow_dispatch:
     inputs:
       test_send:
@@ -35,12 +37,12 @@ jobs:
       NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
       NOTION_PARENT_PAGE_ID: ${{ secrets.NOTION_PARENT_PAGE_ID }}
     steps:
-      - uses: actions/checkout@v4          # 程式碼（master）→ 工作目錄
-      - uses: actions/checkout@v4          # 每日紀錄（state 分支）→ _state/
+      - uses: actions/checkout@v5          # 程式碼（master）→ 工作目錄
+      - uses: actions/checkout@v5          # 每日紀錄（state 分支）→ _state/
         with:
           ref: state
           path: _state
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
