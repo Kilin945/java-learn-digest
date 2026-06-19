@@ -1,210 +1,194 @@
-```html
-<div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 680px; margin: 0 auto; background: #f9edf6; padding: 24px 16px; color: #333;">
+<div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 680px; margin: 0 auto; background: #f7f9fc; padding: 24px 16px;">
 
   <!-- 標題列 -->
-  <div style="border-left: 6px solid #c56bb0; padding: 12px 16px; background: #fff; border-radius: 6px; margin-bottom: 28px;">
-    <p style="margin: 0; font-size: 18px; font-weight: bold; color: #b04b9b;">
-      📘 每週回顧 · Java / Spring Boot · 2026-06-12
-    </p>
-    <p style="margin: 4px 0 0; font-size: 13px; color: #888;">本週主題：IoC 與依賴注入 #1–7（為什麼不要自己 new）</p>
+  <div style="border-left: 5px solid #5b8def; background: #eef4ff; padding: 16px 20px; border-radius: 8px; margin-bottom: 24px;">
+    <p style="margin: 0; font-size: 18px; font-weight: bold; color: #3b6cf6;">📘 每週回顧 · Java / Spring Boot · 2026-06-19</p>
+    <p style="margin: 6px 0 0; font-size: 14px; color: #555;">本週主題：Spring Bean 與三種依賴注入方式</p>
   </div>
 
-  <!-- 前言 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; font-size: 14px; color: #555; line-height: 1.7;">
-    這封信把你這週學過的七堂課濃縮成 7 題回想題。<br>
-    試著在看解答前，用自己的話寫出答案——就算寫錯也沒關係，對照解答才是真正學習的開始。
-  </div>
-
-  <!-- Q 區塊 -->
-
-  <!-- Q1 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #c56bb0;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #c56bb0;">Q1 ／ 基礎動機</p>
-    <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.7;">
-      在 Java 程式裡直接用 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">new SomeService()</code> 建立物件，會帶來什麼問題？Spring IoC 容器（Inversion of Control）如何解決這個問題？
+  <!-- 引言 -->
+  <div style="background: #fff; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; border: 1px solid #dce8ff;">
+    <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
+      主動回想（active recall）是讓知識定著最有效的方法。請先不看筆記試著回答每一題，再對照下方解答確認理解是否正確。加油！💪
     </p>
   </div>
 
-  <!-- Q2 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #c56bb0;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #c56bb0;">Q2 ／ 語意化 Annotation</p>
-    <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.7;">
-      <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">@Service</code>、<code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">@Repository</code>、<code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">@RestController</code> 與 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">@Component</code> 在功能上有什麼關係？三個 annotation 各代表哪一層？
-    </p>
+  <!-- 題目區 -->
+  <div style="background: #fff; border-radius: 8px; padding: 20px 24px; margin-bottom: 20px; border: 1px solid #dce8ff;">
+    <p style="margin: 0 0 20px; font-size: 16px; font-weight: bold; color: #3b6cf6;">🧠 主動回想題</p>
+
+    <!-- Q1 -->
+    <div style="margin-bottom: 18px; padding: 14px 16px; background: #eef4ff; border-radius: 8px; border-left: 4px solid #5b8def;">
+      <p style="margin: 0 0 5px; font-size: 12px; color: #5b8def; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Q1 · Bean 基礎</p>
+      <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.75;">
+        Spring 的 <strong>IoC 容器</strong>（控制反轉容器）負責做什麼？什麼是 <strong>Bean</strong>？一個普通 Java class 要如何「告訴」Spring 把它納入管理？
+      </p>
+    </div>
+
+    <!-- Q2 -->
+    <div style="margin-bottom: 18px; padding: 14px 16px; background: #eef4ff; border-radius: 8px; border-left: 4px solid #5b8def;">
+      <p style="margin: 0 0 5px; font-size: 12px; color: #5b8def; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Q2 · Annotation 職責</p>
+      <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.75;">
+        <code style="background:#dce8ff;padding:1px 6px;border-radius:4px;">@Service</code> 和 <code style="background:#dce8ff;padding:1px 6px;border-radius:4px;">@Repository</code> 都是 <code style="background:#dce8ff;padding:1px 6px;border-radius:4px;">@Component</code> 的「職責標籤特化版」。這兩個 annotation 分別標示哪一層？<code style="background:#dce8ff;padding:1px 6px;border-radius:4px;">@Repository</code> 比 <code style="background:#dce8ff;padding:1px 6px;border-radius:4px;">@Component</code> 多了什麼額外機制？
+      </p>
+    </div>
+
+    <!-- Q3 -->
+    <div style="margin-bottom: 18px; padding: 14px 16px; background: #eef4ff; border-radius: 8px; border-left: 4px solid #5b8def;">
+      <p style="margin: 0 0 5px; font-size: 12px; color: #5b8def; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Q3 · 三層架構</p>
+      <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.75;">
+        請描述 Spring 三層架構的呼叫流向（Controller → ? → ?），並說明各層：① 對應哪個 annotation、② 負責什麼職責。
+      </p>
+    </div>
+
+    <!-- Q4 -->
+    <div style="margin-bottom: 18px; padding: 14px 16px; background: #eef4ff; border-radius: 8px; border-left: 4px solid #5b8def;">
+      <p style="margin: 0 0 5px; font-size: 12px; color: #5b8def; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Q4 · 欄位注入的缺點</p>
+      <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.75;">
+        直接把 <code style="background:#dce8ff;padding:1px 6px;border-radius:4px;">@Autowired</code> 標在欄位上（<strong>field injection</strong>）是最直覺的 DI 寫法，卻被 Spring 官方不推薦。請說出它的三個具體缺點。
+      </p>
+    </div>
+
+    <!-- Q5 -->
+    <div style="margin-bottom: 18px; padding: 14px 16px; background: #eef4ff; border-radius: 8px; border-left: 4px solid #5b8def;">
+      <p style="margin: 0 0 5px; font-size: 12px; color: #5b8def; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Q5 · 建構子注入的優勢</p>
+      <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.75;">
+        為什麼 <strong>constructor injection</strong>（建構子注入）是 Spring 官方的「首選」？<code style="background:#dce8ff;padding:1px 6px;border-radius:4px;">final</code> 關鍵字在其中扮演什麼角色？它如何讓單元測試更容易？
+      </p>
+    </div>
+
+    <!-- Q6 -->
+    <div style="margin-bottom: 18px; padding: 14px 16px; background: #eef4ff; border-radius: 8px; border-left: 4px solid #5b8def;">
+      <p style="margin: 0 0 5px; font-size: 12px; color: #5b8def; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Q6 · Spring 4.3+ 的語法簡化</p>
+      <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.75;">
+        Spring 4.3 之後，建構子注入有一個「可省略的東西」。是什麼？適用條件是什麼？這個特性和 Lombok 的 <code style="background:#dce8ff;padding:1px 6px;border-radius:4px;">@RequiredArgsConstructor</code> 有什麼關聯？
+      </p>
+    </div>
+
+    <!-- Q7 -->
+    <div style="margin-bottom: 18px; padding: 14px 16px; background: #eef4ff; border-radius: 8px; border-left: 4px solid #5b8def;">
+      <p style="margin: 0 0 5px; font-size: 12px; color: #5b8def; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Q7 · Setter 注入的適用場景</p>
+      <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.75;">
+        什麼情境下應該選用 <strong>setter injection</strong>，而不是建構子注入？<code style="background:#dce8ff;padding:1px 6px;border-radius:4px;">@Autowired(required=false)</code> 的作用是什麼？如果不加這個，注入失敗時會發生什麼？
+      </p>
+    </div>
+
+    <!-- Q8 -->
+    <div style="padding: 14px 16px; background: #eef4ff; border-radius: 8px; border-left: 4px solid #5b8def;">
+      <p style="margin: 0 0 5px; font-size: 12px; color: #5b8def; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Q8 · 綜合應用</p>
+      <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.75;">
+        你要寫一個 <code style="background:#dce8ff;padding:1px 6px;border-radius:4px;">OrderService</code>，它<strong>必須</strong>依賴 <code style="background:#dce8ff;padding:1px 6px;border-radius:4px;">OrderRepository</code>，但<strong>可選地</strong>依賴 <code style="background:#dce8ff;padding:1px 6px;border-radius:4px;">NotificationService</code>（可能沒有這個 Bean）。你會如何組合這週學過的注入方式？請寫出 class 的大致骨架。
+      </p>
+    </div>
   </div>
 
-  <!-- Q3 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #c56bb0;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #c56bb0;">Q3 ／ 建構子注入</p>
-    <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.7;">
-      下面兩段程式碼，哪一種是「建構子注入（constructor injection）」？哪一種更推薦？請說明理由。
-    </p>
-    <pre style="background:#f8f4fb;padding:12px;border-radius:6px;font-size:13px;overflow-x:auto;margin-top:10px;color:#444;">
-// 版本 A
-@Service
+  <!-- 解答區 -->
+  <div style="background: #fff; border-radius: 8px; padding: 20px 24px; margin-bottom: 20px; border: 1px solid #dce8ff;">
+    <p style="margin: 0 0 20px; font-size: 15px; font-weight: bold; color: #666; border-bottom: 2px dashed #dce8ff; padding-bottom: 14px;">—— 解答 ——</p>
+
+    <!-- A1 -->
+    <div style="margin-bottom: 20px;">
+      <p style="margin: 0 0 7px; font-size: 13px; font-weight: bold; color: #5b8def;">A1 · Bean 基礎</p>
+      <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
+        <strong>IoC 容器</strong>負責建立與管理物件的生命週期及依賴關係，讓你不需要手動 <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">new</code>，控制權從程式碼轉交給框架（故稱「控制反轉」）。<br>
+        <strong>Bean</strong> 就是被 IoC 容器管理的 Java 物件。<br>
+        在 class 上標 <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">@Component</code>，Spring 啟動時的 <strong>Component Scan</strong> 就會掃描到它，自動建立實例並存入容器。
+      </p>
+    </div>
+
+    <!-- A2 -->
+    <div style="margin-bottom: 20px;">
+      <p style="margin: 0 0 7px; font-size: 13px; font-weight: bold; color: #5b8def;">A2 · Annotation 職責</p>
+      <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
+        <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">@Service</code> → <strong>業務邏輯層</strong>（處理商業規則）<br>
+        <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">@Repository</code> → <strong>資料存取層</strong>（執行 CRUD）<br>
+        <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">@Repository</code> 額外提供「<strong>持久層例外轉換（Exception Translation）</strong>」：JDBC / JPA 拋出的底層例外會被自動轉換為 Spring 統一的 <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">DataAccessException</code>，讓例外處理更一致。
+      </p>
+    </div>
+
+    <!-- A3 -->
+    <div style="margin-bottom: 20px;">
+      <p style="margin: 0 0 7px; font-size: 13px; font-weight: bold; color: #5b8def;">A3 · 三層架構</p>
+      <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
+        <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">Controller (@RestController)</code> → <strong>接收 HTTP 請求</strong>，轉發給 Service<br>
+        <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">Service (@Service)</code> → <strong>處理業務邏輯</strong>，協調多個 Repository<br>
+        <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">Repository (@Repository)</code> → <strong>與資料庫互動</strong>，執行 CRUD<br><br>
+        三層分離的好處：修改任一層（例如換資料庫）不影響其他層，職責一目了然。
+      </p>
+    </div>
+
+    <!-- A4 -->
+    <div style="margin-bottom: 20px;">
+      <p style="margin: 0 0 7px; font-size: 13px; font-weight: bold; color: #5b8def;">A4 · 欄位注入的缺點</p>
+      <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
+        ① <strong>不可標 final</strong>：欄位不能設為 final，依賴在執行期可被替換，缺乏不可變保障。<br>
+        ② <strong>測試困難</strong>：不透過 Spring 容器就無法注入，單元測試必須動用 Reflection 才能塞入 mock。<br>
+        ③ <strong>隱藏依賴</strong>：從 class 外部（建構子簽名）看不出它需要哪些依賴，破壞了「依賴明確可見」的設計原則。
+      </p>
+    </div>
+
+    <!-- A5 -->
+    <div style="margin-bottom: 20px;">
+      <p style="margin: 0 0 7px; font-size: 13px; font-weight: bold; color: #5b8def;">A5 · 建構子注入的優勢</p>
+      <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
+        建構子注入讓所有必要依賴透過建構子參數傳入，搭配 <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">final</code> 欄位可確保依賴<strong>一旦設定後不可被修改</strong>（不可變性）。<br>
+        在測試時，只需直接 <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">new MyService(mockRepo)</code> 即可注入 mock，完全不需要啟動 Spring 容器，測試速度快且可靠。
+      </p>
+    </div>
+
+    <!-- A6 -->
+    <div style="margin-bottom: 20px;">
+      <p style="margin: 0 0 7px; font-size: 13px; font-weight: bold; color: #5b8def;">A6 · Spring 4.3+ 的語法簡化</p>
+      <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
+        當 class 只有<strong>唯一一個建構子</strong>時，可以省略 <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">@Autowired</code>，Spring 會自動辨識並執行注入。<br>
+        Lombok 的 <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">@RequiredArgsConstructor</code> 會為所有 <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">final</code> 欄位自動生成唯一建構子，加上 Spring 4.3+ 的這個規則，兩者合用就是現代 Spring 最簡潔的 DI 寫法，完全不需要手寫建構子或 <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">@Autowired</code>。
+      </p>
+    </div>
+
+    <!-- A7 -->
+    <div style="margin-bottom: 20px;">
+      <p style="margin: 0 0 7px; font-size: 13px; font-weight: bold; color: #5b8def;">A7 · Setter 注入的適用場景</p>
+      <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
+        ① <strong>可選依賴</strong>：某 Bean 不一定存在（例如通知服務可能未部署）。用 <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">@Autowired(required=false)</code> 標在 setter 上，找不到對應 Bean 時欄位保持 <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">null</code> 而不拋例外。若省略 <code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">required=false</code>，找不到 Bean 時 Spring 啟動就會直接失敗。<br>
+        ② <strong>循環依賴</strong>：A 依賴 B、B 依賴 A 時，建構子注入會讓容器卡死，改用 setter 注入可讓 Spring 先建立實例再填入依賴，打破循環。
+      </p>
+    </div>
+
+    <!-- A8 -->
+    <div>
+      <p style="margin: 0 0 7px; font-size: 13px; font-weight: bold; color: #5b8def;">A8 · 綜合應用</p>
+      <p style="margin: 0 0 10px; font-size: 14px; color: #444; line-height: 1.8;">
+        <strong>必要依賴</strong> → 建構子注入（搭配 final）；<strong>可選依賴</strong> → setter 注入（搭配 required=false）：
+      </p>
+      <pre style="background: #f0f4ff; padding: 14px 18px; border-radius: 8px; font-size: 13px; line-height: 1.7; overflow-x: auto; margin: 0;"><code>@Service
 public class OrderService {
-    @Autowired
-    private PaymentService paymentService;
-}
 
-// 版本 B
-@Service
-public class OrderService {
-    private final PaymentService paymentService;
-    public OrderService(PaymentService paymentService) {
-        this.paymentService = paymentService;
+    // 必要依賴：final 保證不可變
+    private final OrderRepository orderRepo;
+
+    // 可選依賴：非 final，可能為 null
+    private NotificationService notificationSvc;
+
+    // 建構子注入（Spring 4.3+ 可省略 @Autowired）
+    public OrderService(OrderRepository orderRepo) {
+        this.orderRepo = orderRepo;
     }
-}</pre>
-  </div>
 
-  <!-- Q4 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #c56bb0;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #c56bb0;">Q4 ／ 注入介面</p>
-    <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.7;">
-      有一個介面 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">NotificationService</code>，你的 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">OrderController</code> 應該依賴介面還是具體實作類別？這樣設計有什麼好處？
-    </p>
-  </div>
-
-  <!-- Q5 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #c56bb0;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #c56bb0;">Q5 ／ 多實作衝突</p>
-    <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.7;">
-      <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">MessageService</code> 介面有兩個實作：<code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">EmailMessageService</code> 和 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">SmsMessageService</code>，都標了 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">@Service</code>。<br>
-      請問 Spring 啟動時會發生什麼事？你有哪兩種方式可以解決，各自的使用時機為何？
-    </p>
-  </div>
-
-  <!-- Q6 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #c56bb0;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #c56bb0;">Q6 ／ Bean Scope</p>
-    <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.7;">
-      Spring Bean 的預設 Scope 是什麼？加上 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">@Scope("prototype")</code> 後行為有何不同？<br>
-      請各舉一個適合用 Singleton 及適合用 Prototype 的情境。
-    </p>
-  </div>
-
-  <!-- Q7 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #c56bb0;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #c56bb0;">Q7 ／ 第三方 Bean 登記</p>
-    <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.7;">
-      Jackson 的 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">ObjectMapper</code> 是第三方 class，你無法在它的原始碼上加 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">@Component</code>。<br>
-      請說明如何把它注冊成 Spring Bean，讓其他元件可以透過建構子注入使用它。
-    </p>
-  </div>
-
-  <!-- 分隔線 -->
-  <div style="border-top: 2px dashed #d9a8d0; margin: 32px 0 24px; text-align: center;">
-    <span style="background: #f9edf6; padding: 0 12px; font-size: 14px; color: #b04b9b; font-weight: bold;">—— 解答 ——</span>
-  </div>
-
-  <!-- A1 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #e0a8d8;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #9a3a88;">A1</p>
-    <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
-      直接 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">new</code> 會造成<strong>緊耦合（tight coupling）</strong>：呼叫方與具體實作綁死，換依賴時必須修改呼叫方；撰寫單元測試時也無法輕易替換成假的（mock）實作。<br><br>
-      Spring IoC 把物件建立的控制權「反轉」給框架：由 IoC 容器統一建立、管理所有 Bean，再主動把依賴「注入」給需要的地方——呼叫方只宣告「我需要什麼」，不關心「由誰建立」。
-    </p>
-  </div>
-
-  <!-- A2 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #e0a8d8;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #9a3a88;">A2</p>
-    <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
-      三者都是 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">@Component</code> 的<strong>語意化別名（stereotype annotation）</strong>，功能上等價於 @Component，都會讓 Spring 掃描並建立 Bean。差別在語意與分層：
-    </p>
-    <ul style="margin: 8px 0 0 16px; font-size: 14px; color: #444; line-height: 1.8;">
-      <li><strong>@RestController</strong>：控制層，接收 HTTP 請求、回傳 JSON</li>
-      <li><strong>@Service</strong>：業務邏輯層，放核心流程</li>
-      <li><strong>@Repository</strong>：資料存取層，與資料庫互動</li>
-    </ul>
-  </div>
-
-  <!-- A3 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #e0a8d8;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #9a3a88;">A3</p>
-    <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
-      <strong>版本 B 是建構子注入</strong>，也是推薦做法。原因：
-    </p>
-    <ul style="margin: 8px 0 0 16px; font-size: 14px; color: #444; line-height: 1.8;">
-      <li>欄位可宣告 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">final</code>，確保注入後不被修改（不可變性）</li>
-      <li>依賴在建構時就必須提供，物件一建立就處於完整狀態</li>
-      <li>單元測試時直接 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">new OrderService(mockPayment)</code> 即可，不需要 Spring 容器</li>
-      <li>版本 A 的 field injection 依賴反射，且欄位無法宣告 final</li>
-    </ul>
-  </div>
-
-  <!-- A4 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #e0a8d8;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #9a3a88;">A4</p>
-    <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
-      應該<strong>依賴介面（inject the interface）</strong>，而非具體實作。這樣：
-    </p>
-    <ul style="margin: 8px 0 0 16px; font-size: 14px; color: #444; line-height: 1.8;">
-      <li>呼叫方（Controller）只知道「它能做什麼」，不知道「誰在做」</li>
-      <li>替換實作（例如從 Email 通知改成 SMS 通知）時，Controller 一行程式碼都不用改</li>
-      <li>測試時可以傳入 Mock 實作，隔離外部依賴</li>
-    </ul>
-    <p style="margin: 8px 0 0; font-size: 14px; color: #444;">這就是「<strong>面向介面程式設計（programming to an interface）</strong>」的實踐。</p>
-  </div>
-
-  <!-- A5 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #e0a8d8;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #9a3a88;">A5</p>
-    <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
-      Spring 啟動時會丟出 <strong>NoUniqueBeanDefinitionException</strong>——它找到兩個候選但不知道選哪個。<br><br>
-      兩種解法：
-    </p>
-    <ul style="margin: 8px 0 0 16px; font-size: 14px; color: #444; line-height: 1.8;">
-      <li><strong>@Primary</strong>：標在其中一個實作上，讓它成為預設首選——適合「大多數情況用這個」的場景</li>
-      <li><strong>@Qualifier("beanName")</strong>：在注入點點名指定——適合「不同注入點需要不同實作」的場景，精確控制</li>
-    </ul>
-  </div>
-
-  <!-- A6 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #e0a8d8;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #9a3a88;">A6</p>
-    <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
-      預設是 <strong>Singleton</strong>：整個 Application 共用同一個實例，節省記憶體、適合無狀態的 Service。<br><br>
-      加上 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">@Scope("prototype")</code> 後，每次注入或呼叫 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">getBean()</code> 都建立<strong>全新物件</strong>。
-    </p>
-    <ul style="margin: 8px 0 0 16px; font-size: 14px; color: #444; line-height: 1.8;">
-      <li><strong>Singleton 適合</strong>：OrderService、UserService 等無狀態業務邏輯類別</li>
-      <li><strong>Prototype 適合</strong>：每次請求需要獨立狀態的物件，例如包含 mutable 狀態的 command/builder 物件</li>
-    </ul>
-  </div>
-
-  <!-- A7 -->
-  <div style="background: #fff; border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; border-left: 4px solid #e0a8d8;">
-    <p style="margin: 0 0 6px; font-size: 13px; font-weight: bold; color: #9a3a88;">A7</p>
-    <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.8;">
-      在標了 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">@Configuration</code> 的類別裡，寫一個標了 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">@Bean</code> 的方法，方法回傳值就是要登記的物件：
-    </p>
-    <pre style="background:#f8f4fb;padding:12px;border-radius:6px;font-size:13px;overflow-x:auto;margin-top:10px;color:#444;">
-@Configuration
-public class AppConfig {
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
+    // Setter 注入（可選依賴）
+    @Autowired(required = false)
+    public void setNotificationService(NotificationService svc) {
+        this.notificationSvc = svc;
     }
-}</pre>
-    <p style="margin: 8px 0 0; font-size: 14px; color: #444;">
-      Spring 啟動時會執行這個方法，把回傳的 <code style="background:#f3e5f0;padding:1px 5px;border-radius:3px;">ObjectMapper</code> 收進 IoC 容器。其他 Bean 就可以透過建構子注入正常使用它，和 @Component Bean 完全一樣。
-    </p>
+}</code></pre>
+      <p style="margin: 10px 0 0; font-size: 13px; color: #666; line-height: 1.7;">
+        使用前記得 null-check：<code style="background:#f0f4ff;padding:1px 5px;border-radius:4px;">if (notificationSvc != null) { notificationSvc.send(...); }</code>
+      </p>
+    </div>
   </div>
 
-  <!-- 結尾鼓勵 -->
-  <div style="background: #f3e5f0; border-radius: 8px; padding: 18px 20px; margin-top: 8px; text-align: center;">
-    <p style="margin: 0; font-size: 14px; color: #b04b9b; line-height: 1.8;">
-      這週把 IoC / DI 的七個層次全走完了——從「為什麼不能 new」到「第三方 Bean 手動登記」。<br>
-      下週進入 <strong>Spring MVC 與 REST API 開發</strong>，這週打好的基礎正是它的地基。<br><br>
-      <strong>繼續加油！每天一小步，累積起來就是質變。💪</strong>
-    </p>
+  <!-- Footer -->
+  <div style="text-align: center; padding: 12px 0 4px; font-size: 12px; color: #bbb;">
+    由 Java / Spring Boot 課程系統自動產生 · 2026-06-19
   </div>
-
-  <!-- footer -->
-  <p style="margin: 24px 0 0; text-align: center; font-size: 12px; color: #bbb;">
-    Java / Spring Boot 每週回顧 · 自動生成 · 如有疑問請直接回信
-  </p>
 
 </div>
-```
