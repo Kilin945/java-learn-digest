@@ -10,3 +10,4 @@
 {"date": "2026-06-17", "topic": "建構子注入 vs 欄位注入 vs setter 注入", "step": 1, "summary": "@Autowired 欄位注入是最直覺的 DI 寫法，但因不可標 final、測試困難、隱藏依賴三個缺點，Spring 官方已不推薦使用。"}
 {"date": "2026-06-18", "topic": "建構子注入 vs 欄位注入 vs setter 注入", "step": 2, "summary": "建構子注入透過 final 欄位強制依賴不可變，是 Spring 官方最推薦的 DI 方式；Spring 4.3+ 唯一建構子可省略 @Autowired。"}
 {"date": "2026-06-19", "topic": "建構子注入 vs 欄位注入 vs setter 注入", "step": 3, "summary": "Setter 注入透過在 setter 方法上標 @Autowired(required=false) 實現可選依賴，適用於可選依賴或循環依賴場景；三種注入總結：建構子注入（首選：final、易測試）、setter 注入（特殊場景備選）、欄位注入（應避免使用）。"}
+{"date": "2026-06-20", "topic": "@Configuration 與 @Bean：手動定義 Bean", "step": 1, "summary": "@Configuration 標記配置類別，@Bean 標在方法上將其回傳值交給 Spring 容器管理，主要解決第三方類別無法加 @Component 的場景。"}
