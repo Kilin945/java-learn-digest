@@ -1,11 +1,12 @@
 {
   "current_index": 3,
-  "step": 5,
+  "step": 6,
   "covered": [
     "@Configuration 標記配置類別，@Bean 標在方法上將其回傳值交給 Spring 容器管理，主要解決第三方類別無法加 @Component 的場景。",
     "在 @Configuration 類別的 @Bean 方法中，把所依賴的 Bean 型別宣告為方法參數，Spring 會自動注入對應的 Bean，讓多個 Bean 能互相協作。",
     "用 @Bean(\"name\") 自訂 Bean 名稱（預設=方法名），同型別有多個 Bean 時以 @Primary 標記首選，讓 Spring 注入不拋 NoUniqueBeanDefinitionException。",
-    "用 @Qualifier(\"Bean名稱\") 加在建構子參數（注入點）前，可精準指定要哪顆 Bean，優先級高於 @Primary，讓多 Bean 場景下的注入明確無歧義。"
+    "用 @Qualifier(\"Bean名稱\") 加在建構子參數（注入點）前，可精準指定要哪顆 Bean，優先級高於 @Primary，讓多 Bean 場景下的注入明確無歧義。",
+    "用 @Scope(\"singleton\")（預設，可省略）讓全容器共用同一個 Bean 實例；用 @Scope(\"prototype\") 讓每次注入或 getBean 都得到全新物件。"
   ],
   "completed_topics": [
     {
