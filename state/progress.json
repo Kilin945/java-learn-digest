@@ -1,7 +1,9 @@
 {
   "current_index": 4,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "Spring 預設的 Bean scope 是 singleton，整個容器只建立一個實例，所有注入點共用同一個物件；不標 @Scope 就是 singleton。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",

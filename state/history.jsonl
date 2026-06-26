@@ -16,3 +16,4 @@
 {"date": "2026-06-23", "topic": "@Configuration 與 @Bean：手動定義 Bean", "step": 4, "summary": "用 @Qualifier(\"Bean名稱\") 加在建構子參數（注入點）前，可精準指定要哪顆 Bean，優先級高於 @Primary，讓多 Bean 場景下的注入明確無歧義。"}
 {"date": "2026-06-24", "topic": "@Configuration 與 @Bean：手動定義 Bean", "step": 5, "summary": "用 @Scope(\"singleton\")（預設，可省略）讓全容器共用同一個 Bean 實例；用 @Scope(\"prototype\") 讓每次注入或 getBean 都得到全新物件。"}
 {"date": "2026-06-25", "topic": "@Configuration 與 @Bean：手動定義 Bean", "step": 6, "summary": "用 @PostConstruct 在 Bean 注入完成後執行初始化，@PreDestroy 在容器關閉前執行清理；prototype Bean 不觸發 @PreDestroy，清理由呼叫端自行負責。"}
+{"date": "2026-06-26", "topic": "Bean 的 scope 與生命週期", "step": 1, "summary": "Spring 預設的 Bean scope 是 singleton，整個容器只建立一個實例，所有注入點共用同一個物件；不標 @Scope 就是 singleton。"}
