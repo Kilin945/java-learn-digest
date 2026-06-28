@@ -44,7 +44,16 @@ REPO_SYNC="${REPO_SYNC:-1}"
 STATE_WT="${STATE_WT:-$(dirname "$DIR")/java-learn-state}"
 git_pull() {
   [ "$REPO_SYNC" = 1 ] || return 0
-  git -C "$STATE_WT" pull --rebase --autostash >>"$LOG" 2>&1 || log "WARN: git pull 失敗（用本機現況續跑）。"
+  local i=1
+  while [ $i -le 3 ]; do
+    if git -C "$STATE_WT" pull --rebase --autostash >>"$LOG" 2>&1; then
+      return 0
+    fi
+    log "WARN: git pull 第 $i/3 次失敗，5s 後重試。"
+    i=$((i+1)); sleep 5
+  done
+  log "WARN: git pull 連續 3 次失敗，本機狀態可能過期。"
+  return 1
 }
 git_push_state() {
   [ "$REPO_SYNC" = 1 ] || return 0
@@ -110,7 +119,10 @@ send_html() {  # $1=html $2=主旨前綴 ；回傳寄信 rc
 
 # ── 慢：產好「下一篇」存進 outbox ──
 do_prepare() {
-  git_pull   # 先同步雲端寄出後推進的進度，避免重複備同一篇
+  if ! git_pull; then
+    log "INFO: git pull 失敗、本機 outbox 不可信，本時段略過（不誤判已備妥，待下次同步後再產）。"
+    return 1
+  fi
   if "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>/dev/null; then
     log "INFO: outbox 已備妥，略過產生。"
     return 0
