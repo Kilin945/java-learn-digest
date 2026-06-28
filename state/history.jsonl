@@ -17,3 +17,4 @@
 {"date": "2026-06-24", "topic": "@Configuration 與 @Bean：手動定義 Bean", "step": 5, "summary": "用 @Scope(\"singleton\")（預設，可省略）讓全容器共用同一個 Bean 實例；用 @Scope(\"prototype\") 讓每次注入或 getBean 都得到全新物件。"}
 {"date": "2026-06-25", "topic": "@Configuration 與 @Bean：手動定義 Bean", "step": 6, "summary": "用 @PostConstruct 在 Bean 注入完成後執行初始化，@PreDestroy 在容器關閉前執行清理；prototype Bean 不觸發 @PreDestroy，清理由呼叫端自行負責。"}
 {"date": "2026-06-26", "topic": "Bean 的 scope 與生命週期", "step": 1, "summary": "Spring 預設的 Bean scope 是 singleton，整個容器只建立一個實例，所有注入點共用同一個物件；不標 @Scope 就是 singleton。"}
+{"date": "2026-06-28", "topic": "Bean 的 scope 與生命週期", "step": 2, "summary": "Prototype scope 讓每次注入都產生一個全新的 Bean 實例，適合有自己狀態（stateful）的物件，使用 @Scope(\"prototype\") 宣告；與 singleton 的共用單一實例完全相反。"}

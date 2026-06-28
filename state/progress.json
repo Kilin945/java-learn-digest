@@ -1,8 +1,9 @@
 {
   "current_index": 4,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "Spring 預設的 Bean scope 是 singleton，整個容器只建立一個實例，所有注入點共用同一個物件；不標 @Scope 就是 singleton。"
+    "Spring 預設的 Bean scope 是 singleton，整個容器只建立一個實例，所有注入點共用同一個物件；不標 @Scope 就是 singleton。",
+    "Prototype scope 讓每次注入都產生一個全新的 Bean 實例，適合有自己狀態（stateful）的物件，使用 @Scope(\"prototype\") 宣告；與 singleton 的共用單一實例完全相反。"
   ],
   "completed_topics": [
     {
