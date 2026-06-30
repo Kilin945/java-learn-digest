@@ -18,6 +18,7 @@
   <!-- 白天再補產幾次當後盾（outbox 已備妥就秒跳過）。 -->
   <key>StartCalendarInterval</key>
   <array>
+    <dict><key>Hour</key><integer>10</integer><key>Minute</key><integer>0</integer></dict>
     <dict><key>Hour</key><integer>13</integer><key>Minute</key><integer>0</integer></dict>
     <dict><key>Hour</key><integer>20</integer><key>Minute</key><integer>0</integer></dict>
   </array>
