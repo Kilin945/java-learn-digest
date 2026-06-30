@@ -66,7 +66,21 @@ jobs:
           MARKER="state/daily-$(date +%F)"
           if [ -f "$MARKER" ]; then echo "今日已寄過（$MARKER），略過。"; exit 0; fi
           if ! python3 apply_result.py --outbox-ready; then
-            echo "outbox 尚未備妥（本機 prepare 還沒 push 上來），本次略過。"; exit 0
+            # 沒有可寄的 outbox：發出可見的警示註解，並每日寄一封通知（marker 去重），不再靜默 exit 0。
+            echo "::warning::outbox 尚未備妥：本機 prepare 未將今天的課程推上 state 分支。"
+            NOPREP="state/noprep-$(date +%F)"
+            if [ -f "$NOPREP" ]; then
+              echo "今日已寄過「沒有可寄的課」警示信（$NOPREP），不重複寄送。"; exit 0
+            fi
+            NOW="$(date '+%Y-%m-%d %H:%M')"
+            if printf '<div style="font-family:-apple-system,sans-serif"><h3>⚠️ 今天沒有可寄的課</h3><p>雲端於 %s 觸發寄信，但 state 分支上沒有備妥的 outbox，表示本機 prepare 未成功將今天的課程推上。今天的每日信無法寄出，請檢查本機 run.log。</p></div>' "$NOW" \
+                 | python3 send_email.py "⚠️ 今天沒有可寄的課（每日 Java/Spring Boot）"; then
+              date '+%Y-%m-%d %H:%M:%S' > "$NOPREP"
+              echo "已寄出「沒有可寄的課」警示信並標記 $NOPREP。"
+            else
+              echo "::warning::警示信寄送失敗，下一時段會再試。"
+            fi
+            exit 0
           fi
           TODAY="$(date +%F)"
           python3 apply_result.py --outbox-html | python3 send_email.py "每日 Java/Spring Boot"
