@@ -44,14 +44,22 @@ REPO_SYNC="${REPO_SYNC:-1}"
 STATE_WT="${STATE_WT:-$(dirname "$DIR")/java-learn-state}"
 git_pull() {
   [ "$REPO_SYNC" = 1 ] || return 0
-  local i=1
+  local i=1 out reason
   while [ $i -le 3 ]; do
-    if git -C "$STATE_WT" pull --rebase --autostash >>"$LOG" 2>&1; then
+    # 設定 ConnectTimeout=10：無法連線時（例如 port 22 被防火牆阻擋）於 10 秒內失敗，避免等待至預設逾時。
+    if out="$(GIT_SSH_COMMAND='ssh -o ConnectTimeout=10' git -C "$STATE_WT" pull --rebase --autostash 2>&1)"; then
+      [ -n "$out" ] && echo "$out" >> "$LOG"
       return 0
     fi
-    log "WARN: git pull 第 $i/3 次失敗，5s 後重試。"
+    echo "$out" >> "$LOG"
+    # 擷取失敗原因寫入 WARN：優先取網路層訊息（ssh、權限、逾時），其次取 git 的 fatal 或 error，最後取輸出末行。
+    reason="$(print -r -- "$out" | grep -iE 'ssh:|Permission denied|timed out|Connection (refused|reset)|Could not resolve' | head -1 | tr -d '"\\' | cut -c1-180)"
+    [ -z "$reason" ] && reason="$(print -r -- "$out" | grep -iE 'fatal|error|致命|無法' | tail -1 | tr -d '"\\' | cut -c1-180)"
+    [ -z "$reason" ] && reason="$(print -r -- "$out" | tail -1 | cut -c1-180)"
+    log "WARN: git pull 第 $i/3 次失敗：${reason:-原因不明}。5 秒後重試。"
     i=$((i+1)); sleep 5
   done
+  GITPULL_LAST_ERR="$reason"   # 保留末次失敗原因，供呼叫端通知使用。
   log "WARN: git pull 連續 3 次失敗，本機狀態可能過期。"
   return 1
 }
@@ -85,13 +93,17 @@ wait_for_network() {
 run_claude() {  # $1=prompt 字串 $2=輸出檔
   local prompt="$1" outfile="$2"
   : > "$outfile"
-  "$CLAUDE" -p "$prompt" --model "$MODEL" --permission-mode default --output-format text > "$outfile" 2>>"$LOG" &
+  # 將 claude 的 stderr 另存一份，供失敗時擷取錯誤原因，內容同時寫入 run.log。
+  CLAUDE_LAST_ERR="${TMPDIR:-/tmp}/java-learn-claude-err"
+  : > "$CLAUDE_LAST_ERR"
+  "$CLAUDE" -p "$prompt" --model "$MODEL" --permission-mode default --output-format text > "$outfile" 2>"$CLAUDE_LAST_ERR" &
   local cpid=$!
   ( sleep "$CLAUDE_TIMEOUT"; kill -TERM "$cpid" 2>/dev/null ) &
   local wpid=$!
   wait "$cpid" 2>/dev/null
   local rc=$?
   kill "$wpid" 2>/dev/null; wait "$wpid" 2>/dev/null
+  cat "$CLAUDE_LAST_ERR" >> "$LOG"
   return $rc
 }
 
@@ -121,6 +133,7 @@ send_html() {  # $1=html $2=主旨前綴 ；回傳寄信 rc
 do_prepare() {
   if ! git_pull; then
     log "INFO: git pull 失敗、本機 outbox 不可信，本時段略過（不誤判已備妥，待下次同步後再產）。"
+    notify "⚠️ 學習信備稿失敗" "無法連線 GitHub：${GITPULL_LAST_ERR:-詳見 run.log}。明天的課程尚未備妥。"
     return 1
   fi
   if "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>/dev/null; then
@@ -134,7 +147,7 @@ do_prepare() {
     log "INFO: 課綱已全部完成，無需產生。"
     return 0
   fi
-  local base prompt tmp out attempt=1
+  local base prompt tmp out attempt=1 why=""
   base="$(cat "$DIR/prompt_daily.txt")"
   tmp="$(mktemp -t java-learn)"
   while [ $attempt -le $MAX_TRIES ]; do
@@ -146,11 +159,16 @@ do_prepare() {
       git_push_state   # 把備好的 outbox 推給雲端寄出
       rm -f "$tmp"; return 0
     fi
-    log "WARN: 第 $attempt/$MAX_TRIES 次產生失敗 (rc=$crc, 長度=${#out})，30s 後重試。"
+    # 失敗原因優先取 claude 的標準輸出，其次取標準錯誤（stderr），兩者皆空則標示無輸出。
+    why="$(print -r -- "$out" | tr '\n' ' ' | tr -s ' ' | tr -d '"\\' | cut -c1-200)"
+    [ -z "$why" ] && why="$(tail -n 3 "$CLAUDE_LAST_ERR" 2>/dev/null | tr '\n' ' ' | tr -s ' ' | tr -d '"\\' | cut -c1-200)"
+    [ -z "$why" ] && why="claude 未輸出任何內容。"
+    log "WARN: 第 $attempt/$MAX_TRIES 次產生失敗（rc=$crc）：$why。30 秒後重試。"
     attempt=$((attempt+1)); [ $attempt -le $MAX_TRIES ] && sleep 30
   done
   rm -f "$tmp"
   log "WARN: 產生 outbox 失敗，待下次補產（不影響已備妥的內容）。"
+  notify "⚠️ 學習信備稿失敗" "claude 連續 $MAX_TRIES 次產生課程失敗：${why:-詳見 run.log}。明天的課程尚未備妥。"
   return 1
 }
 
