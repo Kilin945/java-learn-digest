@@ -66,10 +66,21 @@ git_pull() {
 git_push_state() {
   [ "$REPO_SYNC" = 1 ] || return 0
   git -C "$STATE_WT" add -A >>"$LOG" 2>&1 || true
-  git -C "$STATE_WT" diff --cached --quiet && return 0
-  git -C "$STATE_WT" commit -m "chore: 本機備妥下一篇 $(date +%F)" >>"$LOG" 2>&1 || true
+  git -C "$STATE_WT" diff --cached --quiet \
+    || git -C "$STATE_WT" commit -m "chore: 本機備妥下一篇 $(date +%F)" >>"$LOG" 2>&1 || true
+  # 沒有領先 origin 就不必推；查不出 upstream 時保守視為需要推。
+  local ahead
+  ahead="$(git -C "$STATE_WT" rev-list --count '@{upstream}..HEAD' 2>/dev/null || echo 1)"
+  [ "$ahead" = 0 ] && return 0
   git -C "$STATE_WT" pull --rebase --autostash >>"$LOG" 2>&1 || true
-  git -C "$STATE_WT" push >>"$LOG" 2>&1 || log "WARN: git push 失敗（下次再試）。"
+  local i=1
+  while [ $i -le 3 ]; do
+    git -C "$STATE_WT" push >>"$LOG" 2>&1 && return 0
+    log "WARN: git push 第 $i/3 次失敗。"
+    i=$((i+1)); [ $i -le 3 ] && sleep 5
+  done
+  log "WARN: git push 連續 3 次失敗（下次再試）。"
+  return 1
 }
 
 MARKER_DAILY="$STATE_DIR/daily-$(date +%F)"
@@ -138,6 +149,7 @@ do_prepare() {
   fi
   if "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>/dev/null; then
     log "INFO: outbox 已備妥，略過產生。"
+    git_push_state   # 前次 push 若失敗，這裡補推，否則備好的稿永遠到不了雲端。
     return 0
   fi
   if ! wait_for_network; then return 1; fi
