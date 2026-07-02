@@ -17,6 +17,7 @@
 解析/驗證失敗 → 印錯誤到 stderr 並以非 0 結束。
 """
 import os
+import re
 import sys
 import json
 import argparse
@@ -25,6 +26,13 @@ from datetime import date
 import state_store as ss
 
 REQUIRED = ("html", "topic_complete", "today_summary", "archive_markdown")
+
+# 課通常在前一天備稿，html 標題裡的日期是產稿日；寄出時蓋成寄出當天。
+_TITLE_DATE = re.compile(r"(每日 Java / Spring Boot · )\d{4}-\d{2}-\d{2}")
+
+
+def restamp_send_date(html, today):
+    return _TITLE_DATE.sub(lambda m: m.group(1) + today, html, count=1)
 
 
 def parse_result(text):
@@ -136,7 +144,8 @@ def main(argv=None):
         if not outbox or not isinstance(outbox.get("result"), dict):
             print("ERROR: outbox 尚未備妥", file=sys.stderr)
             sys.exit(2)
-        sys.stdout.write(outbox["result"]["html"])
+        sys.stdout.write(restamp_send_date(outbox["result"]["html"],
+                                           date.today().isoformat()))
         return
 
     if args.commit_outbox:

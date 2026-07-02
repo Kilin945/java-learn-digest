@@ -67,6 +67,19 @@ def test_outbox_ready_matches_current_progress():
     assert ar.outbox_ready({"kind": "lesson", "index": 0, "step": 2}, progress) is False
 
 
+def test_restamp_replaces_title_date_with_send_date():
+    html = ('<div style="...">📘 每日 Java / Spring Boot · 2026-07-01</div>'
+            '<p>內文提到 2026-07-01 的其他日期不該被動到</p>')
+    out = ar.restamp_send_date(html, "2026-07-02")
+    assert "每日 Java / Spring Boot · 2026-07-02" in out
+    assert "內文提到 2026-07-01 的其他日期不該被動到" in out
+
+
+def test_restamp_leaves_html_without_title_untouched():
+    html = "<div>沒有標題行的內容</div>"
+    assert ar.restamp_send_date(html, "2026-07-02") == html
+
+
 def test_commit_writes_archive_and_advances_state(tmp_path):
     syl = tmp_path / "syllabus.txt"
     syl.write_text("主題甲\n主題乙\n", encoding="utf-8")
