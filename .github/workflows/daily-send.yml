@@ -88,7 +88,7 @@ jobs:
           date '+%Y-%m-%d %H:%M:%S' > "$MARKER"
           echo "已寄出並標記 $MARKER"
           python3 sync_notion.py --md "lessons/$TODAY.md" --date "$TODAY" \
-            || echo "Notion 同步失敗（信已寄出），略過。"
+            || echo "::warning::Notion 同步失敗（信已寄出、進度已推）。本機手動補：python3 sync_notion.py --md lessons/$TODAY.md --date $TODAY"
 
       - name: 週六寄出本週回顧（若本機已備稿）
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}

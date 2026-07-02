@@ -137,7 +137,16 @@ def main(argv=None):
     # ── 不讀 stdin 的查詢/動作 ──
     if args.outbox_ready:
         progress = ss.load_progress(args.progress)
-        sys.exit(0 if outbox_ready(load_outbox(args.outbox), progress) else 1)
+        outbox = load_outbox(args.outbox)
+        ok = outbox_ready(outbox, progress)
+        if not ok:  # 把「為何未備妥」寫到 stderr，呼叫端導進 log 供事後驗證
+            if outbox is None:
+                print("outbox-ready: outbox 不存在或無法解析", file=sys.stderr)
+            else:
+                print(f"outbox-ready: outbox(index={outbox.get('index')},step={outbox.get('step')})"
+                      f" 與進度(index={progress.get('current_index')},step={progress.get('step')}) 不符",
+                      file=sys.stderr)
+        sys.exit(0 if ok else 1)
 
     if args.outbox_html:
         outbox = load_outbox(args.outbox)

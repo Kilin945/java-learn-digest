@@ -75,7 +75,10 @@ git_push_state() {
   git -C "$STATE_WT" pull --rebase --autostash >>"$LOG" 2>&1 || true
   local i=1
   while [ $i -le 3 ]; do
-    git -C "$STATE_WT" push >>"$LOG" 2>&1 && return 0
+    if git -C "$STATE_WT" push >>"$LOG" 2>&1; then
+      log "INFO: 已推上 origin（第 $i 次嘗試，共 $ahead 個 commit）。"
+      return 0
+    fi
     log "WARN: git push 第 $i/3 次失敗。"
     i=$((i+1)); [ $i -le 3 ] && sleep 5
   done
@@ -147,14 +150,17 @@ do_prepare() {
     notify "⚠️ 學習信備稿失敗" "無法連線 GitHub：${GITPULL_LAST_ERR:-詳見 run.log}。明天的課程尚未備妥。"
     return 1
   fi
-  if "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>/dev/null; then
+  if "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>>"$LOG"; then
     log "INFO: outbox 已備妥，略過產生。"
     git_push_state   # 前次 push 若失敗，這裡補推，否則備好的稿永遠到不了雲端。
     return 0
   fi
   if ! wait_for_network; then return 1; fi
   local ctx
-  ctx="$("$PYTHON" "$DIR/build_lesson.py" daily 2>>"$LOG")"
+  if ! ctx="$("$PYTHON" "$DIR/build_lesson.py" daily 2>>"$LOG")"; then
+    log "WARN: build_lesson.py 失敗、拿不到課程資料，本時段放棄（原因見上方 stderr）。"
+    return 1
+  fi
   if print -r -- "$ctx" | grep -q '^STATUS: FINISHED'; then
     log "INFO: 課綱已全部完成，無需產生。"
     return 0
@@ -189,7 +195,7 @@ do_send() {
   [ -f "$MARKER_DAILY" ] && { log "SKIP: 今日已寄過（$(basename "$MARKER_DAILY")）。"; return 0; }
   if ! wait_for_network; then return 1; fi
 
-  if "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>/dev/null; then
+  if "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>>"$LOG"; then
     local html
     html="$("$PYTHON" "$DIR/apply_result.py" --outbox-html 2>>"$LOG")"
     if send_html "$html" "$SUBJECT_DAILY"; then
