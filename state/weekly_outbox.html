@@ -1,187 +1,37 @@
-```html
-<div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 680px; margin: 0 auto; padding: 16px; background: #f5f7fa; color: #333;">
+<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background-color:#fbf3e3;padding:24px;">
 
-  <!-- Header -->
-  <div style="border-left: 5px solid #3f97c9; padding: 12px 18px; background: #e8f4fb; border-radius: 6px; margin-bottom: 24px;">
-    <div style="font-size: 20px; font-weight: bold; color: #2b7fb0;">📘 每週回顧 · Java / Spring Boot · 2026-06-26</div>
-    <div style="font-size: 13px; color: #5a8fa8; margin-top: 4px;">本週主題：@Configuration 與 @Bean — 手動定義 Bean（#1–#6）</div>
+  <div style="border-left:6px solid #d99b3f;padding:12px 20px;margin-bottom:20px;background-color:#ffffff;border-radius:6px;">
+    <span style="font-size:20px;font-weight:700;color:#b9791f;">📘 每週回顧 · Java / Spring Boot · 2026-07-03</span>
   </div>
 
-  <!-- Intro -->
-  <div style="background: #fff; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.07);">
-    <p style="margin: 0; color: #444; line-height: 1.7;">
-      這週你把 <strong>@Configuration / @Bean</strong> 的整個工具箱都走過一遍了。<br>
-      現在不看筆記，憑記憶把下面幾題寫出來試試——這是讓知識真正「住進去」最有效的方式。
+  <div style="background-color:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:16px;">
+    <p style="font-size:15px;color:#5a4a30;line-height:1.7;margin:0 0 16px 0;">
+      這週我們把「Bean 的 scope 與生命週期」這個主題走了一遍，從 prototype scope 的宣告方式、初始化 / 銷毀的 lifecycle hook，一路到 singleton 注入 prototype 的常見陷阱與正確解法。以下 7 題幫你把整週的知識點串起來，建議先自己想過一遍答案，再往下看解答。
     </p>
+
+    <ol style="font-size:15px;color:#3a2f1c;line-height:1.9;padding-left:20px;margin:0;">
+      <li>如果你用 <code>@Scope("prototype")</code> 標註一個 Bean，跟預設的 singleton scope 相比，最核心的行為差異是什麼？</li>
+      <li>什麼樣的物件比較適合設計成 prototype Bean？請舉一個判斷依據。</li>
+      <li><code>@PostConstruct</code> 是在 Bean 生命週期的哪個時間點被觸發？</li>
+      <li>承上題，如果這個 Bean 是 prototype scope，<code>@PreDestroy</code> 會不會被容器呼叫到？為什麼？</li>
+      <li>當一個 prototype Bean 透過 <code>@Autowired</code> 被注入到一個 singleton Bean 裡，實際上這個 prototype Bean 會被建立幾次？這是不是符合你原本對 prototype「每次注入都是新實例」的直覺？</li>
+      <li>如果 singleton Bean 真的想要每次呼叫某個方法時都拿到全新的 prototype 實例，有哪兩種做法可以達成？（提示：一種較舊、較不乾淨，一種是這週最後學的收尾方式）</li>
+      <li>綜合這週內容：為什麼說 <code>ObjectProvider&lt;T&gt;.getObject()</code> 是比直接注入 <code>ApplicationContext</code> 更好的解法？</li>
+    </ol>
   </div>
 
-  <!-- Questions -->
-  <div style="background: #fff; border-radius: 8px; padding: 20px 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.07);">
-    <div style="font-size: 16px; font-weight: bold; color: #3f97c9; border-bottom: 2px solid #e8f4fb; padding-bottom: 8px; margin-bottom: 18px;">🧠 回想題</div>
+  <div style="background-color:#ffffff;border-radius:8px;padding:20px 24px;">
+    <p style="font-size:16px;font-weight:700;color:#b9791f;margin:0 0 14px 0;">—— 解答 ——</p>
 
-    <!-- Q1 -->
-    <div style="margin-bottom: 22px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">Q1．為什麼有了 @Component，還需要 @Bean？</div>
-      <div style="background: #f0f8ff; border-left: 3px solid #3f97c9; padding: 10px 14px; border-radius: 4px; color: #555; font-size: 14px;">
-        請描述一個你無法對某個類別加 @Component 的情境，說明此時該怎麼做。
-      </div>
-    </div>
-
-    <!-- Q2 -->
-    <div style="margin-bottom: 22px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">Q2．@Bean 方法如何取得它所依賴的其他 Bean？</div>
-      <div style="background: #f0f8ff; border-left: 3px solid #3f97c9; padding: 10px 14px; border-radius: 4px; color: #555; font-size: 14px;">
-        用一段虛擬碼（pseudo-code）示意：一個 <code>DataSource</code> Bean 被注入到另一個 <code>JdbcTemplate</code> Bean 的方法裡。
-      </div>
-    </div>
-
-    <!-- Q3 -->
-    <div style="margin-bottom: 22px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">Q3．同一個型別有兩顆 Bean，Spring 注入時會怎樣？你有哪些解法？</div>
-      <div style="background: #f0f8ff; border-left: 3px solid #3f97c9; padding: 10px 14px; border-radius: 4px; color: #555; font-size: 14px;">
-        說出至少兩種解決 <code>NoUniqueBeanDefinitionException</code> 的方式，並各說明適用時機。
-      </div>
-    </div>
-
-    <!-- Q4 -->
-    <div style="margin-bottom: 22px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">Q4．@Primary 與 @Qualifier 同時存在時，誰贏？</div>
-      <div style="background: #f0f8ff; border-left: 3px solid #3f97c9; padding: 10px 14px; border-radius: 4px; color: #555; font-size: 14px;">
-        假設你有 <code>@Primary</code> 的 <code>MySQLDataSource</code> 和無標記的 <code>PGDataSource</code>，在注入點加上 <code>@Qualifier("PGDataSource")</code>，最終注入的是哪一顆？原因是什麼？
-      </div>
-    </div>
-
-    <!-- Q5 -->
-    <div style="margin-bottom: 22px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">Q5．Singleton vs. Prototype：各自的生命週期與使用場景？</div>
-      <div style="background: #f0f8ff; border-left: 3px solid #3f97c9; padding: 10px 14px; border-radius: 4px; color: #555; font-size: 14px;">
-        一張表格或條列，說明兩種 Scope 在「建立時機、實例數量、狀態共享」三個維度的差異，並各舉一個現實場景（例如：Connection Pool、Email Builder）。
-      </div>
-    </div>
-
-    <!-- Q6 -->
-    <div style="margin-bottom: 22px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">Q6．@PostConstruct 和 @PreDestroy 的執行時機為何？</div>
-      <div style="background: #f0f8ff; border-left: 3px solid #3f97c9; padding: 10px 14px; border-radius: 4px; color: #555; font-size: 14px;">
-        請說明這兩個 Annotation 分別在 Bean 生命週期的哪個節點觸發，並舉一個各自的典型用途（例如建立 Cache、關閉連線）。
-      </div>
-    </div>
-
-    <!-- Q7 -->
-    <div style="margin-bottom: 6px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">Q7．Prototype Bean 的 @PreDestroy 為什麼不會被觸發？你該如何處理清理工作？</div>
-      <div style="background: #f0f8ff; border-left: 3px solid #3f97c9; padding: 10px 14px; border-radius: 4px; color: #555; font-size: 14px;">
-        解釋背後的原因（Spring 容器追蹤策略），並說明呼叫端應如何負責清理 prototype Bean 所持有的資源。
-      </div>
-    </div>
-  </div>
-
-  <!-- Divider -->
-  <div style="text-align: center; color: #aaa; font-size: 14px; margin: 28px 0 20px;">—— 解答 ——</div>
-
-  <!-- Answers -->
-  <div style="background: #fff; border-radius: 8px; padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07);">
-    <div style="font-size: 16px; font-weight: bold; color: #3f97c9; border-bottom: 2px solid #e8f4fb; padding-bottom: 8px; margin-bottom: 18px;">✅ 參考解答</div>
-
-    <!-- A1 -->
-    <div style="margin-bottom: 20px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">A1．第三方類別無法加 @Component</div>
-      <div style="color: #444; font-size: 14px; line-height: 1.75;">
-        <code>@Component</code> 需要能修改原始碼才能加上去。若使用的是外部 JAR（例如 Jackson 的 <code>ObjectMapper</code>、資料庫驅動的 <code>DataSource</code>），原始碼不在你手上，就無法直接標註。<br>
-        此時在 <code>@Configuration</code> 類別裡寫一個 <code>@Bean</code> 方法，<strong>手動 new 出該物件並回傳</strong>，Spring 容器就會接管它的生命週期。
-      </div>
-    </div>
-
-    <!-- A2 -->
-    <div style="margin-bottom: 20px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">A2．@Bean 方法以參數接收依賴</div>
-      <div style="color: #444; font-size: 14px; line-height: 1.75;">
-        將依賴的 Bean 型別宣告為 <code>@Bean</code> 方法的參數，Spring 在呼叫該方法前會先解析並注入對應的 Bean：
-        <pre style="background:#f5f5f5;padding:10px;border-radius:4px;font-size:13px;overflow-x:auto;">@Bean
-public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-    return new JdbcTemplate(dataSource);
-    // Spring 自動找到 DataSource Bean 傳進來
-}</pre>
-      </div>
-    </div>
-
-    <!-- A3 -->
-    <div style="margin-bottom: 20px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">A3．同型別多 Bean 的解法</div>
-      <div style="color: #444; font-size: 14px; line-height: 1.75;">
-        不處理的話，Spring 注入時拋 <code>NoUniqueBeanDefinitionException</code>。常見兩種解法：<br>
-        1. <strong>@Primary</strong>：在「預設首選」那顆 Bean 上標記，適合有明顯主要選項的場景（全域預設）。<br>
-        2. <strong>@Qualifier("名稱")</strong>：在注入點指定 Bean 名稱，適合需要精確控制、場景各異的情況（每個注入點自行決定）。
-      </div>
-    </div>
-
-    <!-- A4 -->
-    <div style="margin-bottom: 20px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">A4．@Qualifier 優先級高於 @Primary</div>
-      <div style="color: #444; font-size: 14px; line-height: 1.75;">
-        最終注入的是 <strong>PGDataSource</strong>。<br>
-        <code>@Qualifier</code> 是「點名指定」，優先級高於 <code>@Primary</code> 的全域預設。<code>@Primary</code> 只在注入點沒有任何限定詞時才生效，只要注入點出現 <code>@Qualifier</code>，Spring 就直接依名稱比對，<code>@Primary</code> 的設定被忽略。
-      </div>
-    </div>
-
-    <!-- A5 -->
-    <div style="margin-bottom: 20px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">A5．Singleton vs. Prototype 對比</div>
-      <div style="color: #444; font-size: 14px; line-height: 1.75;">
-        <table style="border-collapse:collapse;width:100%;font-size:13px;">
-          <tr style="background:#e8f4fb;">
-            <th style="padding:6px 10px;text-align:left;border:1px solid #c5dde8;"></th>
-            <th style="padding:6px 10px;text-align:left;border:1px solid #c5dde8;">Singleton（預設）</th>
-            <th style="padding:6px 10px;text-align:left;border:1px solid #c5dde8;">Prototype</th>
-          </tr>
-          <tr>
-            <td style="padding:6px 10px;border:1px solid #dde;">建立時機</td>
-            <td style="padding:6px 10px;border:1px solid #dde;">容器啟動時（Eager）</td>
-            <td style="padding:6px 10px;border:1px solid #dde;">每次 getBean / 注入時</td>
-          </tr>
-          <tr style="background:#fafcff;">
-            <td style="padding:6px 10px;border:1px solid #dde;">實例數量</td>
-            <td style="padding:6px 10px;border:1px solid #dde;">整個容器唯一一個</td>
-            <td style="padding:6px 10px;border:1px solid #dde;">每次得到全新物件</td>
-          </tr>
-          <tr>
-            <td style="padding:6px 10px;border:1px solid #dde;">狀態共享</td>
-            <td style="padding:6px 10px;border:1px solid #dde;">全域共用，注意執行緒安全</td>
-            <td style="padding:6px 10px;border:1px solid #dde;">各自獨立，互不影響</td>
-          </tr>
-          <tr style="background:#fafcff;">
-            <td style="padding:6px 10px;border:1px solid #dde;">典型場景</td>
-            <td style="padding:6px 10px;border:1px solid #dde;">Connection Pool、Service</td>
-            <td style="padding:6px 10px;border:1px solid #dde;">Email Builder、Request-scoped 物件</td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-    <!-- A6 -->
-    <div style="margin-bottom: 20px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">A6．@PostConstruct 與 @PreDestroy 的時機</div>
-      <div style="color: #444; font-size: 14px; line-height: 1.75;">
-        <strong>@PostConstruct</strong>：Bean 被 Spring 實例化、所有依賴注入完畢之後立刻呼叫。典型用途：預熱 Cache、建立資料庫 Schema、載入設定檔。<br><br>
-        <strong>@PreDestroy</strong>：ApplicationContext 關閉、Spring 準備銷毀 Bean 之前呼叫。典型用途：關閉 DB 連線、釋放執行緒池、刷寫未提交的 Buffer。
-      </div>
-    </div>
-
-    <!-- A7 -->
-    <div style="margin-bottom: 6px;">
-      <div style="font-weight: bold; color: #2b7fb0; margin-bottom: 6px;">A7．Prototype 不觸發 @PreDestroy 的原因與解法</div>
-      <div style="color: #444; font-size: 14px; line-height: 1.75;">
-        Spring 容器對 Prototype Bean <strong>不保留參考</strong>——把物件交出去後就不再追蹤，因此容器關閉時根本不知道還有哪些 Prototype 實例存活，自然無法觸發 <code>@PreDestroy</code>。<br><br>
-        <strong>解法</strong>：由取得 Prototype Bean 的呼叫端自行負責清理。若該 Bean 實作了 <code>DisposableBean</code> 介面（或有 <code>destroy()</code> 方法），呼叫端在使用完畢後手動呼叫 <code>destroy()</code>；或將 Bean 包在 <code>try-with-resources</code> 裡（實作 <code>AutoCloseable</code>）確保資源被釋放。
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <div style="text-align: center; margin-top: 28px; font-size: 13px; color: #aaa;">
-    📅 下週主題預告：Spring Boot 應用結構與 REST API 基礎<br>
-    <span style="color: #3f97c9;">繼續加油，你這週把 Bean 的管理方式摸得很透徹了 💪</span>
+    <ol style="font-size:14.5px;color:#4a3d24;line-height:1.9;padding-left:20px;margin:0;">
+      <li><strong>Prototype vs Singleton：</strong>prototype 每次被注入或跟容器要 Bean 時，都會產生一個全新的實例；singleton 則整個容器生命週期內只有一個共用實例。</li>
+      <li><strong>適用場景：</strong>有自己內部狀態（stateful）、不希望被多方共用而互相汙染狀態的物件，適合設計成 prototype。</li>
+      <li><strong>@PostConstruct 時機：</strong>Bean 被建立、且所有依賴注入（dependency injection）都完成之後，容器會自動執行標註 <code>@PostConstruct</code> 的方法，用來做初始化邏輯。</li>
+      <li><strong>@PreDestroy 對 prototype 無效：</strong>不會被呼叫。因為 <code>@PreDestroy</code> 是容器在關閉、銷毀自己管理的 Bean 時才觸發，而容器只完整管理 singleton Bean 的生命週期；prototype Bean 建立後就交給呼叫端負責，容器不會追蹤它、也不會在銷毀階段介入。</li>
+      <li><strong>只會建立一次：</strong>因為 <code>@Autowired</code> 是在 singleton Bean 初始化時「注入一次」完成的欄位賦值，之後這個 singleton 一直重複使用同一個 prototype 實例，並不會每次使用時重新建立。這通常和大家原本對 prototype 的直覺（每次都新的）不一致，是這個主題最容易踩雷的地方。</li>
+      <li><strong>兩種取得全新實例的做法：</strong>①（較舊、較不乾淨）直接注入 <code>ApplicationContext</code>，每次呼叫 <code>applicationContext.getBean(XxxBean.class)</code> 手動跟容器要一個新實例；②（本週收尾學的乾淨做法）注入 <code>ObjectProvider&lt;T&gt;</code>，需要時呼叫 <code>.getObject()</code> 取得全新的 prototype 實例。</li>
+      <li><strong>ObjectProvider 較優的原因：</strong><code>ObjectProvider&lt;T&gt;</code> 是型別安全（type-safe）且語意明確地表達「我只是想延遲取得這個特定型別的 Bean」，不需要像直接注入 <code>ApplicationContext</code> 那樣讓 Bean 依賴整個容器（等於把容器本身當成依賴），減少耦合，也更符合 Spring 官方建議的做法。</li>
+    </ol>
   </div>
 
 </div>
-```
