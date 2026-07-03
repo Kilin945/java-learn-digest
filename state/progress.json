@@ -1,7 +1,9 @@
 {
   "current_index": 5,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "學會了 @Autowired 的基本概念：標在建構子上，讓 Spring 容器自動把需要的 Bean（依賴）送進來完成依賴注入（DI），目前情境只有一個實作類別，所以一切正常運作。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
