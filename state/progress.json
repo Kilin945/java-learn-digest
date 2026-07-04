@@ -1,8 +1,9 @@
 {
   "current_index": 5,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "學會了 @Autowired 的基本概念：標在建構子上，讓 Spring 容器自動把需要的 Bean（依賴）送進來完成依賴注入（DI），目前情境只有一個實作類別，所以一切正常運作。"
+    "學會了 @Autowired 的基本概念：標在建構子上，讓 Spring 容器自動把需要的 Bean（依賴）送進來完成依賴注入（DI），目前情境只有一個實作類別，所以一切正常運作。",
+    "學會了當同一個介面有多個實作類別時，Spring 因為不知道要注入哪一個，會丟出 NoUniqueBeanDefinitionException，這個問題留待明天用 @Qualifier 解決。"
   ],
   "completed_topics": [
     {
