@@ -23,3 +23,4 @@
 {"date": "2026-07-02", "topic": "Bean 的 scope 與生命週期", "step": 5, "summary": "學會用 ObjectProvider<T>.getObject() 取代直接注入 ApplicationContext，讓 Singleton Bean 能乾淨地取得全新的 Prototype Bean，藉此為「Bean 的 scope 與生命週期」主題做收尾。"}
 {"date": "2026-07-03", "topic": "@Autowired、@Qualifier 與多個候選 Bean 的解析", "step": 1, "summary": "學會了 @Autowired 的基本概念：標在建構子上，讓 Spring 容器自動把需要的 Bean（依賴）送進來完成依賴注入（DI），目前情境只有一個實作類別，所以一切正常運作。"}
 {"date": "2026-07-04", "topic": "@Autowired、@Qualifier 與多個候選 Bean 的解析", "step": 2, "summary": "學會了當同一個介面有多個實作類別時，Spring 因為不知道要注入哪一個，會丟出 NoUniqueBeanDefinitionException，這個問題留待明天用 @Qualifier 解決。"}
+{"date": "2026-07-05", "topic": "@Autowired、@Qualifier 與多個候選 Bean 的解析", "step": 3, "summary": "學會了用 @Qualifier 在多個候選 Bean 上貼名字標籤，並在注入點指名要哪一個，解決昨天 NoUniqueBeanDefinitionException 的問題；明天可以接著學另一種解法 @Primary（指定預設 Bean）。"}
