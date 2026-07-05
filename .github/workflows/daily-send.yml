@@ -2,12 +2,9 @@ name: daily-send
 # 雲端只負責「寄出」：程式碼取自 master、每日紀錄取自獨立的 state 分支，
 # 寄完只把紀錄推回 state 分支（master 永遠不被每日紀錄碰）。產生課程（claude）仍在本機。
 on:
-  schedule:                 # 比照新聞 5 時段、各提早 5 分避開雲端整點壅塞
-    - cron: '55 23 * * *'   # 07:55 GMT+8
-    - cron: '55 0 * * *'    # 08:55 GMT+8（補寄）
-    - cron: '25 2 * * *'    # 10:25 GMT+8（補寄）
-    - cron: '55 3 * * *'    # 11:55 GMT+8（補寄）
-    - cron: '55 5 * * *'    # 13:55 GMT+8（補寄）
+  # 觸發交給 Cloudflare Worker（digest-cron）準點 dispatch：
+  # 台北 08:00 主班、12:00 補寄班、14:00 最後一班（slot=last）。
+  # GitHub 自家 schedule 已移除——延遲 1~4 小時且會整班靜默消失，留著只添亂。
   workflow_dispatch:
     inputs:
       test_send:
@@ -18,6 +15,10 @@ on:
         description: '不分平日假日，立刻寄出已備妥的週報來測試（不打 marker）'
         type: boolean
         default: false
+      slot:
+        description: '外部排程帶入的班次身分；last=當天最後一班，沒稿時才寄警示信'
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -61,13 +62,20 @@ jobs:
 
       - name: 寄出今天備妥的課（若有）
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}
+        env:
+          # 只有「當天最後一班」沒稿才寄警示信，避免早班誤報（後面班次還能補寄）。
+          # 最後一班 = Cloudflare 觸發帶 slot=last；另保留「已過台北 15:00」的兜底條件（手動補救時也適用）。
+          IS_LAST: ${{ github.event_name == 'workflow_dispatch' && inputs.slot == 'last' }}
         run: |
           set -euo pipefail
           MARKER="state/daily-$(date +%F)"
           if [ -f "$MARKER" ]; then echo "今日已寄過（$MARKER），略過。"; exit 0; fi
           if ! python3 apply_result.py --outbox-ready; then
-            # 沒有可寄的 outbox：發出可見的警示註解，並每日寄一封通知（marker 去重），不再靜默 exit 0。
+            # 沒有可寄的 outbox：發出可見的警示註解；警示信只在最後一班發（marker 去重）。
             echo "::warning::outbox 尚未備妥：本機 prepare 未將今天的課程推上 state 分支。"
+            if [ "$IS_LAST" != "true" ] && [ "$(date +%H)" -lt 15 ]; then
+              echo "非最後一班（且未過 15:00），後面班次還有機會補寄，先不寄警示信。"; exit 0
+            fi
             NOPREP="state/noprep-$(date +%F)"
             if [ -f "$NOPREP" ]; then
               echo "今日已寄過「沒有可寄的課」警示信（$NOPREP），不重複寄送。"; exit 0
