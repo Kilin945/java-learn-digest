@@ -1,7 +1,9 @@
 {
   "current_index": 6,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "學會了在 application.properties 設定檔裡用 key=value 寫設定值，並用 @Value(\"${key}\") 把設定值注入到欄位中，避免把會變動的設定寫死（hardcode）在程式碼裡。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
