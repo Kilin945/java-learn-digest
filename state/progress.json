@@ -1,8 +1,9 @@
 {
   "current_index": 6,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "學會了在 application.properties 設定檔裡用 key=value 寫設定值，並用 @Value(\"${key}\") 把設定值注入到欄位中，避免把會變動的設定寫死（hardcode）在程式碼裡。"
+    "學會了在 application.properties 設定檔裡用 key=value 寫設定值，並用 @Value(\"${key}\") 把設定值注入到欄位中，避免把會變動的設定寫死（hardcode）在程式碼裡。",
+    "學會了用冒號語法 @Value(\"${key:預設值}\") 幫設定值準備備用值，避免 application.properties 缺少某個 key 時導致 Spring Boot 開機失敗。"
   ],
   "completed_topics": [
     {
