@@ -27,3 +27,4 @@
 {"date": "2026-07-06", "topic": "@Autowired、@Qualifier 與多個候選 Bean 的解析", "step": 4, "summary": "學會了用 @Primary 幫多個候選實作類別指定「預設 Bean」，讓沒寫 @Qualifier 的注入點也能自動選到指定的那個；當兩者同時存在時，注入點上明確寫的 @Qualifier 會贏過 @Primary 的預設值，至此「多候選 Bean 解析」主題（@Autowired 基礎、NoUniqueBeanDefinitionException 問題、@Qualifier 指名、@Primary 預設）完整收尾。"}
 {"date": "2026-07-07", "topic": "@Value 與 application.properties 讀設定", "step": 1, "summary": "學會了在 application.properties 設定檔裡用 key=value 寫設定值，並用 @Value(\"${key}\") 把設定值注入到欄位中，避免把會變動的設定寫死（hardcode）在程式碼裡。"}
 {"date": "2026-07-08", "topic": "@Value 與 application.properties 讀設定", "step": 2, "summary": "學會了用冒號語法 @Value(\"${key:預設值}\") 幫設定值準備備用值，避免 application.properties 缺少某個 key 時導致 Spring Boot 開機失敗。"}
+{"date": "2026-07-09", "topic": "@Value 與 application.properties 讀設定", "step": 3, "summary": "學會了 @Value 只對 Spring 建立、管理的物件（Bean）有效，若自己用 new 建立物件，@Value 欄位不會被注入，只會是 null，必須改用 @Autowired 取得由 Spring 建立的物件才拿得到設定值。"}
