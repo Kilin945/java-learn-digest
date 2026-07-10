@@ -1,37 +1,72 @@
-<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background-color:#fbf3e3;padding:24px;">
+<div style="max-width:680px;margin:0 auto;font-family:'Helvetica Neue',Arial,'PingFang TC','Microsoft JhengHei',sans-serif;background:#ecf7ef;padding:24px 16px;">
 
-  <div style="border-left:6px solid #d99b3f;padding:12px 20px;margin-bottom:20px;background-color:#ffffff;border-radius:6px;">
-    <span style="font-size:20px;font-weight:700;color:#b9791f;">📘 每週回顧 · Java / Spring Boot · 2026-07-03</span>
+  <div style="background:#ffffff;border-radius:12px;border-left:6px solid #4caf72;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="font-size:18px;font-weight:700;color:#1e9e57;">📘 每週回顧 · Java / Spring Boot · 2026-07-10</div>
+    <div style="font-size:13px;color:#4a4a4a;margin-top:6px;">這週你學了兩個主題：多候選 Bean 的解析（@Autowired / @Qualifier / @Primary）、以及用 @Value 讀 application.properties 設定。以下用主動回想（active recall）的方式幫你把整週串起來，先自己想一遍答案，再往下滑看解答。</div>
   </div>
 
-  <div style="background-color:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:16px;">
-    <p style="font-size:15px;color:#5a4a30;line-height:1.7;margin:0 0 16px 0;">
-      這週我們把「Bean 的 scope 與生命週期」這個主題走了一遍，從 prototype scope 的宣告方式、初始化 / 銷毀的 lifecycle hook，一路到 singleton 注入 prototype 的常見陷阱與正確解法。以下 7 題幫你把整週的知識點串起來，建議先自己想過一遍答案，再往下看解答。
-    </p>
+  <div style="background:#ffffff;border-radius:12px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="font-size:16px;font-weight:700;color:#1e9e57;margin-bottom:12px;">🧠 回想題</div>
 
-    <ol style="font-size:15px;color:#3a2f1c;line-height:1.9;padding-left:20px;margin:0;">
-      <li>如果你用 <code>@Scope("prototype")</code> 標註一個 Bean，跟預設的 singleton scope 相比，最核心的行為差異是什麼？</li>
-      <li>什麼樣的物件比較適合設計成 prototype Bean？請舉一個判斷依據。</li>
-      <li><code>@PostConstruct</code> 是在 Bean 生命週期的哪個時間點被觸發？</li>
-      <li>承上題，如果這個 Bean 是 prototype scope，<code>@PreDestroy</code> 會不會被容器呼叫到？為什麼？</li>
-      <li>當一個 prototype Bean 透過 <code>@Autowired</code> 被注入到一個 singleton Bean 裡，實際上這個 prototype Bean 會被建立幾次？這是不是符合你原本對 prototype「每次注入都是新實例」的直覺？</li>
-      <li>如果 singleton Bean 真的想要每次呼叫某個方法時都拿到全新的 prototype 實例，有哪兩種做法可以達成？（提示：一種較舊、較不乾淨，一種是這週最後學的收尾方式）</li>
-      <li>綜合這週內容：為什麼說 <code>ObjectProvider&lt;T&gt;.getObject()</code> 是比直接注入 <code>ApplicationContext</code> 更好的解法？</li>
-    </ol>
+    <div style="font-size:14px;color:#333;margin-bottom:14px;">
+      <b>1.</b> 如果同一個 interface 有兩個以上的實作類別，都標了 <code>@Component</code>／<code>@Service</code>，然後你用 <code>@Autowired</code> 直接注入這個 interface 型別，Spring 會丟出什麼例外？為什麼？
+    </div>
+
+    <div style="font-size:14px;color:#333;margin-bottom:14px;">
+      <b>2.</b> 承上題，怎麼用 <code>@Qualifier</code> 解決這個問題？需要在哪兩個地方各加上什麼？
+    </div>
+
+    <div style="font-size:14px;color:#333;margin-bottom:14px;">
+      <b>3.</b> <code>@Primary</code> 的作用是什麼？如果某個注入點同時受到 <code>@Primary</code> 和 <code>@Qualifier</code> 影響，Spring 會聽誰的？
+    </div>
+
+    <div style="font-size:14px;color:#333;margin-bottom:14px;">
+      <b>4.</b> 要把 <code>application.properties</code> 裡的一個 key 注入到欄位中，<code>@Value</code> 的語法怎麼寫？
+    </div>
+
+    <div style="font-size:14px;color:#333;margin-bottom:14px;">
+      <b>5.</b> 如果 <code>application.properties</code> 裡缺少某個 key，而 <code>@Value</code> 又沒設定備用值，會發生什麼事？怎麼用語法避免這個情況？
+    </div>
+
+    <div style="font-size:14px;color:#333;margin-bottom:14px;">
+      <b>6.</b> 你自己寫了 <code>new MyService()</code> 來建立物件，結果裡面標了 <code>@Value</code> 的欄位是 <code>null</code>，這是為什麼？該怎麼修正才能拿到設定值？
+    </div>
+
+    <div style="font-size:14px;color:#333;">
+      <b>7.（整合題）</b> 假設你有一個 <code>NotificationService</code> 介面，兩個實作類別 <code>EmailNotificationService</code> 和 <code>SmsNotificationService</code>，你希望預設用 Email 版本，但某個地方要明確指名用簡訊版本；同時 Email 版本裡有一個 API 金鑰要從 <code>application.properties</code> 讀取，且要有預設值以防設定檔漏寫。請用這週學到的四個概念（<code>@Qualifier</code>、<code>@Primary</code>、<code>@Value</code> 讀值、<code>@Value</code> 預設值）描述你會怎麼寫。
+    </div>
   </div>
 
-  <div style="background-color:#ffffff;border-radius:8px;padding:20px 24px;">
-    <p style="font-size:16px;font-weight:700;color:#b9791f;margin:0 0 14px 0;">—— 解答 ——</p>
+  <div style="background:#ffffff;border-radius:12px;padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+    <div style="font-size:16px;font-weight:700;color:#1e9e57;margin-bottom:12px;">—— 解答 ——</div>
 
-    <ol style="font-size:14.5px;color:#4a3d24;line-height:1.9;padding-left:20px;margin:0;">
-      <li><strong>Prototype vs Singleton：</strong>prototype 每次被注入或跟容器要 Bean 時，都會產生一個全新的實例；singleton 則整個容器生命週期內只有一個共用實例。</li>
-      <li><strong>適用場景：</strong>有自己內部狀態（stateful）、不希望被多方共用而互相汙染狀態的物件，適合設計成 prototype。</li>
-      <li><strong>@PostConstruct 時機：</strong>Bean 被建立、且所有依賴注入（dependency injection）都完成之後，容器會自動執行標註 <code>@PostConstruct</code> 的方法，用來做初始化邏輯。</li>
-      <li><strong>@PreDestroy 對 prototype 無效：</strong>不會被呼叫。因為 <code>@PreDestroy</code> 是容器在關閉、銷毀自己管理的 Bean 時才觸發，而容器只完整管理 singleton Bean 的生命週期；prototype Bean 建立後就交給呼叫端負責，容器不會追蹤它、也不會在銷毀階段介入。</li>
-      <li><strong>只會建立一次：</strong>因為 <code>@Autowired</code> 是在 singleton Bean 初始化時「注入一次」完成的欄位賦值，之後這個 singleton 一直重複使用同一個 prototype 實例，並不會每次使用時重新建立。這通常和大家原本對 prototype 的直覺（每次都新的）不一致，是這個主題最容易踩雷的地方。</li>
-      <li><strong>兩種取得全新實例的做法：</strong>①（較舊、較不乾淨）直接注入 <code>ApplicationContext</code>，每次呼叫 <code>applicationContext.getBean(XxxBean.class)</code> 手動跟容器要一個新實例；②（本週收尾學的乾淨做法）注入 <code>ObjectProvider&lt;T&gt;</code>，需要時呼叫 <code>.getObject()</code> 取得全新的 prototype 實例。</li>
-      <li><strong>ObjectProvider 較優的原因：</strong><code>ObjectProvider&lt;T&gt;</code> 是型別安全（type-safe）且語意明確地表達「我只是想延遲取得這個特定型別的 Bean」，不需要像直接注入 <code>ApplicationContext</code> 那樣讓 Bean 依賴整個容器（等於把容器本身當成依賴），減少耦合，也更符合 Spring 官方建議的做法。</li>
-    </ol>
+    <div style="font-size:14px;color:#333;margin-bottom:14px;">
+      <b>1.</b> 會丟出 <code>NoUniqueBeanDefinitionException</code>。因為 Spring 在容器裡找到多個符合該 interface 型別的 Bean，卻不知道要注入哪一個候選者，所以無法自動決定。
+    </div>
+
+    <div style="font-size:14px;color:#333;margin-bottom:14px;">
+      <b>2.</b> 在每個候選實作類別上用 <code>@Qualifier("名字")</code> 貼上名字標籤，再到注入點（欄位或建構子參數）上也標 <code>@Qualifier("名字")</code>，指名要哪一個實作，Spring 就會依名字精準選取。
+    </div>
+
+    <div style="font-size:14px;color:#333;margin-bottom:14px;">
+      <b>3.</b> <code>@Primary</code> 是幫多個候選 Bean 指定一個「預設 Bean」，讓沒有寫 <code>@Qualifier</code> 的注入點也能自動選到它。若兩者同時出現，注入點上明確寫的 <code>@Qualifier</code> 優先權較高，會覆蓋 <code>@Primary</code> 的預設選擇。
+    </div>
+
+    <div style="font-size:14px;color:#333;margin-bottom:14px;">
+      <b>4.</b> 用 <code>@Value("${key}")</code> 標在欄位上，Spring 就會去 <code>application.properties</code> 找對應的 <code>key=value</code>，把 value 注入進來。
+    </div>
+
+    <div style="font-size:14px;color:#333;margin-bottom:14px;">
+      <b>5.</b> 若沒有預設值，Spring Boot 會因為找不到該 key 而開機失敗（啟動時噴錯）。要避免的話用冒號語法：<code>@Value("${key:預設值}")</code>，缺少該 key 時就會退回用預設值，不影響啟動。
+    </div>
+
+    <div style="font-size:14px;color:#333;margin-bottom:14px;">
+      <b>6.</b> 因為 <code>@Value</code> 這類注入只對 Spring 建立並管理的物件（Bean）有效。自己用 <code>new</code> 建立的物件不是 Spring 管理的，所以欄位不會被處理，只會維持 <code>null</code>。要拿到設定值，必須讓這個類別由 Spring 管理（例如標 <code>@Service</code>/<code>@Component</code>），再透過 <code>@Autowired</code> 取得這個由 Spring 建立、已經填好值的 Bean。
+    </div>
+
+    <div style="font-size:14px;color:#333;">
+      <b>7.</b> <code>EmailNotificationService</code> 和 <code>SmsNotificationService</code> 都標 <code>@Service</code>；在 <code>EmailNotificationService</code> 上加 <code>@Primary</code> 作為預設值。<code>EmailNotificationService</code> 內部用 <code>@Value("${notification.apiKey:default-key}")</code> 讀取 API 金鑰並提供預設值。需要明確用簡訊版本的地方，在注入點寫 <code>@Qualifier("smsNotificationService")</code>（此時會贏過 <code>@Primary</code>）；其他沒指名的地方就自動拿到 <code>@Primary</code> 的 Email 版本。而 <code>EmailNotificationService</code> 本身必須交給 Spring 管理（靠 <code>@Service</code> + <code>@Autowired</code> 取得），<code>@Value</code> 的金鑰欄位才會被正確填值。
+    </div>
   </div>
 
 </div>
