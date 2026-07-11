@@ -1,7 +1,9 @@
 {
   "current_index": 7,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "Spring Boot 用 Profile 機制讓同一支程式在不同環境套用不同設定：application.properties 是預設共用設定，application-dev.properties／application-prod.properties 分別是只在開發／正式情境才生效的專屬設定檔。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",

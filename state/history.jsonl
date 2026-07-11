@@ -29,3 +29,4 @@
 {"date": "2026-07-08", "topic": "@Value 與 application.properties 讀設定", "step": 2, "summary": "學會了用冒號語法 @Value(\"${key:預設值}\") 幫設定值準備備用值，避免 application.properties 缺少某個 key 時導致 Spring Boot 開機失敗。"}
 {"date": "2026-07-09", "topic": "@Value 與 application.properties 讀設定", "step": 3, "summary": "學會了 @Value 只對 Spring 建立、管理的物件（Bean）有效，若自己用 new 建立物件，@Value 欄位不會被注入，只會是 null，必須改用 @Autowired 取得由 Spring 建立的物件才拿得到設定值。"}
 {"date": "2026-07-10", "topic": "@Value 與 application.properties 讀設定", "step": 4, "summary": "把 @Value 的三個重點（讀值、預設值、只對 Bean 有效）合成一個完整範例做總結：一個標了 @Service 的物件用 @Value(\"${key:預設值}\") 讀設定，再透過 @Autowired 拿到這個已填好值的 Bean 使用。"}
+{"date": "2026-07-11", "topic": "Profiles：dev / prod 用不同設定", "step": 1, "summary": "Spring Boot 用 Profile 機制讓同一支程式在不同環境套用不同設定：application.properties 是預設共用設定，application-dev.properties／application-prod.properties 分別是只在開發／正式情境才生效的專屬設定檔。"}
