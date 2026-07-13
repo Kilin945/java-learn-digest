@@ -234,12 +234,29 @@ _LANG_MAP = {
     "shell": "shell", "sql": "sql", "xml": "xml", "yaml": "yaml",
     "yml": "yaml", "kotlin": "kotlin", "groovy": "groovy",
     "javascript": "javascript", "js": "javascript", "python": "python",
-    "html": "html", "properties": "properties",
+    "html": "html",
+}
+
+# Notion code block 接受的語言；其餘一律降級 plain text，避免單一冷門語言（如 properties）害整頁 400。
+_NOTION_LANGS = {
+    "abap", "abc", "agda", "arduino", "ascii art", "assembly", "bash", "basic", "bnf",
+    "c", "c#", "c++", "clojure", "coffeescript", "coq", "css", "dart", "dhall", "diff",
+    "docker", "ebnf", "elixir", "elm", "erlang", "f#", "flow", "fortran", "gherkin",
+    "glsl", "go", "graphql", "groovy", "haskell", "hcl", "html", "idris", "java",
+    "javascript", "json", "julia", "kotlin", "latex", "less", "lisp", "livescript",
+    "llvm ir", "lua", "makefile", "markdown", "markup", "matlab", "mathematica",
+    "mermaid", "nix", "notion formula", "objective-c", "ocaml", "pascal", "perl",
+    "php", "plain text", "powershell", "prolog", "protobuf", "purescript", "python",
+    "r", "racket", "reason", "ruby", "rust", "sass", "scala", "scheme", "scss",
+    "shell", "smalltalk", "solidity", "sql", "swift", "toml", "typescript", "vb.net",
+    "verilog", "vhdl", "visual basic", "webassembly", "xml", "yaml", "java/c/c++/c#",
 }
 
 
 def _norm_lang(lang):
-    return _LANG_MAP.get(lang.lower(), "plain text")
+    # 先套別名（js→javascript…），再用白名單守門：不合法就降級 plain text。
+    v = _LANG_MAP.get(lang.lower(), lang.lower())
+    return v if v in _NOTION_LANGS else "plain text"
 
 
 # ── 標題推導 ──
