@@ -1,8 +1,9 @@
 {
   "current_index": 7,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "Spring Boot 用 Profile 機制讓同一支程式在不同環境套用不同設定：application.properties 是預設共用設定，application-dev.properties／application-prod.properties 分別是只在開發／正式情境才生效的專屬設定檔。"
+    "Spring Boot 用 Profile 機制讓同一支程式在不同環境套用不同設定：application.properties 是預設共用設定，application-dev.properties／application-prod.properties 分別是只在開發／正式情境才生效的專屬設定檔。",
+    "Spring Boot 用 spring.profiles.active 這個設定值（可以寫在 application.properties 裡，也可以用命令列參數 --spring.profiles.active=xxx 覆蓋）來告訴程式現在要啟用哪一個 Profile，啟用後會把共用設定和該 Profile 專屬設定疊加使用，專屬設定會蓋過共用設定的同名項目。"
   ],
   "completed_topics": [
     {
