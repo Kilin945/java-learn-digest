@@ -145,6 +145,12 @@ send_html() {  # $1=html $2=主旨前綴 ；回傳寄信 rc
 
 # ── 慢：產好「下一篇」存進 outbox ──
 do_prepare() {
+  # 先確認網路就緒再 git_pull：launchd 準點常在睡眠或剛喚醒、網路還沒起來，
+  # git_pull 只硬等約 15 秒就放棄，會走不到後面能等 120 秒的 wait_for_network。
+  if ! wait_for_network; then
+    log "INFO: 網路未就緒，本時段略過備稿（待下次）。"
+    return 1
+  fi
   if ! git_pull; then
     log "INFO: git pull 失敗、本機 outbox 不可信，本時段略過（不誤判已備妥，待下次同步後再產）。"
     notify "⚠️ 學習信備稿失敗" "無法連線 GitHub：${GITPULL_LAST_ERR:-詳見 run.log}。明天的課程尚未備妥。"
@@ -155,7 +161,6 @@ do_prepare() {
     git_push_state   # 前次 push 若失敗，這裡補推，否則備好的稿永遠到不了雲端。
     return 0
   fi
-  if ! wait_for_network; then return 1; fi
   local ctx
   if ! ctx="$("$PYTHON" "$DIR/build_lesson.py" daily 2>>"$LOG")"; then
     log "WARN: build_lesson.py 失敗、拿不到課程資料，本時段放棄（原因見上方 stderr）。"
@@ -231,6 +236,8 @@ do_send() {
 # 跟每日信同理：產生靠本機 claude、寄出靠雲端，週報不再依賴週末筆電醒著。
 # 回顧範圍與週身分證（WEEK_ID）由 build_lesson.py 釘在「最近的週五」，晚產也不位移。
 do_prepare_weekly() {
+  # 同 do_prepare：先確認網路就緒再 git_pull，避免喚醒空窗就直接放棄。
+  if ! wait_for_network; then log "INFO: 網路未就緒，略過週報備稿（待下次）。"; return 1; fi
   git_pull
   local out wk ctx
   out="$("$PYTHON" "$DIR/build_lesson.py" weekly 2>>"$LOG")"
