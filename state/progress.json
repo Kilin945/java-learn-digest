@@ -1,11 +1,7 @@
 {
-  "current_index": 7,
-  "step": 4,
-  "covered": [
-    "Spring Boot 用 Profile 機制讓同一支程式在不同環境套用不同設定：application.properties 是預設共用設定，application-dev.properties／application-prod.properties 分別是只在開發／正式情境才生效的專屬設定檔。",
-    "Spring Boot 用 spring.profiles.active 這個設定值（可以寫在 application.properties 裡，也可以用命令列參數 --spring.profiles.active=xxx 覆蓋）來告訴程式現在要啟用哪一個 Profile，啟用後會把共用設定和該 Profile 專屬設定疊加使用，專屬設定會蓋過共用設定的同名項目。",
-    "Spring Boot 可以在 Bean（元件）上加 @Profile(\"dev\") 或 @Profile(\"prod\") 這種註解，讓同一個功能介面依照目前啟用的 profile 建立不同的實作（例如 dev 用假的寄信元件、prod 用真的寄信元件），呼叫端程式碼不用改。"
-  ],
+  "current_index": 8,
+  "step": 1,
+  "covered": [],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
@@ -40,6 +36,11 @@
     {
       "topic": "@Value 與 application.properties 讀設定",
       "finished": "2026-07-10",
+      "steps": 4
+    },
+    {
+      "topic": "Profiles：dev / prod 用不同設定",
+      "finished": "2026-07-15",
       "steps": 4
     }
   ]
