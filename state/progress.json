@@ -1,7 +1,9 @@
 {
   "current_index": 8,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "@SpringBootApplication 其實是三個註解（@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan）打包成的一個懶人包註解，貼在主程式類別上就同時套用這三種效果。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
