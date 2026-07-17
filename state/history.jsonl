@@ -34,3 +34,4 @@
 {"date": "2026-07-14", "topic": "Profiles：dev / prod 用不同設定", "step": 3, "summary": "Spring Boot 可以在 Bean（元件）上加 @Profile(\"dev\") 或 @Profile(\"prod\") 這種註解，讓同一個功能介面依照目前啟用的 profile 建立不同的實作（例如 dev 用假的寄信元件、prod 用真的寄信元件），呼叫端程式碼不用改。"}
 {"date": "2026-07-15", "topic": "Profiles：dev / prod 用不同設定", "step": 4, "summary": "正式環境通常不寫死設定檔，而是用 SPRING_PROFILES_ACTIVE 環境變數在部署時啟用 profile，同一份 jar 檔就能在不同機器上變成不同環境，也可以用逗號同時啟用多個 profile（例如 dev,mail）。"}
 {"date": "2026-07-16", "topic": "@SpringBootApplication 與自動組態的原理", "step": 1, "summary": "@SpringBootApplication 其實是三個註解（@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan）打包成的一個懶人包註解，貼在主程式類別上就同時套用這三種效果。"}
+{"date": "2026-07-17", "topic": "@SpringBootApplication 與自動組態的原理", "step": 2, "summary": "Spring Boot 的自動組態（@EnableAutoConfiguration）會用 @ConditionalOnClass 檢查 classpath 上有沒有特定類別（例如加了 spring-boot-starter-web 這種 starter 依賴），有才會自動幫你套用對應的設定。"}
