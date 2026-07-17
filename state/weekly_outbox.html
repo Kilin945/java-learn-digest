@@ -1,72 +1,34 @@
-<div style="max-width:680px;margin:0 auto;font-family:'Helvetica Neue',Arial,'PingFang TC','Microsoft JhengHei',sans-serif;background:#ecf7ef;padding:24px 16px;">
-
-  <div style="background:#ffffff;border-radius:12px;border-left:6px solid #4caf72;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
-    <div style="font-size:18px;font-weight:700;color:#1e9e57;">📘 每週回顧 · Java / Spring Boot · 2026-07-10</div>
-    <div style="font-size:13px;color:#4a4a4a;margin-top:6px;">這週你學了兩個主題：多候選 Bean 的解析（@Autowired / @Qualifier / @Primary）、以及用 @Value 讀 application.properties 設定。以下用主動回想（active recall）的方式幫你把整週串起來，先自己想一遍答案，再往下滑看解答。</div>
+<div style="max-width:680px;margin:0 auto;font-family:'Segoe UI',Helvetica,Arial,sans-serif;background-color:#f2f6e8;padding:24px;">
+  <div style="background-color:#ffffff;border-left:6px solid #88a83f;border-radius:8px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+    <h1 style="margin:0;font-size:20px;color:#6e8c28;">📘 每週回顧 · Java / Spring Boot · 2026-07-17</h1>
+    <p style="margin:8px 0 0;font-size:14px;color:#6e8c28;">這週我們把 Profiles（dev/prod 設定切換）和 @SpringBootApplication 自動組態原理串起來了，來做個主動回想（active recall）複習一下～</p>
   </div>
 
-  <div style="background:#ffffff;border-radius:12px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
-    <div style="font-size:16px;font-weight:700;color:#1e9e57;margin-bottom:12px;">🧠 回想題</div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>1.</b> 如果同一個 interface 有兩個以上的實作類別，都標了 <code>@Component</code>／<code>@Service</code>，然後你用 <code>@Autowired</code> 直接注入這個 interface 型別，Spring 會丟出什麼例外？為什麼？
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>2.</b> 承上題，怎麼用 <code>@Qualifier</code> 解決這個問題？需要在哪兩個地方各加上什麼？
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>3.</b> <code>@Primary</code> 的作用是什麼？如果某個注入點同時受到 <code>@Primary</code> 和 <code>@Qualifier</code> 影響，Spring 會聽誰的？
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>4.</b> 要把 <code>application.properties</code> 裡的一個 key 注入到欄位中，<code>@Value</code> 的語法怎麼寫？
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>5.</b> 如果 <code>application.properties</code> 裡缺少某個 key，而 <code>@Value</code> 又沒設定備用值，會發生什麼事？怎麼用語法避免這個情況？
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>6.</b> 你自己寫了 <code>new MyService()</code> 來建立物件，結果裡面標了 <code>@Value</code> 的欄位是 <code>null</code>，這是為什麼？該怎麼修正才能拿到設定值？
-    </div>
-
-    <div style="font-size:14px;color:#333;">
-      <b>7.（整合題）</b> 假設你有一個 <code>NotificationService</code> 介面，兩個實作類別 <code>EmailNotificationService</code> 和 <code>SmsNotificationService</code>，你希望預設用 Email 版本，但某個地方要明確指名用簡訊版本；同時 Email 版本裡有一個 API 金鑰要從 <code>application.properties</code> 讀取，且要有預設值以防設定檔漏寫。請用這週學到的四個概念（<code>@Qualifier</code>、<code>@Primary</code>、<code>@Value</code> 讀值、<code>@Value</code> 預設值）描述你會怎麼寫。
-    </div>
+  <div style="background-color:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+    <h2 style="font-size:16px;color:#6e8c28;margin-top:0;">🧠 本週回想題</h2>
+    <ol style="font-size:15px;color:#333333;line-height:1.7;padding-left:20px;">
+      <li><b>application.properties</b> 和 <b>application-dev.properties</b> 這兩個設定檔，各自的角色與生效時機有什麼不同？</li>
+      <li>要啟用某個 profile，有哪兩種常見方式可以設定 <code>spring.profiles.active</code>？</li>
+      <li>如果共用設定檔和 dev 專屬設定檔對同一個設定項目寫了不同的值，最後會以哪個為準？為什麼？</li>
+      <li>假設你有一個「寄信」功能介面，要讓 dev 環境用假的寄信元件、prod 環境用真的寄信元件，你會怎麼用 <code>@Profile</code> 設計？</li>
+      <li>為什麼正式（prod）環境通常不會把 profile 直接寫死在設定檔裡，而是用 <b>SPRING_PROFILES_ACTIVE</b> 環境變數來啟用？這樣做的好處是什麼？</li>
+      <li>如果想同時啟用 <code>dev</code> 和 <code>mail</code> 兩個 profile，設定值該怎麼寫？</li>
+      <li><b>@SpringBootApplication</b> 其實是哪三個註解打包而成的？各自負責什麼工作？</li>
+      <li>Spring Boot 的自動組態（<b>@EnableAutoConfiguration</b>）是怎麼判斷「該不該」幫你自動套用某個功能的設定（例如網頁相關的設定）？和 <code>@ConditionalOnClass</code> 有什麼關係？</li>
+    </ol>
   </div>
 
-  <div style="background:#ffffff;border-radius:12px;padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
-    <div style="font-size:16px;font-weight:700;color:#1e9e57;margin-bottom:12px;">—— 解答 ——</div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>1.</b> 會丟出 <code>NoUniqueBeanDefinitionException</code>。因為 Spring 在容器裡找到多個符合該 interface 型別的 Bean，卻不知道要注入哪一個候選者，所以無法自動決定。
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>2.</b> 在每個候選實作類別上用 <code>@Qualifier("名字")</code> 貼上名字標籤，再到注入點（欄位或建構子參數）上也標 <code>@Qualifier("名字")</code>，指名要哪一個實作，Spring 就會依名字精準選取。
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>3.</b> <code>@Primary</code> 是幫多個候選 Bean 指定一個「預設 Bean」，讓沒有寫 <code>@Qualifier</code> 的注入點也能自動選到它。若兩者同時出現，注入點上明確寫的 <code>@Qualifier</code> 優先權較高，會覆蓋 <code>@Primary</code> 的預設選擇。
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>4.</b> 用 <code>@Value("${key}")</code> 標在欄位上，Spring 就會去 <code>application.properties</code> 找對應的 <code>key=value</code>，把 value 注入進來。
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>5.</b> 若沒有預設值，Spring Boot 會因為找不到該 key 而開機失敗（啟動時噴錯）。要避免的話用冒號語法：<code>@Value("${key:預設值}")</code>，缺少該 key 時就會退回用預設值，不影響啟動。
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>6.</b> 因為 <code>@Value</code> 這類注入只對 Spring 建立並管理的物件（Bean）有效。自己用 <code>new</code> 建立的物件不是 Spring 管理的，所以欄位不會被處理，只會維持 <code>null</code>。要拿到設定值，必須讓這個類別由 Spring 管理（例如標 <code>@Service</code>/<code>@Component</code>），再透過 <code>@Autowired</code> 取得這個由 Spring 建立、已經填好值的 Bean。
-    </div>
-
-    <div style="font-size:14px;color:#333;">
-      <b>7.</b> <code>EmailNotificationService</code> 和 <code>SmsNotificationService</code> 都標 <code>@Service</code>；在 <code>EmailNotificationService</code> 上加 <code>@Primary</code> 作為預設值。<code>EmailNotificationService</code> 內部用 <code>@Value("${notification.apiKey:default-key}")</code> 讀取 API 金鑰並提供預設值。需要明確用簡訊版本的地方，在注入點寫 <code>@Qualifier("smsNotificationService")</code>（此時會贏過 <code>@Primary</code>）；其他沒指名的地方就自動拿到 <code>@Primary</code> 的 Email 版本。而 <code>EmailNotificationService</code> 本身必須交給 Spring 管理（靠 <code>@Service</code> + <code>@Autowired</code> 取得），<code>@Value</code> 的金鑰欄位才會被正確填值。
-    </div>
+  <div style="background-color:#ffffff;border-radius:8px;padding:20px 24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+    <h2 style="font-size:16px;color:#6e8c28;margin-top:0;">—— 解答 ——</h2>
+    <ol style="font-size:14px;color:#555555;line-height:1.8;padding-left:20px;">
+      <li><b>application.properties</b> 是預設、所有環境都會套用的共用設定；<b>application-dev.properties</b> 是只有啟用 dev 這個 profile 時才會額外生效的專屬設定。</li>
+      <li>一種是直接寫在 <code>application.properties</code> 裡的 <code>spring.profiles.active=dev</code>，另一種是啟動時用命令列參數 <code>--spring.profiles.active=xxx</code> 覆蓋（override）。</li>
+      <li>以專屬設定檔（如 application-dev.properties）為準，因為 Spring Boot 會把共用設定和專屬設定「疊加（layer）」，同名項目由專屬設定覆蓋共用設定。</li>
+      <li>在該功能介面的兩個實作類別上分別加 <code>@Profile("dev")</code>（假的寄信元件）和 <code>@Profile("prod")</code>（真的寄信元件），Spring 會依目前啟用的 profile 自動組裝正確的實作，呼叫端程式碼完全不用改。</li>
+      <li>因為同一份 jar 檔要能部署到不同機器、變成不同環境，用環境變數在「部署當下」決定 profile，比把設定寫死在檔案裡更有彈性，也不用為了換環境重新打包或改程式碼。</li>
+      <li>用逗號分隔即可，例如 <code>SPRING_PROFILES_ACTIVE=dev,mail</code>，可以同時啟用多個 profile。</li>
+      <li>是 <b>@SpringBootConfiguration</b>（宣告這是一個設定類別）、<b>@EnableAutoConfiguration</b>（開啟自動組態機制）、<b>@ComponentScan</b>（掃描並註冊元件）三個打包成的懶人包（convenience annotation）。</li>
+      <li>自動組態會用 <code>@ConditionalOnClass</code> 檢查 classpath 上有沒有特定類別存在（例如專案有沒有加 <code>spring-boot-starter-web</code> 這個 starter 依賴），有偵測到相關類別才會觸發對應的自動設定；沒有的話該組態就不會生效，避免多餘或錯誤的設定被套用。</li>
+    </ol>
   </div>
-
 </div>
