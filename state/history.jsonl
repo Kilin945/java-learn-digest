@@ -35,3 +35,4 @@
 {"date": "2026-07-15", "topic": "Profiles：dev / prod 用不同設定", "step": 4, "summary": "正式環境通常不寫死設定檔，而是用 SPRING_PROFILES_ACTIVE 環境變數在部署時啟用 profile，同一份 jar 檔就能在不同機器上變成不同環境，也可以用逗號同時啟用多個 profile（例如 dev,mail）。"}
 {"date": "2026-07-16", "topic": "@SpringBootApplication 與自動組態的原理", "step": 1, "summary": "@SpringBootApplication 其實是三個註解（@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan）打包成的一個懶人包註解，貼在主程式類別上就同時套用這三種效果。"}
 {"date": "2026-07-17", "topic": "@SpringBootApplication 與自動組態的原理", "step": 2, "summary": "Spring Boot 的自動組態（@EnableAutoConfiguration）會用 @ConditionalOnClass 檢查 classpath 上有沒有特定類別（例如加了 spring-boot-starter-web 這種 starter 依賴），有才會自動幫你套用對應的設定。"}
+{"date": "2026-07-18", "topic": "@SpringBootApplication 與自動組態的原理", "step": 3, "summary": "Spring Boot 靠一份叫 AutoConfiguration.imports 的候選清單列出所有可能的自動組態類別，再逐一用 @ConditionalOnClass 檢查 classpath 決定要不要真的套用，這就是自動組態的完整運作原理。"}
