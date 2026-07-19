@@ -1,7 +1,9 @@
 {
   "current_index": 9,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "spring-boot-starter-web 這類 Starter，是 Spring Boot 幫你事先組好、測過版本相容性的一整包依賴，加一行就等於加了一整組互相搭配好的函式庫，不用自己一個一個挑版本。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",

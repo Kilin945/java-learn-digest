@@ -36,3 +36,4 @@
 {"date": "2026-07-16", "topic": "@SpringBootApplication 與自動組態的原理", "step": 1, "summary": "@SpringBootApplication 其實是三個註解（@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan）打包成的一個懶人包註解，貼在主程式類別上就同時套用這三種效果。"}
 {"date": "2026-07-17", "topic": "@SpringBootApplication 與自動組態的原理", "step": 2, "summary": "Spring Boot 的自動組態（@EnableAutoConfiguration）會用 @ConditionalOnClass 檢查 classpath 上有沒有特定類別（例如加了 spring-boot-starter-web 這種 starter 依賴），有才會自動幫你套用對應的設定。"}
 {"date": "2026-07-18", "topic": "@SpringBootApplication 與自動組態的原理", "step": 3, "summary": "Spring Boot 靠一份叫 AutoConfiguration.imports 的候選清單列出所有可能的自動組態類別，再逐一用 @ConditionalOnClass 檢查 classpath 決定要不要真的套用，這就是自動組態的完整運作原理。"}
+{"date": "2026-07-19", "topic": "Starter 依賴：spring-boot-starter-web 幫你帶了什麼", "step": 1, "summary": "spring-boot-starter-web 這類 Starter，是 Spring Boot 幫你事先組好、測過版本相容性的一整包依賴，加一行就等於加了一整組互相搭配好的函式庫，不用自己一個一個挑版本。"}
