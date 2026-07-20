@@ -1,8 +1,9 @@
 {
   "current_index": 9,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "spring-boot-starter-web 這類 Starter，是 Spring Boot 幫你事先組好、測過版本相容性的一整包依賴，加一行就等於加了一整組互相搭配好的函式庫，不用自己一個一個挑版本。"
+    "spring-boot-starter-web 這類 Starter，是 Spring Boot 幫你事先組好、測過版本相容性的一整包依賴，加一行就等於加了一整組互相搭配好的函式庫，不用自己一個一個挑版本。",
+    "spring-boot-starter-web 這包依賴裡內建了一個小型 Tomcat（網頁伺服器），程式一執行就自動啟動，不需要自己另外安裝或設定伺服器。"
   ],
   "completed_topics": [
     {
