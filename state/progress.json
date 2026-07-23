@@ -1,7 +1,9 @@
 {
   "current_index": 10,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "application.yml 是 Spring Boot 的設定檔，放在 src/main/resources 底下，用 YAML 格式（key: value，靠空白縮排表示巢狀階層）來管理 port、名稱等設定值，不用寫死在程式碼裡。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
