@@ -1,34 +1,50 @@
-<div style="max-width:680px;margin:0 auto;font-family:'Segoe UI',Helvetica,Arial,sans-serif;background-color:#f2f6e8;padding:24px;">
-  <div style="background-color:#ffffff;border-left:6px solid #88a83f;border-radius:8px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <h1 style="margin:0;font-size:20px;color:#6e8c28;">📘 每週回顧 · Java / Spring Boot · 2026-07-17</h1>
-    <p style="margin:8px 0 0;font-size:14px;color:#6e8c28;">這週我們把 Profiles（dev/prod 設定切換）和 @SpringBootApplication 自動組態原理串起來了，來做個主動回想（active recall）複習一下～</p>
-  </div>
+<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:#fdeef0;padding:24px;">
+  <div style="background:#ffffff;border-radius:12px;padding:0;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+    <div style="border-left:6px solid #e0738a;padding:20px 24px;">
+      <div style="font-size:20px;font-weight:700;color:#d83a5e;">📘 每週回顧 · Java / Spring Boot · 2026-07-24</div>
+    </div>
 
-  <div style="background-color:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <h2 style="font-size:16px;color:#6e8c28;margin-top:0;">🧠 本週回想題</h2>
-    <ol style="font-size:15px;color:#333333;line-height:1.7;padding-left:20px;">
-      <li><b>application.properties</b> 和 <b>application-dev.properties</b> 這兩個設定檔，各自的角色與生效時機有什麼不同？</li>
-      <li>要啟用某個 profile，有哪兩種常見方式可以設定 <code>spring.profiles.active</code>？</li>
-      <li>如果共用設定檔和 dev 專屬設定檔對同一個設定項目寫了不同的值，最後會以哪個為準？為什麼？</li>
-      <li>假設你有一個「寄信」功能介面，要讓 dev 環境用假的寄信元件、prod 環境用真的寄信元件，你會怎麼用 <code>@Profile</code> 設計？</li>
-      <li>為什麼正式（prod）環境通常不會把 profile 直接寫死在設定檔裡，而是用 <b>SPRING_PROFILES_ACTIVE</b> 環境變數來啟用？這樣做的好處是什麼？</li>
-      <li>如果想同時啟用 <code>dev</code> 和 <code>mail</code> 兩個 profile，設定值該怎麼寫？</li>
-      <li><b>@SpringBootApplication</b> 其實是哪三個註解打包而成的？各自負責什麼工作？</li>
-      <li>Spring Boot 的自動組態（<b>@EnableAutoConfiguration</b>）是怎麼判斷「該不該」幫你自動套用某個功能的設定（例如網頁相關的設定）？和 <code>@ConditionalOnClass</code> 有什麼關係？</li>
-    </ol>
-  </div>
+    <div style="padding:4px 24px 24px 24px;color:#333333;font-size:15px;line-height:1.7;">
 
-  <div style="background-color:#ffffff;border-radius:8px;padding:20px 24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <h2 style="font-size:16px;color:#6e8c28;margin-top:0;">—— 解答 ——</h2>
-    <ol style="font-size:14px;color:#555555;line-height:1.8;padding-left:20px;">
-      <li><b>application.properties</b> 是預設、所有環境都會套用的共用設定；<b>application-dev.properties</b> 是只有啟用 dev 這個 profile 時才會額外生效的專屬設定。</li>
-      <li>一種是直接寫在 <code>application.properties</code> 裡的 <code>spring.profiles.active=dev</code>，另一種是啟動時用命令列參數 <code>--spring.profiles.active=xxx</code> 覆蓋（override）。</li>
-      <li>以專屬設定檔（如 application-dev.properties）為準，因為 Spring Boot 會把共用設定和專屬設定「疊加（layer）」，同名項目由專屬設定覆蓋共用設定。</li>
-      <li>在該功能介面的兩個實作類別上分別加 <code>@Profile("dev")</code>（假的寄信元件）和 <code>@Profile("prod")</code>（真的寄信元件），Spring 會依目前啟用的 profile 自動組裝正確的實作，呼叫端程式碼完全不用改。</li>
-      <li>因為同一份 jar 檔要能部署到不同機器、變成不同環境，用環境變數在「部署當下」決定 profile，比把設定寫死在檔案裡更有彈性，也不用為了換環境重新打包或改程式碼。</li>
-      <li>用逗號分隔即可，例如 <code>SPRING_PROFILES_ACTIVE=dev,mail</code>，可以同時啟用多個 profile。</li>
-      <li>是 <b>@SpringBootConfiguration</b>（宣告這是一個設定類別）、<b>@EnableAutoConfiguration</b>（開啟自動組態機制）、<b>@ComponentScan</b>（掃描並註冊元件）三個打包成的懶人包（convenience annotation）。</li>
-      <li>自動組態會用 <code>@ConditionalOnClass</code> 檢查 classpath 上有沒有特定類別存在（例如專案有沒有加 <code>spring-boot-starter-web</code> 這個 starter 依賴），有偵測到相關類別才會觸發對應的自動設定；沒有的話該組態就不會生效，避免多餘或錯誤的設定被套用。</li>
-    </ol>
+      <p style="margin:16px 0 20px 0;">這週從「Spring Boot 為什麼自動組態」一路教到「starter-web 帶了哪三份禮物」，再到「application.yml 怎麼設定」。以下用回想題把整週串起來，建議先自己想過一輪再看解答 👇</p>
+
+      <div style="background:#fdeef0;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
+        <div style="font-weight:700;color:#d83a5e;margin-bottom:12px;font-size:16px;">🧠 本週回想題</div>
+
+        <p style="margin:0 0 14px 0;"><strong>1.</strong> application.yml 裡如果你這樣寫：</p>
+        <pre style="background:#ffffff;border-radius:6px;padding:10px 14px;margin:0 0 14px 0;font-size:13px;overflow-x:auto;">server:
+  port: 8081</pre>
+        <p style="margin:0 0 20px 0;">這段設定最終會被 Spring Boot 拼成什麼樣的 dot notation（點記法）？程式讀取時實際用的名字是什麼？</p>
+
+        <p style="margin:0 0 14px 0;"><strong>2.</strong> application.yml 這個檔案應該放在專案的哪個路徑底下？它用什麼方式（縮排 or 括號）來表示巢狀結構？</p>
+
+        <p style="margin:0 0 14px 0;"><strong>3.</strong> 你加了一行 <code>spring-boot-starter-web</code> 依賴，完全沒寫任何伺服器設定，程式執行後卻能直接處理 HTTP 請求——這是因為這包 starter 內建了什麼？</p>
+
+        <p style="margin:0 0 14px 0;"><strong>4.</strong> 當瀏覽器打到 <code>/hello</code> 這個網址時，是誰（哪個元件）負責接住這個請求，再依照 <code>@RestController</code> 和 <code>@GetMapping</code> 的標籤，轉接到你寫的方法上？</p>
+
+        <p style="margin:0 0 14px 0;"><strong>5.</strong> 你的 Controller 方法回傳了一個 Java 物件（例如 <code>User</code>），前端收到的卻是 JSON 字串。這中間是哪個函式庫、在背後幫你做了轉換？</p>
+
+        <p style="margin:0 0 14px 0;"><strong>6.</strong> 綜合第 3~5 題：請用一句話說明 <code>spring-boot-starter-web</code> 這一行依賴，總共幫你打包好了哪三大禮物？</p>
+
+        <p style="margin:0 0 20px 0;"><strong>7.</strong> 進階挑戰：假設 classpath 上根本沒有 Tomcat 相關的類別，Spring Boot 的自動組態機制（AutoConfiguration.imports + <code>@ConditionalOnClass</code>）會怎麼處理「內建 Tomcat 這個自動組態類別」？為什麼即使候選清單裡列了它，最後也不會真的套用？</p>
+      </div>
+
+      <div style="font-weight:700;color:#d83a5e;margin:20px 0 12px 0;font-size:16px;">—— 解答 ——</div>
+
+      <p style="margin:0 0 12px 0;"><strong>1.</strong> 會拼成 <code>server.port</code>。縮排的巢狀結構最終都會攤平成一串用 <code>.</code> 連接的完整名字，這就是程式實際讀取設定時用的 key。</p>
+
+      <p style="margin:0 0 12px 0;"><strong>2.</strong> 放在 <code>src/main/resources</code> 底下。用縮排（indentation）表示 key 之間的巢狀（nested）關係，同一層級的縮排要對齊。</p>
+
+      <p style="margin:0 0 12px 0;"><strong>3.</strong> 因為 <code>spring-boot-starter-web</code> 內建了一個小型 Tomcat（網頁伺服器），程式一執行就自動啟動，不用自己另外安裝或設定伺服器。</p>
+
+      <p style="margin:0 0 12px 0;"><strong>4.</strong> 是 <code>DispatcherServlet</code>（可以想成「總機」）。它先接住所有請求，再依照 <code>@RestController</code>／<code>@GetMapping</code> 的標籤，把請求轉接到對應的方法，這整套機制就是 Spring MVC。</p>
+
+      <p style="margin:0 0 12px 0;"><strong>5.</strong> 是 Jackson。它會自動把回傳的 Java 物件轉換成 JSON 格式，完全不用自己寫轉換程式碼。</p>
+
+      <p style="margin:0 0 12px 0;"><strong>6.</strong> 三大禮物：① Tomcat 伺服器（不用自己裝）② Spring MVC + DispatcherServlet（自動轉接請求到你的方法）③ Jackson（自動把物件轉成 JSON）。</p>
+
+      <p style="margin:0 0 4px 0;"><strong>7.</strong> 不會套用。Spring Boot 會用 <code>@ConditionalOnClass</code> 去檢查 classpath 上有沒有對應的類別，AutoConfiguration.imports 裡列出的只是「候選」清單；如果 classpath 上根本沒有 Tomcat 的類別，這個條件檢查就會失敗，這個自動組態類別就會被跳過，不會真的生效。這就是自動組態「先列候選、再逐一檢查條件」的完整運作方式。</p>
+
+    </div>
   </div>
 </div>
