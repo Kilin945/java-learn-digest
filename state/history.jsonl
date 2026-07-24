@@ -41,3 +41,4 @@
 {"date": "2026-07-21", "topic": "Starter 依賴：spring-boot-starter-web 幫你帶了什麼", "step": 3, "summary": "spring-boot-starter-web 除了內建 Tomcat 伺服器，還附贈了 Spring MVC 框架，透過 DispatcherServlet（總機）搭配 @RestController 和 @GetMapping 標籤，自動把網址請求轉接到你寫的方法，不用自己解析 HTTP 請求。"}
 {"date": "2026-07-22", "topic": "Starter 依賴：spring-boot-starter-web 幫你帶了什麼", "step": 4, "summary": "spring-boot-starter-web 內建的 Jackson 函式庫，會自動把你回傳的 Java 物件轉換成 JSON 格式回傳給前端，不用自己寫任何轉換程式碼；到此，starter-web 的三大禮物（Tomcat 伺服器、Spring MVC 轉接、Jackson JSON 轉換）都教完了。"}
 {"date": "2026-07-23", "topic": "application.yml 結構與設定優先序", "step": 1, "summary": "application.yml 是 Spring Boot 的設定檔，放在 src/main/resources 底下，用 YAML 格式（key: value，靠空白縮排表示巢狀階層）來管理 port、名稱等設定值，不用寫死在程式碼裡。"}
+{"date": "2026-07-24", "topic": "application.yml 結構與設定優先序", "step": 2, "summary": "application.yml 用縮排（indentation）表示巢狀結構（nested structure），例如 server 底下縮排一層寫 port，最終會被拼成點記法（dot notation）的 server.port，這是程式讀取設定值時實際使用的完整名字。"}
