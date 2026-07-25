@@ -1,9 +1,10 @@
 {
   "current_index": 10,
-  "step": 3,
+  "step": 4,
   "covered": [
     "application.yml 是 Spring Boot 的設定檔，放在 src/main/resources 底下，用 YAML 格式（key: value，靠空白縮排表示巢狀階層）來管理 port、名稱等設定值，不用寫死在程式碼裡。",
-    "application.yml 用縮排（indentation）表示巢狀結構（nested structure），例如 server 底下縮排一層寫 port，最終會被拼成點記法（dot notation）的 server.port，這是程式讀取設定值時實際使用的完整名字。"
+    "application.yml 用縮排（indentation）表示巢狀結構（nested structure），例如 server 底下縮排一層寫 port，最終會被拼成點記法（dot notation）的 server.port，這是程式讀取設定值時實際使用的完整名字。",
+    "Spring Boot 讀取設定值時有優先序：啟動時多打的命令列參數（command-line argument，例如 --server.port=9090）會覆寫（override）application.yml 裡寫的值，這是設定優先序的第一條規則。"
   ],
   "completed_topics": [
     {
