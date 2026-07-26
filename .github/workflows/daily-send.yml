@@ -62,32 +62,15 @@ jobs:
 
       - name: 寄出今天備妥的課（若有）
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}
-        env:
-          # 只有「當天最後一班」沒稿才寄警示信，避免早班誤報（後面班次還能補寄）。
-          # 最後一班 = Cloudflare 觸發帶 slot=last；另保留「已過台北 15:00」的兜底條件（手動補救時也適用）。
-          IS_LAST: ${{ github.event_name == 'workflow_dispatch' && inputs.slot == 'last' }}
         run: |
           set -euo pipefail
           MARKER="state/daily-$(date +%F)"
           if [ -f "$MARKER" ]; then echo "今日已寄過（$MARKER），略過。"; exit 0; fi
           if ! python3 apply_result.py --outbox-ready; then
-            # 沒有可寄的 outbox：發出可見的警示註解；警示信只在最後一班發（marker 去重）。
-            echo "::warning::outbox 尚未備妥：本機 prepare 未將今天的課程推上 state 分支。"
-            if [ "$IS_LAST" != "true" ] && [ "$(date +%H)" -lt 15 ]; then
-              echo "非最後一班（且未過 15:00），後面班次還有機會補寄，先不寄警示信。"; exit 0
-            fi
-            NOPREP="state/noprep-$(date +%F)"
-            if [ -f "$NOPREP" ]; then
-              echo "今日已寄過「沒有可寄的課」警示信（$NOPREP），不重複寄送。"; exit 0
-            fi
-            NOW="$(date '+%Y-%m-%d %H:%M')"
-            if printf '<div style="font-family:-apple-system,sans-serif"><h3>⚠️ 今天沒有可寄的課</h3><p>雲端於 %s 觸發寄信，但 state 分支上沒有備妥的 outbox，表示本機 prepare 未成功將今天的課程推上。今天的每日信無法寄出，請檢查本機 run.log。</p></div>' "$NOW" \
-                 | python3 send_email.py "⚠️ 今天沒有可寄的課（每日 Java/Spring Boot）"; then
-              date '+%Y-%m-%d %H:%M:%S' > "$NOPREP"
-              echo "已寄出「沒有可寄的課」警示信並標記 $NOPREP。"
-            else
-              echo "::warning::警示信寄送失敗，下一時段會再試。"
-            fi
+            # 沒稿就安靜跳過——這種情況昨天 14:00 的體檢就已經警示過了
+            # （昨天備的就是今天要寄的，昨天下午發現沒備妥時就通知了）。
+            # 今天再警示一次是重複，只留一行 Actions 註解方便回查。
+            echo "::warning::outbox 尚未備妥：昨天的備稿未成功，今天的每日信寄不出去。"
             exit 0
           fi
           TODAY="$(date +%F)"
@@ -115,6 +98,74 @@ jobs:
           if [ "$FORCE" = "true" ]; then echo "force 測試寄出完成，不打 marker。"; exit 0; fi
           date '+%Y-%m-%d %H:%M:%S' > "$WMARK"
           echo "已寄出週報並標記 $WMARK"
+
+      - name: 缺稿體檢與警示信（當天最後一班）
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}
+        env:
+          # 最後一班 = Cloudflare 觸發帶 slot=last；另保留「已過台北 15:00」的兜底（手動補救時也適用）。
+          IS_LAST: ${{ github.event_name == 'workflow_dispatch' && inputs.slot == 'last' }}
+        run: |
+          set -euo pipefail
+          if [ "$IS_LAST" != "true" ] && [ "$(date +%H)" -lt 15 ]; then
+            echo "非最後一班（且未過 15:00），本機備稿可能還在跑，先不體檢。"; exit 0
+          fi
+          TODAY="$(date +%F)"
+          MISSING=""
+
+          # ① 明天的課備好了嗎？
+          # outbox 存的是「下一篇」——早上寄完會清空，當天 12:00/13:00 再填進明天的。
+          # 所以這個時間點 outbox 是空的，就等於明天早上 08:00 會沒信。
+          # 這是整套設計裡唯一能在「還來得及補」的時候發現問題的檢查點：
+          # 等到明天早上沒收到信才通知，已經是事發 25 小時後、那天的課也補不回來了。
+          if ! python3 apply_result.py --outbox-ready 2>/dev/null; then
+            if [ -f "state/alert-prepare-$TODAY" ]; then
+              echo "[每日] 本機已寄過警示信，不重複。"
+            else
+              MISSING="$MISSING<li><b>明天的每日課</b>——本機今天沒有備成，明天早上 08:00 會收不到信</li>"
+            fi
+          fi
+
+          # ② 週六該寄的週報寄了嗎？（原本這裡沒稿只印一行 log 就結束，完全靜默）
+          if [ "$(date +%u)" = "6" ]; then
+            WMARK="state/weekly-$(date +%G-W%V)"
+            if [ ! -f "$WMARK" ]; then
+              if [ -f "state/alert-prepare-weekly-$TODAY" ]; then
+                echo "[週報] 本機已寄過警示信，不重複。"
+              else
+                MISSING="$MISSING<li><b>本週週報</b>——週五的備稿沒成功，今天早上的週報沒寄出</li>"
+              fi
+            fi
+          fi
+
+          if [ -z "$MISSING" ]; then echo "體檢通過，該備的都備了。"; exit 0; fi
+
+          # 本機每個備稿時段都會留一行 RESULT，出事那天才會把它推上 state 分支。
+          # 檔案不在 = 本機一次都沒能連上 GitHub，這本身就是答案，不能寫成「查無資料」。
+          ATT="state/attempts-$TODAY.log"
+          if [ -s "$ATT" ]; then
+            DETAIL="<p><b>本機今天各備稿時段：</b></p><pre style=\"background:#f6f7f9;padding:10px;border-radius:6px;font-size:12px\">$(cat "$ATT")</pre>"
+          else
+            DETAIL="<p><b>本機今天沒有留下任何時段紀錄。</b>備稿程式一次都沒能連上 GitHub，最可能是筆電整天沒有真正喚醒——闔蓋加電池時 launchd 只會把機器叫進 DarkWake，那個狀態下沒有網路。</p>"
+          fi
+
+          NOW="$(date '+%Y-%m-%d %H:%M')"
+          BODY="<div style=\"font-family:-apple-system,sans-serif\">
+          <h3>⚠️ 學習信有缺口</h3>
+          <p>雲端於 $NOW 體檢，發現：</p>
+          <ul>$MISSING</ul>
+          $DETAIL
+          <p>現在補跑還來得及：<code>cd ~/Workspace/java-learn-digest &amp;&amp; ./run_slot.sh</code></p>
+          </div>"
+
+          if printf '%s' "$BODY" | python3 send_email.py "⚠️ 學習信有缺口"; then
+            date '+%Y-%m-%d %H:%M:%S' > "state/alert-prepare-$TODAY"
+            if [ "$(date +%u)" = "6" ]; then
+              date '+%Y-%m-%d %H:%M:%S' > "state/alert-prepare-weekly-$TODAY"
+            fi
+            echo "已寄出體檢警示信。"
+          else
+            echo "::warning::警示信寄送失敗，下一班次會再試。"
+          fi
 
       - name: 把進度/marker/課程檔推回 state 分支
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}

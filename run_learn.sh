@@ -36,6 +36,16 @@ export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$LOG"; }
 notify() { /usr/bin/osascript -e "display notification \"$2\" with title \"$1\" sound name \"Basso\"" >/dev/null 2>&1; }
 
+# 每個時段留一行結果，方便事後一眼看完當天發生什麼事：
+#   2026-07-26 13:00:12 RESULT prepare FAIL 網路未就緒
+# 沒有這行就代表「這個時段根本沒被觸發」（機器沒醒），跟「跑了但失敗」是兩回事，
+# 混在一起就無從除錯。
+result() {  # $1=OK|SKIP|FAIL  $2=說明
+  log "RESULT $MODE $1 $2"
+}
+
+START_HHMM="$(date +%H%M)"   # 本次啟動時間，用來判斷自己是不是當天最後一個備稿班
+
 # 雲端寄信模式：用 git 當同步通道，但「紀錄」放獨立的 state 分支，
 # 透過旁邊的 worktree（預設 ../java-learn-state）讀寫，master 只剩開發、不被每日紀錄洗版。
 # prepare 前先 pull 取得雲端推進的進度，備好下一篇後 push 上去給雲端寄。
@@ -149,25 +159,30 @@ do_prepare() {
   # git_pull 只硬等約 15 秒就放棄，會走不到後面能等 120 秒的 wait_for_network。
   if ! wait_for_network; then
     log "INFO: 網路未就緒，本時段略過備稿（待下次）。"
+    PREPARE_WHY="網路未就緒"; result FAIL "$PREPARE_WHY"
     return 1
   fi
   if ! git_pull; then
     log "INFO: git pull 失敗、本機 outbox 不可信，本時段略過（不誤判已備妥，待下次同步後再產）。"
     notify "⚠️ 學習信備稿失敗" "無法連線 GitHub：${GITPULL_LAST_ERR:-詳見 run.log}。明天的課程尚未備妥。"
+    PREPARE_WHY="state 分支同步失敗：${GITPULL_LAST_ERR:-詳見 run.log}"; result FAIL "$PREPARE_WHY"
     return 1
   fi
   if "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>>"$LOG"; then
     log "INFO: outbox 已備妥，略過產生。"
     git_push_state   # 前次 push 若失敗，這裡補推，否則備好的稿永遠到不了雲端。
+    result SKIP "outbox 已備妥"
     return 0
   fi
   local ctx
   if ! ctx="$("$PYTHON" "$DIR/build_lesson.py" daily 2>>"$LOG")"; then
     log "WARN: build_lesson.py 失敗、拿不到課程資料，本時段放棄（原因見上方 stderr）。"
+    PREPARE_WHY="build_lesson.py 失敗，拿不到課程資料"; result FAIL "$PREPARE_WHY"
     return 1
   fi
   if print -r -- "$ctx" | grep -q '^STATUS: FINISHED'; then
     log "INFO: 課綱已全部完成，無需產生。"
+    result SKIP "課綱已全部完成"
     return 0
   fi
   local base prompt tmp out attempt=1 why=""
@@ -180,6 +195,7 @@ do_prepare() {
     if [ $crc -eq 0 ] && echo "$out" | "$PYTHON" "$DIR/apply_result.py" --to-outbox >>"$LOG" 2>&1; then
       log "INFO: 第 $attempt 次產生並存進 outbox 成功。"
       git_push_state   # 把備好的 outbox 推給雲端寄出
+      result OK "備稿完成（明天要寄的課）"
       rm -f "$tmp"; return 0
     fi
     # 失敗原因優先取 claude 的標準輸出，其次取標準錯誤（stderr），兩者皆空則標示無輸出。
@@ -192,6 +208,8 @@ do_prepare() {
   rm -f "$tmp"
   log "WARN: 產生 outbox 失敗，待下次補產（不影響已備妥的內容）。"
   notify "⚠️ 學習信備稿失敗" "claude 連續 $MAX_TRIES 次產生課程失敗：${why:-詳見 run.log}。明天的課程尚未備妥。"
+  PREPARE_WHY="claude 連續 $MAX_TRIES 次產生課程失敗：${why:-詳見 run.log}"
+  result FAIL "$PREPARE_WHY"
   return 1
 }
 
@@ -237,18 +255,28 @@ do_send() {
 # 回顧範圍與週身分證（WEEK_ID）由 build_lesson.py 釘在「最近的週五」，晚產也不位移。
 do_prepare_weekly() {
   # 同 do_prepare：先確認網路就緒再 git_pull，避免喚醒空窗就直接放棄。
-  if ! wait_for_network; then log "INFO: 網路未就緒，略過週報備稿（待下次）。"; return 1; fi
+  if ! wait_for_network; then
+    log "INFO: 網路未就緒，略過週報備稿（待下次）。"
+    PREPARE_WHY="網路未就緒"; result FAIL "$PREPARE_WHY"; return 1
+  fi
   git_pull
   local out wk ctx
   out="$("$PYTHON" "$DIR/build_lesson.py" weekly 2>>"$LOG")"
   wk="$(print -r -- "$out" | sed -n 's/^WEEK_ID: //p' | head -1)"
-  [ -z "$wk" ] && { log "WARN: 取不到 WEEK_ID，略過週報備稿。"; return 1; }
+  if [ -z "$wk" ]; then
+    log "WARN: 取不到 WEEK_ID，略過週報備稿。"
+    PREPARE_WHY="build_lesson.py 取不到 WEEK_ID"; result FAIL "$PREPARE_WHY"; return 1
+  fi
   ctx="$(print -r -- "$out" | grep -v '^WEEK_ID:')"
   if [ -f "$STATE_DIR/weekly_outbox.html" ] && [ "$(cat "$STATE_DIR/weekly_outbox.week" 2>/dev/null)" = "$wk" ]; then
-    log "INFO: 週報已備妥（$wk），略過。"; return 0
+    log "INFO: 週報已備妥（$wk），略過。"; result SKIP "週報已備妥（$wk）"; return 0
   fi
-  [ -f "$STATE_DIR/weekly-$wk" ] && { log "INFO: 週報已寄過（$wk），略過備稿。"; return 0; }
-  if ! wait_for_network; then return 1; fi
+  if [ -f "$STATE_DIR/weekly-$wk" ]; then
+    log "INFO: 週報已寄過（$wk），略過備稿。"; result SKIP "週報已寄過（$wk）"; return 0
+  fi
+  if ! wait_for_network; then
+    PREPARE_WHY="網路中途斷線"; result FAIL "$PREPARE_WHY"; return 1
+  fi
   local base prompt tmp cout attempt=1 html=""
   base="$(cat "$DIR/prompt_weekly.txt")"
   tmp="$(mktemp -t java-learn)"
@@ -261,11 +289,15 @@ do_prepare_weekly() {
     attempt=$((attempt+1)); [ $attempt -le $MAX_TRIES ] && sleep 30
   done
   rm -f "$tmp"
-  [ -z "$html" ] && { log "WARN: 週報備稿產生失敗，待下次補產。"; return 1; }
+  if [ -z "$html" ]; then
+    log "WARN: 週報備稿產生失敗，待下次補產。"
+    PREPARE_WHY="claude 連續 $MAX_TRIES 次產生週報失敗"; result FAIL "$PREPARE_WHY"; return 1
+  fi
   print -r -- "$html" > "$STATE_DIR/weekly_outbox.html"
   print -r -- "$wk"   > "$STATE_DIR/weekly_outbox.week"
   git_push_state
   log "INFO: 週報已備稿（$wk），待雲端週六寄出。"
+  result OK "週報備稿完成（$wk）"
 }
 
 # ── 每週回顧：即時產生即時寄（不經 outbox、不動進度）。手動 / 備援用 ──
@@ -292,13 +324,52 @@ do_weekly() {
   fi
 }
 
+# 最後一班仍然失敗 → 當下直接寄警示信。
+# 這裡特別重要：java-learn 備的是「明天的課」，等雲端通知等於事發 25 小時後才知道
+# （今天備稿失敗 → 明天早上 08:00 沒信 → 明天 14:00 才發警示），根本來不及補。
+# 本機寄不出去（多半是沒網路）就不寫 marker，雲端會補寄，兩層不會重複。
+# 順序不可顛倒：一定要「確認寄信成功」才寫 marker，反過來會變成沒信也沒人知道。
+send_local_alert() {  # $1=失敗原因
+  local why="$1" today attempts body
+  today="$(date +%F)"
+  attempts="$STATE_DIR/attempts-$today.log"
+  # 平常成功的日子不留檔，只有出事這天才把當天各時段的結果送上 state 分支供雲端引用
+  grep "^$today .*RESULT " "$LOG" > "$attempts" 2>/dev/null || true
+  body="<div style=\"font-family:-apple-system,sans-serif\">
+<h3>⚠️ 學習信備稿失敗（$MODE）</h3>
+<p>最後一個備稿時段仍然失敗。備的是<b>明天</b>要寄的內容，明天早上 08:00 會收不到信。</p>
+<p><b>原因：</b>${why:-詳見 run.log}</p>
+<p><b>今天各時段：</b></p>
+<pre style=\"background:#f6f7f9;padding:10px;border-radius:6px;font-size:12px\">$(cat "$attempts" 2>/dev/null)</pre>
+</div>"
+  if print -r -- "$body" | "$PYTHON" "$DIR/send_email.py" "⚠️ 學習信備稿失敗" >>"$LOG" 2>&1; then
+    date '+%Y-%m-%d %H:%M:%S' > "$STATE_DIR/alert-$MODE-$today"
+    log "INFO: 已從本機寄出警示信並標記 alert-$MODE-$today。"
+  else
+    log "WARN: 本機警示信寄送失敗，改由雲端補寄。"
+  fi
+  git_push_state
+}
+
 echo "===== $(date '+%Y-%m-%d %H:%M:%S') 開始 [mode=$MODE] =====" >> "$LOG"
+RC=0
 case "$MODE" in
-  prepare)         do_prepare ;;
-  send)            do_send ;;
-  prepare-weekly)  do_prepare_weekly ;;
+  prepare)         do_prepare        || RC=$? ;;
+  send)            do_send           || RC=$? ;;
+  prepare-weekly)  do_prepare_weekly || RC=$? ;;
   daily)           [ -f "$MARKER_DAILY" ] && { log "SKIP: 今日已寄過。"; } || { do_prepare; do_send; } ;;
-  weekly)          do_weekly ;;
+  weekly)          do_weekly         || RC=$? ;;
   *)               log "ERROR: 未知 mode：$MODE（可用 prepare|send|prepare-weekly|weekly）"; exit 2 ;;
 esac
-echo "===== $(date '+%Y-%m-%d %H:%M:%S') 結束 [mode=$MODE] =====" >> "$LOG"
+
+# 只有「最後一個備稿班」失敗才警示——此時今天不會再自動好，通知才代表「該動手了」。
+# 判斷用本次啟動時間而非現在時間：12:00 那班若跑很久拖過 13:00，它不該搶著發警示。
+case "$MODE" in
+  prepare|prepare-weekly)
+    if [ $RC -ne 0 ] && [ "$START_HHMM" -ge 1300 ] \
+       && [ ! -f "$STATE_DIR/alert-$MODE-$(date +%F)" ]; then
+      send_local_alert "${PREPARE_WHY:-詳見 run.log}"
+    fi ;;
+esac
+
+echo "===== $(date '+%Y-%m-%d %H:%M:%S') 結束 [mode=$MODE, rc=$RC] =====" >> "$LOG"
