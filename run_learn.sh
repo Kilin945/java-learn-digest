@@ -30,7 +30,11 @@ SUBJECT_WEEKLY="每週 Java/Spring Boot 回顧"
 
 MAX_TRIES=3
 CLAUDE_TIMEOUT=600
-NET_WAIT_MAX=24
+# 網路就緒最多等 90×5=450 秒（7.5 分鐘）。
+# 120 秒是照「WiFi 喚醒後慢個幾十秒」設的，對固定 WiFi 夠，對手機熱點遠遠不夠：
+# Mac 要先用藍牙把 iPhone 叫醒、iPhone 才開始廣播、再關聯、再 DHCP，整串常要好幾分鐘。
+# 7/27 實測：12:00:04 開跑、12:02:01 等滿 120 秒放棄，網路 12:04:09 才通，差 2 分 8 秒。
+NET_WAIT_MAX=90
 
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$LOG"; }
