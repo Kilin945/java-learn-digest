@@ -1,7 +1,9 @@
 {
   "current_index": 11,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "Spring Boot 用內嵌 Tomcat 把 web 伺服器打包進應用程式的 jar 檔裡，執行 main() 呼叫 SpringApplication.run() 就會自動啟動這個內嵌伺服器（預設 8080 port），不必另外安裝或設定外部 Tomcat。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
