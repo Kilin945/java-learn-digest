@@ -46,3 +46,4 @@
 {"date": "2026-07-26", "topic": "application.yml 結構與設定優先序", "step": 4, "summary": "環境變數（environment variable）也能覆寫 application.yml 的設定，Spring Boot 靠「寬鬆綁定（relaxed binding）」自動把 SERVER_PORT 對應到 server.port；目前已知的優先順序是命令列參數 > 環境變數 > application.yml。"}
 {"date": "2026-07-27", "topic": "application.yml 結構與設定優先序", "step": 5, "summary": "Spring Boot 可用 application-{profile}.yml（例如 application-dev.yml）針對不同環境準備專屬設定，靠 spring.profiles.active 指定啟用哪個 profile；完整優先序是：命令列參數 > 環境變數 > application-{profile}.yml > application.yml（預設）。"}
 {"date": "2026-07-28", "topic": "內嵌 Tomcat 與 main() 啟動流程", "step": 1, "summary": "Spring Boot 用內嵌 Tomcat 把 web 伺服器打包進應用程式的 jar 檔裡，執行 main() 呼叫 SpringApplication.run() 就會自動啟動這個內嵌伺服器（預設 8080 port），不必另外安裝或設定外部 Tomcat。"}
+{"date": "2026-07-29", "topic": "內嵌 Tomcat 與 main() 啟動流程", "step": 2, "summary": "Spring Boot 主 class 上貼 @SpringBootApplication 這個註解，main() 裡呼叫 SpringApplication.run(該class, args) 就是真正啟動整個應用程式（含內嵌 Tomcat）的那一行程式碼。"}
