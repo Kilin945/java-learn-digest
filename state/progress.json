@@ -1,9 +1,10 @@
 {
   "current_index": 11,
-  "step": 3,
+  "step": 4,
   "covered": [
     "Spring Boot 用內嵌 Tomcat 把 web 伺服器打包進應用程式的 jar 檔裡，執行 main() 呼叫 SpringApplication.run() 就會自動啟動這個內嵌伺服器（預設 8080 port），不必另外安裝或設定外部 Tomcat。",
-    "Spring Boot 主 class 上貼 @SpringBootApplication 這個註解，main() 裡呼叫 SpringApplication.run(該class, args) 就是真正啟動整個應用程式（含內嵌 Tomcat）的那一行程式碼。"
+    "Spring Boot 主 class 上貼 @SpringBootApplication 這個註解，main() 裡呼叫 SpringApplication.run(該class, args) 就是真正啟動整個應用程式（含內嵌 Tomcat）的那一行程式碼。",
+    "Spring Boot 啟動時，console 印出的「Tomcat started on port(s): 8080」和「Started XxxApplication in X seconds」這兩行代表應用程式已成功啟動；若出現「Port 8080 was already in use」則代表該 port 已被佔用、啟動失敗。"
   ],
   "completed_topics": [
     {
