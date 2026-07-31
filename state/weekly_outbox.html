@@ -1,50 +1,37 @@
-<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:#fdeef0;padding:24px;">
-  <div style="background:#ffffff;border-radius:12px;padding:0;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <div style="border-left:6px solid #e0738a;padding:20px 24px;">
-      <div style="font-size:20px;font-weight:700;color:#d83a5e;">📘 每週回顧 · Java / Spring Boot · 2026-07-24</div>
-    </div>
+```html
+<div style="max-width:680px;margin:0 auto;padding:24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#f1ecfb;color:#333;">
+  <div style="border-left:6px solid #8a6bd8;background:#ffffff;border-radius:8px;padding:16px 20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+    <span style="font-size:18px;font-weight:700;color:#6b3bf6;">📘 每週回顧 · Java / Spring Boot · 2026-07-31</span>
+  </div>
 
-    <div style="padding:4px 24px 24px 24px;color:#333333;font-size:15px;line-height:1.7;">
+  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+    <p style="font-size:15px;line-height:1.7;margin:0 0 12px;">
+      這週你把兩大主題都摸過一輪了：<b>application.yml 設定優先序</b>，還有<b>內嵌 Tomcat 與 main() 啟動流程</b>。
+      下面這幾題刻意把兩邊混在一起問，幫你把知識串成一條線，而不是分開的小碎片。先自己想過一遍再往下看解答會更有效果 💪
+    </p>
 
-      <p style="margin:16px 0 20px 0;">這週從「Spring Boot 為什麼自動組態」一路教到「starter-web 帶了哪三份禮物」，再到「application.yml 怎麼設定」。以下用回想題把整週串起來，建議先自己想過一輪再看解答 👇</p>
+    <ol style="font-size:15px;line-height:1.9;padding-left:20px;margin:0;">
+      <li>Spring Boot 啟動一個 Java 應用程式，預設情況下不用另外裝任何東西，內建的 web 伺服器是什麼？它被放在哪裡？</li>
+      <li>主 class 上要貼哪個 annotation，main() 裡又要呼叫哪一行程式碼，才算是真正啟動了整個 Spring Boot 應用程式（含內嵌伺服器）？</li>
+      <li>啟動 console 印出「Tomcat started on port(s): 8080」和「Started XxxApplication in X seconds」代表什麼？如果看到「Port 8080 was already in use」呢？</li>
+      <li>假設 8080 port 被佔用導致啟動失敗，你會在 application.properties 裡加哪一行設定來解決？這行設定跟 main() → SpringApplication.run() → 讀設定 → 啟動內嵌 Tomcat 這條流程有什麼關係？</li>
+      <li>同樣是改 port，如果你想「不改任何設定檔」、只在啟動指令上臨時多打一個參數把 port 換成 9090，你會怎麼下這個 command-line argument？它跟 application.yml 裡寫的 server.port 相比，誰會贏？</li>
+      <li>如果你改用設定環境變數 SERVER_PORT=9090 的方式呢？Spring Boot 是靠什麼機制自動把它對應到 server.port 這個設定名稱的？</li>
+      <li>現在把命令列參數、環境變數、application-{profile}.yml、application.yml（預設）四種來源全部混在一起考慮，完整的優先序（誰蓋過誰）是什麼？要啟用某個 profile（例如 dev），要靠哪個設定值指定？</li>
+    </ol>
+  </div>
 
-      <div style="background:#fdeef0;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
-        <div style="font-weight:700;color:#d83a5e;margin-bottom:12px;font-size:16px;">🧠 本週回想題</div>
-
-        <p style="margin:0 0 14px 0;"><strong>1.</strong> application.yml 裡如果你這樣寫：</p>
-        <pre style="background:#ffffff;border-radius:6px;padding:10px 14px;margin:0 0 14px 0;font-size:13px;overflow-x:auto;">server:
-  port: 8081</pre>
-        <p style="margin:0 0 20px 0;">這段設定最終會被 Spring Boot 拼成什麼樣的 dot notation（點記法）？程式讀取時實際用的名字是什麼？</p>
-
-        <p style="margin:0 0 14px 0;"><strong>2.</strong> application.yml 這個檔案應該放在專案的哪個路徑底下？它用什麼方式（縮排 or 括號）來表示巢狀結構？</p>
-
-        <p style="margin:0 0 14px 0;"><strong>3.</strong> 你加了一行 <code>spring-boot-starter-web</code> 依賴，完全沒寫任何伺服器設定，程式執行後卻能直接處理 HTTP 請求——這是因為這包 starter 內建了什麼？</p>
-
-        <p style="margin:0 0 14px 0;"><strong>4.</strong> 當瀏覽器打到 <code>/hello</code> 這個網址時，是誰（哪個元件）負責接住這個請求，再依照 <code>@RestController</code> 和 <code>@GetMapping</code> 的標籤，轉接到你寫的方法上？</p>
-
-        <p style="margin:0 0 14px 0;"><strong>5.</strong> 你的 Controller 方法回傳了一個 Java 物件（例如 <code>User</code>），前端收到的卻是 JSON 字串。這中間是哪個函式庫、在背後幫你做了轉換？</p>
-
-        <p style="margin:0 0 14px 0;"><strong>6.</strong> 綜合第 3~5 題：請用一句話說明 <code>spring-boot-starter-web</code> 這一行依賴，總共幫你打包好了哪三大禮物？</p>
-
-        <p style="margin:0 0 20px 0;"><strong>7.</strong> 進階挑戰：假設 classpath 上根本沒有 Tomcat 相關的類別，Spring Boot 的自動組態機制（AutoConfiguration.imports + <code>@ConditionalOnClass</code>）會怎麼處理「內建 Tomcat 這個自動組態類別」？為什麼即使候選清單裡列了它，最後也不會真的套用？</p>
-      </div>
-
-      <div style="font-weight:700;color:#d83a5e;margin:20px 0 12px 0;font-size:16px;">—— 解答 ——</div>
-
-      <p style="margin:0 0 12px 0;"><strong>1.</strong> 會拼成 <code>server.port</code>。縮排的巢狀結構最終都會攤平成一串用 <code>.</code> 連接的完整名字，這就是程式實際讀取設定時用的 key。</p>
-
-      <p style="margin:0 0 12px 0;"><strong>2.</strong> 放在 <code>src/main/resources</code> 底下。用縮排（indentation）表示 key 之間的巢狀（nested）關係，同一層級的縮排要對齊。</p>
-
-      <p style="margin:0 0 12px 0;"><strong>3.</strong> 因為 <code>spring-boot-starter-web</code> 內建了一個小型 Tomcat（網頁伺服器），程式一執行就自動啟動，不用自己另外安裝或設定伺服器。</p>
-
-      <p style="margin:0 0 12px 0;"><strong>4.</strong> 是 <code>DispatcherServlet</code>（可以想成「總機」）。它先接住所有請求，再依照 <code>@RestController</code>／<code>@GetMapping</code> 的標籤，把請求轉接到對應的方法，這整套機制就是 Spring MVC。</p>
-
-      <p style="margin:0 0 12px 0;"><strong>5.</strong> 是 Jackson。它會自動把回傳的 Java 物件轉換成 JSON 格式，完全不用自己寫轉換程式碼。</p>
-
-      <p style="margin:0 0 12px 0;"><strong>6.</strong> 三大禮物：① Tomcat 伺服器（不用自己裝）② Spring MVC + DispatcherServlet（自動轉接請求到你的方法）③ Jackson（自動把物件轉成 JSON）。</p>
-
-      <p style="margin:0 0 4px 0;"><strong>7.</strong> 不會套用。Spring Boot 會用 <code>@ConditionalOnClass</code> 去檢查 classpath 上有沒有對應的類別，AutoConfiguration.imports 裡列出的只是「候選」清單；如果 classpath 上根本沒有 Tomcat 的類別，這個條件檢查就會失敗，這個自動組態類別就會被跳過，不會真的生效。這就是自動組態「先列候選、再逐一檢查條件」的完整運作方式。</p>
-
-    </div>
+  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+    <p style="font-size:15px;font-weight:700;color:#6b3bf6;margin:0 0 12px;">—— 解答 ——</p>
+    <ol style="font-size:14px;line-height:1.9;padding-left:20px;margin:0;color:#444;">
+      <li>內嵌 Tomcat（embedded Tomcat）。它被打包進應用程式的 jar 檔裡，不用另外安裝或設定外部 Tomcat，預設用 8080 port。</li>
+      <li>主 class 貼 <code>@SpringBootApplication</code>，main() 裡呼叫 <code>SpringApplication.run(該class, args)</code>，這一行就是啟動整個應用程式（含內嵌 Tomcat）的關鍵程式碼。</li>
+      <li>這兩行代表應用程式已經成功啟動；「Port 8080 was already in use」則代表該 port 被佔用，啟動失敗（failed to start）。</li>
+      <li>加上 <code>server.port=8081</code>（或其他未被佔用的 port）。這正是完整啟動流程的最後一環：main() 呼叫 SpringApplication.run() → 讀取設定（讀到 server.port）→ 用這個 port 啟動內嵌 Tomcat。</li>
+      <li>啟動指令加上 <code>--server.port=9090</code>。這是設定優先序裡最高的一層：命令列參數（command-line argument）會覆寫（override）application.yml 裡寫的值。</li>
+      <li>Spring Boot 靠「寬鬆綁定（relaxed binding）」自動把環境變數 <code>SERVER_PORT</code> 對應到設定名稱 <code>server.port</code>，不用另外寫轉換規則。</li>
+      <li>完整優先序：命令列參數 > 環境變數 > application-{profile}.yml > application.yml（預設）。要啟用某個 profile，是靠 <code>spring.profiles.active</code>（例如設成 <code>dev</code>）來指定。</li>
+    </ol>
   </div>
 </div>
+```
