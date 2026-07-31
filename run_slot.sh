@@ -21,6 +21,11 @@
 set -u
 DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# ./run_slot.sh status —— 今天寄了沒、下一篇備了沒？不用翻 run.log。
+if [ "${1:-}" = "status" ]; then
+  exec python3 "$DIR/apply_result.py" --status
+fi
+
 WINDOW_START=800
 WINDOW_END=2300
 NOW="$((10#$(date +%H%M)))"   # 10# 強制十進位，免得 0900 這種前導零被當八進位
