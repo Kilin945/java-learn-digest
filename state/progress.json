@@ -1,7 +1,9 @@
 {
   "current_index": 12,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "@RestController 這個標籤會讓一個類別變成專門處理 HTTP 請求的「外帶窗口」，方法的回傳值會直接變成 response body 送回去，不會經過 View 樣板排版。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
