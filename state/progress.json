@@ -1,8 +1,9 @@
 {
   "current_index": 12,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "@RestController 這個標籤會讓一個類別變成專門處理 HTTP 請求的「外帶窗口」，方法的回傳值會直接變成 response body 送回去，不會經過 View 樣板排版。"
+    "@RestController 這個標籤會讓一個類別變成專門處理 HTTP 請求的「外帶窗口」，方法的回傳值會直接變成 response body 送回去，不會經過 View 樣板排版。",
+    "@RequestMapping 是貼在方法上的號碼牌，用 value（網址路徑）和 method（請求方式，如 RequestMethod.GET）告訴 Spring 這個方法該對應哪個網址、處理哪種請求。"
   ],
   "completed_topics": [
     {
