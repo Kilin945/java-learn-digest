@@ -56,12 +56,36 @@ START_HHMM="$(date +%H%M)"   # 本次啟動時間，用來判斷自己是不是�
 # REPO_SYNC=0 可關掉（純本機模式）；STATE_WT 可覆寫 worktree 路徑。
 REPO_SYNC="${REPO_SYNC:-1}"
 STATE_WT="${STATE_WT:-$(dirname "$DIR")/java-learn-state}"
+# git 網路操作一律包這個，理由是 2026-08-02/03 連兩天的教訓：
+# 憑證助手拿不到 Keychain（errSecInteractionNotAllowed）時不會失敗，而是無限等下去。
+# git push 因此永不返回，launchd 同一個 label 前一次還在跑就不會再啟動，
+# 一卡就吃掉當天剩下所有班次——08-03 那次從 12:02 卡到 18:00，13:00 那班完全沒跑，
+# 稿明明產好了卻留在本機，雲端 14:00 只能寄缺稿警示。
+# BatchMode / TERMINAL_PROMPT 讓 git 不要問（要問就直接失敗，交給重試邏輯）；
+# watchdog 是保險：就算還是卡住，時限一到強制收掉，至少 log 留下痕跡、班次能往下走。
+GIT_NET_TIMEOUT="${GIT_NET_TIMEOUT:-60}"
+git_timeout() {
+  local pid wd rc
+  GIT_TERMINAL_PROMPT=0 \
+  GIT_SSH_COMMAND='ssh -o ConnectTimeout=10 -o BatchMode=yes' \
+    "$@" >>"$LOG" 2>&1 &
+  pid=$!
+  # 先收子進程再收自己：git 會生 remote-https / credential 這些孫子，只殺父的話它們會留著。
+  ( sleep "$GIT_NET_TIMEOUT"; pkill -9 -P "$pid" 2>/dev/null; kill -9 "$pid" 2>/dev/null ) >/dev/null 2>&1 &
+  wd=$!
+  wait "$pid"; rc=$?
+  kill "$wd" 2>/dev/null
+  [ "$rc" -ge 128 ] && log "WARN: git 操作超過 ${GIT_NET_TIMEOUT}s 被強制中止（若不中止會無限等待）。"
+  return "$rc"
+}
+
 git_pull() {
   [ "$REPO_SYNC" = 1 ] || return 0
   local i=1 out reason
   while [ $i -le 3 ]; do
-    # 設定 ConnectTimeout=10：無法連線時（例如 port 22 被防火牆阻擋）於 10 秒內失敗，避免等待至預設逾時。
-    if out="$(GIT_SSH_COMMAND='ssh -o ConnectTimeout=10' git -C "$STATE_WT" pull --rebase --autostash 2>&1)"; then
+    # ConnectTimeout=10：連不上（例如 port 22 被擋）10 秒內失敗，不要等到預設逾時。
+    # BatchMode/TERMINAL_PROMPT：不准問憑證或 host key，要問就失敗——問了就是卡死。
+    if out="$(GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND='ssh -o ConnectTimeout=10 -o BatchMode=yes' git -C "$STATE_WT" pull --rebase --autostash 2>&1)"; then
       [ -n "$out" ] && echo "$out" >> "$LOG"
       return 0
     fi
@@ -86,10 +110,10 @@ git_push_state() {
   local ahead
   ahead="$(git -C "$STATE_WT" rev-list --count '@{upstream}..HEAD' 2>/dev/null || echo 1)"
   [ "$ahead" = 0 ] && return 0
-  git -C "$STATE_WT" pull --rebase --autostash >>"$LOG" 2>&1 || true
+  git_timeout git -C "$STATE_WT" pull --rebase --autostash || true
   local i=1
   while [ $i -le 3 ]; do
-    if git -C "$STATE_WT" push >>"$LOG" 2>&1; then
+    if git_timeout git -C "$STATE_WT" push; then
       log "INFO: 已推上 origin（第 $i 次嘗試，共 $ahead 個 commit）。"
       return 0
     fi
@@ -213,6 +237,98 @@ do_prepare() {
   log "WARN: 產生 outbox 失敗，待下次補產（不影響已備妥的內容）。"
   notify "⚠️ 學習信備稿失敗" "claude 連續 $MAX_TRIES 次產生課程失敗：${why:-詳見 run.log}。明天的課程尚未備妥。"
   PREPARE_WHY="claude 連續 $MAX_TRIES 次產生課程失敗：${why:-詳見 run.log}"
+  result FAIL "$PREPARE_WHY"
+  return 1
+}
+
+# ── 批次備稿：一次備 N 篇填滿庫存（出遠門用，見 README「庫存佇列」）──
+# 跟 do_prepare 的三個差別：
+#   1. 不看 outbox-ready——本來就有庫存也要繼續往後疊，不然一篇都補不進去
+#   2. 每產一篇都重算下一篇該教什麼：--queue-tail-state 把現有庫存依序 replay
+#      出「全部寄完後」的進度與歷史，寫成暫存 state 餵給 build_lesson.py。
+#      不能用 step+1 猜——收尾那篇會換主題、step 歸 1，猜錯整串庫存都寄不出去。
+#   3. 只在最後推一次 git：中途每篇都 push 會慢，而且產到一半中斷時
+#      本機佇列仍然完整，下次再跑會接著疊上去。
+do_prepare_batch() {
+  local want="${1:-0}"
+  if ! print -r -- "$want" | grep -qE '^[1-9][0-9]*$'; then
+    log "ERROR: prepare-batch 要帶正整數篇數，例如 ./run_learn.sh prepare-batch 11"
+    return 2
+  fi
+  if ! wait_for_network; then
+    log "INFO: 網路未就緒，批次備稿放棄。"
+    PREPARE_WHY="網路未就緒"; result FAIL "$PREPARE_WHY"
+    return 1
+  fi
+  if ! git_pull; then
+    log "WARN: git pull 失敗，批次備稿放棄（庫存狀態不可信，硬產會疊在過期進度上）。"
+    PREPARE_WHY="state 分支同步失敗：${GITPULL_LAST_ERR:-詳見 run.log}"; result FAIL "$PREPARE_WHY"
+    return 1
+  fi
+
+  # 庫存第一篇的預計寄出日＝明天（今天早上那篇已經寄掉了）。
+  # 只影響補進歷史的日期標記，週報的回顧視窗要靠它才篩得到還沒寄出的那幾篇。
+  local first_send tail_dir made=0 i ctx idx step base prompt tmp out attempt crc why=""
+  first_send="$(date -v+1d +%F)"
+  tail_dir="$(mktemp -d -t java-learn-batch)"
+  base="$(cat "$DIR/prompt_daily.txt")"
+  tmp="$(mktemp -t java-learn)"
+  log "INFO: 批次備稿開始，目標 $want 篇，庫存第一篇預計 $first_send 寄出。"
+
+  for (( i = 1; i <= want; i++ )); do
+    if ! "$PYTHON" "$DIR/apply_result.py" --queue-tail-state "$tail_dir" \
+           --first-send "$first_send" >>"$LOG" 2>&1; then
+      log "WARN: 第 $i 篇算不出庫存尾端進度，停在這裡（已備 $made 篇）。"
+      break
+    fi
+    if ! ctx="$("$PYTHON" "$DIR/build_lesson.py" daily \
+                 --progress "$tail_dir/progress.json" \
+                 --history "$tail_dir/history.jsonl" 2>>"$LOG")"; then
+      log "WARN: 第 $i 篇 build_lesson.py 失敗，停在這裡（已備 $made 篇）。"
+      break
+    fi
+    if print -r -- "$ctx" | grep -q '^STATUS: FINISHED'; then
+      log "INFO: 課綱已走完，庫存只能備到 $made 篇。"
+      break
+    fi
+    idx="$("$PYTHON" -c "import json;print(json.load(open('$tail_dir/progress.json'))['current_index'])")"
+    step="$("$PYTHON" -c "import json;print(json.load(open('$tail_dir/progress.json'))['step'])")"
+
+    attempt=1
+    while [ $attempt -le $MAX_TRIES ]; do
+      prompt="$base"$'\n\n=== 今日課程資料 ===\n'"$ctx"
+      run_claude "$prompt" "$tmp"; crc=$?
+      out="$(cat "$tmp")"
+      if [ $crc -eq 0 ] && echo "$out" | "$PYTHON" "$DIR/apply_result.py" \
+           --append-outbox --index "$idx" --step "$step" >>"$LOG" 2>&1; then
+        made=$((made+1))
+        log "INFO: 第 $made/$want 篇備妥（第 $idx 課 step $step）。"
+        break
+      fi
+      why="$(print -r -- "$out" | tr '\n' ' ' | tr -s ' ' | tr -d '"\\' | cut -c1-200)"
+      [ -z "$why" ] && why="$(tail -n 3 "$CLAUDE_LAST_ERR" 2>/dev/null | tr '\n' ' ' | tr -s ' ' | tr -d '"\\' | cut -c1-200)"
+      [ -z "$why" ] && why="claude 未輸出任何內容。"
+      log "WARN: 第 $i 篇第 $attempt/$MAX_TRIES 次失敗（rc=$crc）：$why。30 秒後重試。"
+      attempt=$((attempt+1)); [ $attempt -le $MAX_TRIES ] && sleep 30
+    done
+    if [ $attempt -gt $MAX_TRIES ]; then
+      log "WARN: 第 $i 篇連續 $MAX_TRIES 次失敗，停在這裡（已備 $made 篇）。"
+      break
+    fi
+  done
+
+  rm -f "$tmp"; rm -rf "$tail_dir"
+  # 產幾篇都要推：即使沒達標，已備好的也該送上雲端，不要留在本機。
+  git_push_state
+  local total
+  total="$("$PYTHON" "$DIR/apply_result.py" --queue-len 2>/dev/null || echo '?')"
+  if [ "$made" -eq "$want" ]; then
+    log "INFO: 批次備稿完成，本次新增 $made 篇，庫存共 $total 篇。"
+    result OK "批次備稿完成（新增 $made 篇，庫存 $total 篇）"
+    return 0
+  fi
+  log "WARN: 批次備稿只完成 $made/$want 篇，庫存共 $total 篇。"
+  PREPARE_WHY="批次備稿只完成 $made/$want 篇：${why:-詳見 run.log}"
   result FAIL "$PREPARE_WHY"
   return 1
 }
@@ -359,11 +475,12 @@ echo "===== $(date '+%Y-%m-%d %H:%M:%S') 開始 [mode=$MODE] =====" >> "$LOG"
 RC=0
 case "$MODE" in
   prepare)         do_prepare        || RC=$? ;;
+  prepare-batch)   do_prepare_batch "${2:-}" || RC=$? ;;
   send)            do_send           || RC=$? ;;
   prepare-weekly)  do_prepare_weekly || RC=$? ;;
   daily)           [ -f "$MARKER_DAILY" ] && { log "SKIP: 今日已寄過。"; } || { do_prepare; do_send; } ;;
   weekly)          do_weekly         || RC=$? ;;
-  *)               log "ERROR: 未知 mode：$MODE（可用 prepare|send|prepare-weekly|weekly）"; exit 2 ;;
+  *)               log "ERROR: 未知 mode：$MODE（可用 prepare|prepare-batch N|send|prepare-weekly|weekly）"; exit 2 ;;
 esac
 
 # 只有「最後一個備稿班」失敗才警示——此時今天不會再自動好，通知才代表「該動手了」。

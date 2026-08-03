@@ -96,3 +96,112 @@ def test_commit_writes_archive_and_advances_state(tmp_path):
     assert rows[-1] == {"date": "2026-06-07", "topic": "主題甲", "step": 1, "summary": "收尾"}
     md = (tmp_path / "lessons" / "2026-06-07.md").read_text(encoding="utf-8")
     assert md == "## Day 1\n內容"
+
+
+# ── 佇列（一次備多天，離線期間靠庫存續命）──
+
+def _item(index, step, summary="s"):
+    return {"kind": "lesson", "index": index, "step": step,
+            "result": dict(VALID, today_summary=summary)}
+
+
+def test_load_queue_missing_file_is_empty(tmp_path):
+    assert ar.load_queue(str(tmp_path / "state" / "outbox.json")) == []
+
+
+def test_load_queue_accepts_legacy_single_object(tmp_path):
+    """舊格式是單一物件。雲端可能還存著這種檔，讀不出來就等於漏信。"""
+    p = str(tmp_path / "state" / "outbox.json")
+    ar.save_outbox(p, _item(3, 2))
+    assert ar.load_queue(p) == [_item(3, 2)]
+
+
+def test_load_queue_ignores_broken_json(tmp_path):
+    p = tmp_path / "outbox.json"
+    p.write_text("{壞掉的", encoding="utf-8")
+    assert ar.load_queue(str(p)) == []
+
+
+def test_queue_roundtrip_preserves_order(tmp_path):
+    p = str(tmp_path / "state" / "outbox.json")
+    items = [_item(3, 2, "第一"), _item(3, 3, "第二"), _item(4, 1, "第三")]
+    ar.save_queue(p, items)
+    assert ar.load_queue(p) == items
+
+
+def test_append_queue_adds_to_tail(tmp_path):
+    p = str(tmp_path / "state" / "outbox.json")
+    ar.append_queue(p, _item(3, 2, "先"))
+    ar.append_queue(p, _item(3, 3, "後"))
+    got = ar.load_queue(p)
+    assert [i["result"]["today_summary"] for i in got] == ["先", "後"]
+
+
+def test_pop_queue_removes_only_head(tmp_path):
+    p = str(tmp_path / "state" / "outbox.json")
+    ar.save_queue(p, [_item(3, 2, "頭"), _item(3, 3, "身")])
+    ar.pop_queue(p)
+    got = ar.load_queue(p)
+    assert len(got) == 1
+    assert got[0]["result"]["today_summary"] == "身"
+
+
+def test_pop_queue_empty_removes_file(tmp_path):
+    """清空後檔案要消失——14:00 體檢是靠「檔案不存在」判斷明天會沒信。"""
+    p = str(tmp_path / "state" / "outbox.json")
+    ar.save_queue(p, [_item(3, 2)])
+    ar.pop_queue(p)
+    assert ar.load_queue(p) == []
+    import os
+    assert not os.path.exists(p)
+    ar.pop_queue(p)  # 空佇列再 pop 不應出錯
+
+
+def _syllabus(tmp_path):
+    p = tmp_path / "syllabus.txt"
+    p.write_text("主題甲\n主題乙\n主題丙\n", encoding="utf-8")
+    return str(p)
+
+
+def test_queue_tail_progress_empty_queue_is_current(tmp_path):
+    prog = {"current_index": 1, "step": 3, "covered": [], "completed_topics": []}
+    out = ar.queue_tail_progress([], _syllabus(tmp_path), prog, "2026-08-04")
+    assert (out["current_index"], out["step"]) == (1, 3)
+
+
+def test_queue_tail_progress_advances_step_within_topic(tmp_path):
+    """topic_complete=False 的那幾篇只是往下一步走，主題不換。"""
+    prog = {"current_index": 1, "step": 3, "covered": [], "completed_topics": []}
+    queue = [_item(1, 3), _item(1, 4)]  # 兩篇都沒收尾
+    out = ar.queue_tail_progress(queue, _syllabus(tmp_path), prog, "2026-08-04")
+    assert (out["current_index"], out["step"]) == (1, 5)
+
+
+def test_queue_tail_progress_switches_topic_on_complete(tmp_path):
+    """這是 step+1 推算會算錯的情形：收尾那篇會把主題推到下一個、step 歸 1。"""
+    prog = {"current_index": 1, "step": 3, "covered": [], "completed_topics": []}
+    done = _item(1, 3)
+    done["result"] = dict(VALID, topic_complete=True, today_summary="收尾")
+    out = ar.queue_tail_progress([done], _syllabus(tmp_path), prog, "2026-08-04")
+    assert (out["current_index"], out["step"]) == (2, 1)
+
+
+def test_queue_tail_history_appends_queue_summaries_with_dates(tmp_path):
+    """週報要吃到還沒寄出的那幾篇，所以庫存也得帶著「預計寄出日」進歷史。"""
+    prog = {"current_index": 1, "step": 3, "covered": [], "completed_topics": []}
+    hist = [{"date": "2026-08-03", "topic": "主題甲", "step": 2, "summary": "已寄出的"}]
+    queue = [_item(1, 3, "庫存第一"), _item(1, 4, "庫存第二")]
+    rows = ar.queue_tail_history(queue, _syllabus(tmp_path), prog, hist, "2026-08-04")
+    assert [r["summary"] for r in rows] == ["已寄出的", "庫存第一", "庫存第二"]
+    # 每天寄一篇，日期從 first_send 依序往後
+    assert [r["date"] for r in rows[1:]] == ["2026-08-04", "2026-08-05"]
+
+
+def test_queue_head_ready_checks_first_item_only(tmp_path):
+    """庫存第二篇對不上進度是正常的（它要等第一篇寄完才輪到），不該因此判定未備妥。"""
+    progress = {"current_index": 3, "step": 2}
+    queue = [_item(3, 2), _item(3, 3), _item(4, 1)]
+    assert ar.outbox_ready(ar.queue_head(queue), progress) is True
+    # 反過來：頭部對不上就是未備妥，即使後面有對得上的
+    assert ar.outbox_ready(ar.queue_head([_item(9, 9), _item(3, 2)]), progress) is False
+    assert ar.queue_head([]) is None

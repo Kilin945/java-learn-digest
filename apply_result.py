@@ -21,7 +21,7 @@ import re
 import sys
 import json
 import argparse
-from datetime import date
+from datetime import date, timedelta
 
 import state_store as ss
 
@@ -99,6 +99,104 @@ def outbox_ready(outbox, progress):
             and outbox.get("step") == progress.get("step"))
 
 
+# ── 佇列：備妥待寄的稿，先進先出 ────────────────────────────
+# 為什麼不是只放一篇：沒人補貨就會斷。庫存一篇的話，筆電關著或備稿失敗的隔天
+# 雲端就沒東西可寄；2026-08 要離開十二天，只能一次把整段備滿。
+#
+# 刻意沿用「綁進度、不綁日期」：每篇認的是自己的 index/step，不是某月某日。
+# 所以雲端漏掉一班（或某天寄失敗）庫存不會作廢，只是整串往後遞一天，
+# progress、lessons/、history 三者仍然對得起來。ai-news 那邊相反——內容就是
+# 當天新聞，綁週期代號、過期作廢，兩邊差異是刻意的，別互相套用。
+
+def load_queue(path):
+    """讀佇列，一律回傳 list（不存在或壞掉回空）。
+
+    舊格式是單一物件，會被包成只有一篇的佇列——雲端可能還存著舊檔，
+    讀不出來就等於漏信，所以這層相容不能省。
+    """
+    raw = load_outbox(path)
+    if isinstance(raw, dict):
+        return [raw]
+    if isinstance(raw, list):
+        return [i for i in raw if isinstance(i, dict)]
+    return []
+
+
+def save_queue(path, items):
+    """整個佇列寫回檔案。"""
+    save_outbox(path, list(items))
+
+
+def append_queue(path, item):
+    """追加一篇到尾端，回傳追加後的庫存數。"""
+    items = load_queue(path)
+    items.append(item)
+    save_queue(path, items)
+    return len(items)
+
+
+def pop_queue(path):
+    """丟掉頭部那篇（寄出成功後呼叫），回傳剩下的佇列。
+
+    清空時把檔案刪掉，而不是留一個空陣列：14:00 的缺稿體檢是靠
+    「outbox 不存在」判斷明天早上會沒信，留空檔會讓它看起來還有庫存。
+    """
+    items = load_queue(path)
+    rest = items[1:]
+    if rest:
+        save_queue(path, rest)
+    else:
+        clear_outbox(path)
+    return rest
+
+
+def queue_head(items):
+    """下一篇要寄的（佇列空回 None）。"""
+    return items[0] if items else None
+
+
+def _replay_queue(queue, syllabus, progress, first_send_date):
+    """把庫存依序套一遍 advance_progress，回傳（尾端進度, 庫存各篇的歷史列）。
+
+    批次備稿必須知道「這些庫存全部寄完後會走到哪」，才能接著產下一篇。
+    不另存一份虛擬進度檔——佇列本身就記著每篇的 topic_complete，從真實
+    progress replay 一遍即可，少一份會跟佇列對不起來的狀態。
+
+    為什麼不能用 step+1 猜：收尾那篇（topic_complete=True）會換主題、step 歸 1。
+    猜錯的下場是庫存頭部跟進度對不上，雲端判定未備妥，整串庫存全寄不出去。
+    """
+    prog = progress
+    rows = []
+    first = date.fromisoformat(first_send_date)
+    for i, item in enumerate(queue):
+        res = item.get("result") or {}
+        topic = ss.current_topic(syllabus, prog) or "（課綱外）"
+        # 每天寄一篇，所以第 i 篇的預計寄出日就是 first_send_date + i 天。
+        send_day = (first + timedelta(days=i)).isoformat()
+        rows.append({"date": send_day, "topic": topic,
+                     "step": prog.get("step", 1),
+                     "summary": res.get("today_summary", "")})
+        prog = ss.advance_progress(prog, topic, res.get("today_summary", ""),
+                                   res.get("topic_complete", False), send_day)
+    return prog, rows
+
+
+def queue_tail_progress(queue, syllabus_path, progress, first_send_date):
+    """庫存全部寄完後的進度。"""
+    prog, _ = _replay_queue(queue, ss.load_syllabus(syllabus_path), progress, first_send_date)
+    return prog
+
+
+def queue_tail_history(queue, syllabus_path, progress, history, first_send_date):
+    """真實歷史 ＋ 庫存各篇（帶預計寄出日）。
+
+    週報的回顧視窗是按日期篩的，而庫存還沒寄出、history 裡沒有它們；
+    離開期間那封週報要涵蓋的七天有一半還在庫存裡，所以得把它們補進來。
+    """
+    _, rows = _replay_queue(queue, ss.load_syllabus(syllabus_path), progress, first_send_date)
+    return list(history) + rows
+
+
 def commit(res, syllabus_path, progress_path, history_path, lessons_dir, today):
     """用一份結果推進度、寫存檔、記歷史（寄信成功後才呼叫）。"""
     syllabus = ss.load_syllabus(syllabus_path)
@@ -170,17 +268,22 @@ def status(args, here):
     else:
         print(f"  今日課程  ❌ 今天還沒寄出")
 
-    # 下一篇（明天要寄的）備妥了沒。
+    # 下一篇（明天要寄的）備妥了沒，以及庫存還能撐幾天。
     progress = ss.load_progress(args.progress)
-    outbox = load_outbox(args.outbox)
+    queue = load_queue(args.outbox)
+    head = queue_head(queue)
     idx, step = progress.get("current_index", 0), progress.get("step", 1)
-    if outbox_ready(outbox, progress):
+    if outbox_ready(head, progress):
         print(f"  下一篇    ✅ 已備妥（第 {idx} 課 · step {step}）")
-    elif outbox is None:
+    elif head is None:
         print(f"  下一篇    ❌ 未備妥（outbox 不存在）")
     else:
-        print(f"  下一篇    ❌ 未備妥（outbox 是第 {outbox.get('index')} 課 step "
-              f"{outbox.get('step')}，進度已走到第 {idx} 課 step {step}）")
+        print(f"  下一篇    ❌ 未備妥（佇列頭部是第 {head.get('index')} 課 step "
+              f"{head.get('step')}，進度已走到第 {idx} 課 step {step}）")
+    if len(queue) > 1:
+        # 每天寄一篇，所以庫存篇數就是還能撐幾天。
+        last = (date.today() + timedelta(days=len(queue))).isoformat()
+        print(f"  庫存      📦 {len(queue)} 篇（每天一篇，可撐到 {last} 早上）")
 
     # 週報：週五備稿、週六由雲端寄。
     box_wk = ""
@@ -217,7 +320,11 @@ def main(argv=None):
     here = os.path.dirname(os.path.abspath(__file__))
     ap = argparse.ArgumentParser()
     g = ap.add_mutually_exclusive_group()
-    g.add_argument("--to-outbox", action="store_true", help="解析 stdin 並存進 outbox")
+    g.add_argument("--to-outbox", action="store_true", help="解析 stdin 並存進 outbox（覆寫整個佇列）")
+    g.add_argument("--append-outbox", action="store_true", help="解析 stdin 並追加到佇列尾端（批次備稿用）")
+    g.add_argument("--queue-len", action="store_true", help="印出目前庫存幾篇")
+    g.add_argument("--queue-tail-state", metavar="DIR",
+                   help="把「庫存全寄完後的進度／歷史」寫進 DIR（批次備稿組 context 用）")
     g.add_argument("--outbox-ready", action="store_true", help="outbox 備妥且相符則 exit 0")
     g.add_argument("--outbox-html", action="store_true", help="印出 outbox 的 html")
     g.add_argument("--commit-outbox", action="store_true", help="用 outbox 推進度並清空")
@@ -228,43 +335,73 @@ def main(argv=None):
     ap.add_argument("--history", default=os.path.join(here, "state", "history.jsonl"))
     ap.add_argument("--lessons-dir", default=os.path.join(here, "lessons"))
     ap.add_argument("--outbox", default=os.path.join(here, "state", "outbox.json"))
+    # 批次備稿時由呼叫端算出每篇的位置（虛擬進度），不指定就沿用 progress.json。
+    ap.add_argument("--index", type=int, default=None, help="這篇對應的主題序號（預設取自 progress）")
+    ap.add_argument("--step", type=int, default=None, help="這篇對應的第幾步（預設取自 progress）")
+    ap.add_argument("--first-send", default=None,
+                    help="庫存第一篇的預計寄出日 YYYY-MM-DD（預設明天）")
     args = ap.parse_args(argv)
 
     # ── 不讀 stdin 的查詢/動作 ──
     if args.status:
         sys.exit(status(args, here))
 
+    if args.queue_len:
+        print(len(load_queue(args.outbox)))
+        return
+
+    if args.queue_tail_state:
+        # 批次備稿用：把「庫存全寄完後的狀態」寫成一份暫存 state，
+        # build_lesson.py 直接指向它就能組出下一篇的 context，本身不必改。
+        # 這份是推算出來的，絕不能寫回真的 state/——真正的進度推進只由
+        # 雲端寄出後的 --commit-outbox 負責。
+        progress = ss.load_progress(args.progress)
+        history = ss.load_history(args.history)
+        queue = load_queue(args.outbox)
+        first = args.first_send or (date.today() + timedelta(days=1)).isoformat()
+        tail_prog = queue_tail_progress(queue, args.syllabus, progress, first)
+        tail_hist = queue_tail_history(queue, args.syllabus, progress, history, first)
+        os.makedirs(args.queue_tail_state, exist_ok=True)
+        ss.save_progress(os.path.join(args.queue_tail_state, "progress.json"), tail_prog)
+        with open(os.path.join(args.queue_tail_state, "history.jsonl"), "w", encoding="utf-8") as f:
+            for row in tail_hist:
+                f.write(json.dumps(row, ensure_ascii=False) + "\n")
+        print(f"OK: 庫存 {len(queue)} 篇寄完後會走到第 {tail_prog.get('current_index')} 課 "
+              f"step {tail_prog.get('step')}（暫存於 {args.queue_tail_state}）", file=sys.stderr)
+        return
+
     if args.outbox_ready:
         progress = ss.load_progress(args.progress)
-        outbox = load_outbox(args.outbox)
-        ok = outbox_ready(outbox, progress)
+        queue = load_queue(args.outbox)
+        head = queue_head(queue)
+        ok = outbox_ready(head, progress)
         if not ok:  # 把「為何未備妥」寫到 stderr，呼叫端導進 log 供事後驗證
-            if outbox is None:
+            if head is None:
                 print("outbox-ready: outbox 不存在或無法解析", file=sys.stderr)
             else:
-                print(f"outbox-ready: outbox(index={outbox.get('index')},step={outbox.get('step')})"
-                      f" 與進度(index={progress.get('current_index')},step={progress.get('step')}) 不符",
-                      file=sys.stderr)
+                print(f"outbox-ready: 佇列頭部(index={head.get('index')},step={head.get('step')})"
+                      f" 與進度(index={progress.get('current_index')},step={progress.get('step')}) 不符"
+                      f"（庫存 {len(queue)} 篇）", file=sys.stderr)
         sys.exit(0 if ok else 1)
 
     if args.outbox_html:
-        outbox = load_outbox(args.outbox)
-        if not outbox or not isinstance(outbox.get("result"), dict):
+        head = queue_head(load_queue(args.outbox))
+        if not head or not isinstance(head.get("result"), dict):
             print("ERROR: outbox 尚未備妥", file=sys.stderr)
             sys.exit(2)
-        sys.stdout.write(restamp_send_date(outbox["result"]["html"],
+        sys.stdout.write(restamp_send_date(head["result"]["html"],
                                            date.today().isoformat()))
         return
 
     if args.commit_outbox:
-        outbox = load_outbox(args.outbox)
-        if not outbox or not isinstance(outbox.get("result"), dict):
+        head = queue_head(load_queue(args.outbox))
+        if not head or not isinstance(head.get("result"), dict):
             print("ERROR: outbox 尚未備妥，無法 commit", file=sys.stderr)
             sys.exit(2)
-        commit(outbox["result"], args.syllabus, args.progress, args.history,
+        commit(head["result"], args.syllabus, args.progress, args.history,
                args.lessons_dir, date.today().isoformat())
-        clear_outbox(args.outbox)
-        print("OK: 已用 outbox 推進度並清空", file=sys.stderr)
+        rest = pop_queue(args.outbox)
+        print(f"OK: 已用 outbox 推進度，庫存剩 {len(rest)} 篇", file=sys.stderr)
         return
 
     # ── 以下需讀 stdin（claude 輸出）──
@@ -274,15 +411,24 @@ def main(argv=None):
         print(f"ERROR: {e}", file=sys.stderr)
         sys.exit(2)
 
-    if args.to_outbox:
+    if args.to_outbox or args.append_outbox:
         progress = ss.load_progress(args.progress)
-        save_outbox(args.outbox, {
+        # index/step 可由呼叫端指定：批次備稿時每篇對應的是「虛擬進度」（前面幾篇
+        # 寄出後才會走到的位置），不是 progress.json 現在的值。
+        item = {
             "kind": "lesson",
-            "index": progress.get("current_index", 0),
-            "step": progress.get("step", 1),
+            "index": args.index if args.index is not None else progress.get("current_index", 0),
+            "step": args.step if args.step is not None else progress.get("step", 1),
             "result": res,
-        })
-        print("OK: 已存進 outbox（備妥待寄）", file=sys.stderr)
+        }
+        if args.append_outbox:
+            n = append_queue(args.outbox, item)
+            print(f"OK: 已追加進佇列（庫存 {n} 篇）", file=sys.stderr)
+        else:
+            # --to-outbox 是覆寫語意：只有在佇列頭部對不上進度（異常狀態）時
+            # run_learn.sh 才會重產並走到這裡，此時舊的壞資料就該被整批換掉。
+            save_queue(args.outbox, [item])
+            print("OK: 已存進 outbox（備妥待寄）", file=sys.stderr)
     elif args.commit:
         commit(res, args.syllabus, args.progress, args.history,
                args.lessons_dir, date.today().isoformat())

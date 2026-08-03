@@ -40,8 +40,26 @@ pmset 那組定時喚醒由隔壁的 `ai-news-digest/install.sh` 設定（`pmset
 > 所以 14:00 體檢時 outbox 是空的，就等於明天早上會沒信——這是唯一能在「還來得及補」的時候
 > 發現問題的檢查點，等到明天早上沒收到信才知道，已經是事發 25 小時後。
 
-> 限制：outbox 一次只備「下一篇」；若筆電連續多天關著、prepare 沒機會補產，
-> 雲端寄完庫存就會斷。要根治多日離線需把 outbox 改成小佇列（待辦）。
+### 庫存佇列（多日離線靠它續命）
+
+`state/outbox.json` 是一個**佇列**（陣列），一篇一個 `{index, step, result}`。雲端每天寄頭部那篇，
+`--commit-outbox` 推進度後把它 pop 掉，後面往前遞。平常每天只備一篇，行為跟以前一樣；
+要出遠門就一次備滿一段：
+
+```bash
+./run_learn.sh prepare-batch 11        # 一次備 11 篇（8/4–8/14 這種離線期）
+python3 apply_result.py --queue-len    # 看庫存還剩幾篇
+./run_slot.sh status                   # 庫存幾篇、可撐到哪天
+```
+
+**刻意綁進度、不綁日期。** 每篇認的是自己的 `index/step`，不是某月某日。所以雲端漏掉一班
+（或某天寄失敗）庫存不會作廢，只是整串往後遞一天，`progress.json`、`lessons/`、`history.jsonl`
+三者仍然對得起來。ai-news 那邊相反——內容就是當天新聞，綁週期代號、過期作廢。**兩邊差異是刻意的，別互相套用。**
+
+批次備稿的位置怎麼算：`--queue-tail-state` 把庫存依序套一遍 `advance_progress`，
+replay 出「全部寄完後會走到哪」，寫成一份暫存 state 給 `build_lesson.py` 組下一篇的 context。
+不能用 `step+1` 猜——收尾那篇（`topic_complete=True`）會換主題、step 歸 1，
+猜錯的下場是庫存頭部跟進度對不上，雲端判定未備妥，**整串庫存全寄不出去**。
 
 ### 雲端寄信設定（GitHub Actions + Cloudflare 觸發）
 1. repo 推上 GitHub（**私有**，因為 `state/`、`lessons/` 會進版控）。
