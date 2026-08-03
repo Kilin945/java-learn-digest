@@ -47,10 +47,20 @@ pmset 那組定時喚醒由隔壁的 `ai-news-digest/install.sh` 設定（`pmset
 要出遠門就一次備滿一段：
 
 ```bash
-./run_learn.sh prepare-batch 11        # 一次備 11 篇（8/4–8/14 這種離線期）
-python3 apply_result.py --queue-len    # 看庫存還剩幾篇
-./run_slot.sh status                   # 庫存幾篇、可撐到哪天
+./run_learn.sh prepare-batch 12              # 一次備 12 篇日課
+./run_learn.sh prepare-weekly 2026-08-08     # 離線期間那個週六的週報
+python3 apply_result.py --queue-len          # 看庫存還剩幾篇
+./run_slot.sh status                         # 庫存幾篇、可撐到哪天
 ```
+
+**出遠門前算篇數**：庫存已有的那篇是「明天要寄的」，所以要撐到 X 月 Y 日早上，
+需要的總篇數＝離開天數，扣掉現有庫存就是要補的量。多備一兩篇當緩衝——回來當天
+筆電不一定開得及，那天中午的備稿班若沒跑，隔天早上就會斷。
+
+**週報要另外補**，而且得帶上那個週六的日期。週報的回顧視窗釘在「最近的週五」，
+用今天去算會算到上一週、產出錯週期的稿（`weekly-<ISO週>` marker 對不上就不會寄）。
+帶了日期還會自動把庫存各篇補進回顧範圍——`history.jsonl` 是寄出時才寫的，
+離線期間那七天有一半還躺在庫存裡，不補進去回顧會少掉一半內容。
 
 **刻意綁進度、不綁日期。** 每篇認的是自己的 `index/step`，不是某月某日。所以雲端漏掉一班
 （或某天寄失敗）庫存不會作廢，只是整串往後遞一天，`progress.json`、`lessons/`、`history.jsonl`

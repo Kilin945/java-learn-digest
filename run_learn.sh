@@ -374,14 +374,31 @@ do_send() {
 # 跟每日信同理：產生靠本機 claude、寄出靠雲端，週報不再依賴週末筆電醒著。
 # 回顧範圍與週身分證（WEEK_ID）由 build_lesson.py 釘在「最近的週五」，晚產也不位移。
 do_prepare_weekly() {
+  # $1（選填）＝把哪一天當成「今天」。補一整段庫存時要用：離開期間那封週報
+  # 是站在未來的週六寄的，用今天去算會算到上一週，產出錯週期的週報。
+  local as_of="${1:-}"
   # 同 do_prepare：先確認網路就緒再 git_pull，避免喚醒空窗就直接放棄。
   if ! wait_for_network; then
     log "INFO: 網路未就緒，略過週報備稿（待下次）。"
     PREPARE_WHY="網路未就緒"; result FAIL "$PREPARE_WHY"; return 1
   fi
   git_pull
-  local out wk ctx
-  out="$("$PYTHON" "$DIR/build_lesson.py" weekly 2>>"$LOG")"
+  local out wk ctx tail_dir=""
+  local -a extra=()
+  if [ -n "$as_of" ]; then
+    # 視窗裡有幾天的課還躺在庫存、history 還沒有它們（history 是寄出時才寫的），
+    # 不補進去的話回顧會少掉一半內容。--queue-tail-state 會把庫存各篇
+    # 連同預計寄出日寫成一份暫存歷史。
+    tail_dir="$(mktemp -d -t java-learn-weekly)"
+    if ! "$PYTHON" "$DIR/apply_result.py" --queue-tail-state "$tail_dir" >>"$LOG" 2>&1; then
+      log "WARN: 算不出含庫存的歷史，略過週報備稿。"
+      rm -rf "$tail_dir"
+      PREPARE_WHY="--queue-tail-state 失敗"; result FAIL "$PREPARE_WHY"; return 1
+    fi
+    extra=(--as-of "$as_of" --history "$tail_dir/history.jsonl")
+    log "INFO: 週報改以 $as_of 為基準，並把庫存各篇補進回顧範圍。"
+  fi
+  out="$("$PYTHON" "$DIR/build_lesson.py" weekly "${extra[@]}" 2>>"$LOG")"
   wk="$(print -r -- "$out" | sed -n 's/^WEEK_ID: //p' | head -1)"
   if [ -z "$wk" ]; then
     log "WARN: 取不到 WEEK_ID，略過週報備稿。"
@@ -415,6 +432,7 @@ do_prepare_weekly() {
   fi
   print -r -- "$html" > "$STATE_DIR/weekly_outbox.html"
   print -r -- "$wk"   > "$STATE_DIR/weekly_outbox.week"
+  [ -n "$tail_dir" ] && rm -rf "$tail_dir"
   git_push_state
   log "INFO: 週報已備稿（$wk），待雲端週六寄出。"
   result OK "週報備稿完成（$wk）"
@@ -477,7 +495,7 @@ case "$MODE" in
   prepare)         do_prepare        || RC=$? ;;
   prepare-batch)   do_prepare_batch "${2:-}" || RC=$? ;;
   send)            do_send           || RC=$? ;;
-  prepare-weekly)  do_prepare_weekly || RC=$? ;;
+  prepare-weekly)  do_prepare_weekly "${2:-}" || RC=$? ;;
   daily)           [ -f "$MARKER_DAILY" ] && { log "SKIP: 今日已寄過。"; } || { do_prepare; do_send; } ;;
   weekly)          do_weekly         || RC=$? ;;
   *)               log "ERROR: 未知 mode：$MODE（可用 prepare|prepare-batch N|send|prepare-weekly|weekly）"; exit 2 ;;

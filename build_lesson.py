@@ -63,10 +63,14 @@ def main(argv=None):
     ap.add_argument("--syllabus", default=os.path.join(here, "syllabus.txt"))
     ap.add_argument("--progress", default=os.path.join(here, "state", "progress.json"))
     ap.add_argument("--history", default=os.path.join(here, "state", "history.jsonl"))
+    # 補一整段庫存時要能「站在未來某天」回顧：8/3 跑 weekly 會算成上週五（W31），
+    # 但離開期間要寄的是 8/8 那封（W32，涵蓋 8/1~8/7）。預設仍是今天。
+    ap.add_argument("--as-of", default=None, metavar="YYYY-MM-DD",
+                    help="把哪一天當成「今天」（預設今天）")
     args = ap.parse_args(argv)
 
     goal = os.environ.get("LEARN_GOAL") or DEFAULT_GOAL
-    today = date.today()
+    today = date.fromisoformat(args.as_of) if args.as_of else date.today()
     today_s = today.isoformat()
     color = daily_color(today.timetuple().tm_yday)
 
