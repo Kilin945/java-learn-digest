@@ -1,37 +1,86 @@
-```html
-<div style="max-width:680px;margin:0 auto;padding:24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#f1ecfb;color:#333;">
-  <div style="border-left:6px solid #8a6bd8;background:#ffffff;border-radius:8px;padding:16px 20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <span style="font-size:18px;font-weight:700;color:#6b3bf6;">📘 每週回顧 · Java / Spring Boot · 2026-07-31</span>
-  </div>
+直接依使用者提供的規格產出本週回顧信 HTML，不需要額外技能介入（純內容產出、規格已明確）。
 
-  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <p style="font-size:15px;line-height:1.7;margin:0 0 12px;">
-      這週你把兩大主題都摸過一輪了：<b>application.yml 設定優先序</b>，還有<b>內嵌 Tomcat 與 main() 啟動流程</b>。
-      下面這幾題刻意把兩邊混在一起問，幫你把知識串成一條線，而不是分開的小碎片。先自己想過一遍再往下看解答會更有效果 💪
-    </p>
+<div style="max-width:680px;margin:0 auto;padding:24px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:#eef4ff;color:#333;">
 
-    <ol style="font-size:15px;line-height:1.9;padding-left:20px;margin:0;">
-      <li>Spring Boot 啟動一個 Java 應用程式，預設情況下不用另外裝任何東西，內建的 web 伺服器是什麼？它被放在哪裡？</li>
-      <li>主 class 上要貼哪個 annotation，main() 裡又要呼叫哪一行程式碼，才算是真正啟動了整個 Spring Boot 應用程式（含內嵌伺服器）？</li>
-      <li>啟動 console 印出「Tomcat started on port(s): 8080」和「Started XxxApplication in X seconds」代表什麼？如果看到「Port 8080 was already in use」呢？</li>
-      <li>假設 8080 port 被佔用導致啟動失敗，你會在 application.properties 裡加哪一行設定來解決？這行設定跟 main() → SpringApplication.run() → 讀設定 → 啟動內嵌 Tomcat 這條流程有什麼關係？</li>
-      <li>同樣是改 port，如果你想「不改任何設定檔」、只在啟動指令上臨時多打一個參數把 port 換成 9090，你會怎麼下這個 command-line argument？它跟 application.yml 裡寫的 server.port 相比，誰會贏？</li>
-      <li>如果你改用設定環境變數 SERVER_PORT=9090 的方式呢？Spring Boot 是靠什麼機制自動把它對應到 server.port 這個設定名稱的？</li>
-      <li>現在把命令列參數、環境變數、application-{profile}.yml、application.yml（預設）四種來源全部混在一起考慮，完整的優先序（誰蓋過誰）是什麼？要啟用某個 profile（例如 dev），要靠哪個設定值指定？</li>
-    </ol>
-  </div>
-
-  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <p style="font-size:15px;font-weight:700;color:#6b3bf6;margin:0 0 12px;">—— 解答 ——</p>
-    <ol style="font-size:14px;line-height:1.9;padding-left:20px;margin:0;color:#444;">
-      <li>內嵌 Tomcat（embedded Tomcat）。它被打包進應用程式的 jar 檔裡，不用另外安裝或設定外部 Tomcat，預設用 8080 port。</li>
-      <li>主 class 貼 <code>@SpringBootApplication</code>，main() 裡呼叫 <code>SpringApplication.run(該class, args)</code>，這一行就是啟動整個應用程式（含內嵌 Tomcat）的關鍵程式碼。</li>
-      <li>這兩行代表應用程式已經成功啟動；「Port 8080 was already in use」則代表該 port 被佔用，啟動失敗（failed to start）。</li>
-      <li>加上 <code>server.port=8081</code>（或其他未被佔用的 port）。這正是完整啟動流程的最後一環：main() 呼叫 SpringApplication.run() → 讀取設定（讀到 server.port）→ 用這個 port 啟動內嵌 Tomcat。</li>
-      <li>啟動指令加上 <code>--server.port=9090</code>。這是設定優先序裡最高的一層：命令列參數（command-line argument）會覆寫（override）application.yml 裡寫的值。</li>
-      <li>Spring Boot 靠「寬鬆綁定（relaxed binding）」自動把環境變數 <code>SERVER_PORT</code> 對應到設定名稱 <code>server.port</code>，不用另外寫轉換規則。</li>
-      <li>完整優先序：命令列參數 > 環境變數 > application-{profile}.yml > application.yml（預設）。要啟用某個 profile，是靠 <code>spring.profiles.active</code>（例如設成 <code>dev</code>）來指定。</li>
-    </ol>
-  </div>
+<div style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:20px;">
+<div style="background:#5b8def;padding:16px 20px;">
+<span style="color:#ffffff;font-size:18px;font-weight:700;">📘 每週回顧 · Java / Spring Boot · 2026-08-07</span>
 </div>
-```
+<div style="padding:18px 20px;font-size:14px;line-height:1.7;color:#555;">
+這週把 <b>@RestController 家族</b> 跟 <b>接收資料的三種方式</b> 兩個主題都學完了。趁記憶還熱，用下面幾題把這週的東西串起來，別急著看解答，先自己想一遍再對照 👇
+</div>
+</div>
+
+<div style="background:#ffffff;border-radius:12px;padding:20px 20px 8px 20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:20px;border-left:4px solid #5b8def;">
+<div style="font-size:16px;font-weight:700;color:#3b6cf6;margin-bottom:12px;">🧠 回想題</div>
+
+<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
+<b>1.</b> 一個類別貼了 <code>@RestController</code>，它的方法回傳一個 Java 物件，這個物件最後會變成什麼？跟一般 MVC 的 <code>@Controller</code> 差在哪裡？
+</div>
+
+<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
+<b>2.</b> <code>@RequestMapping(value = "/hello", method = RequestMethod.GET)</code> 這句話裡，<code>value</code> 跟 <code>method</code> 分別在告訴 Spring 什麼？
+</div>
+
+<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
+<b>3.</b> 如果要「新增一筆訂單」，你會用 <code>@GetMapping</code>、<code>@PostMapping</code> 還是 <code>@PutMapping</code>？為什麼不能用另外兩個？
+</div>
+
+<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
+<b>4.</b> class 上寫 <code>@RequestMapping("/api/users")</code>，方法上寫 <code>@GetMapping("/{id}")</code>，最後 client 要打的完整網址是什麼？
+</div>
+
+<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
+<b>5.</b> <code>GET /users/3</code> 這個請求，如果方法簽名是 <code>getUser(@PathVariable Long id)</code>，Spring 是怎麼知道 <code>id</code> 要填 3 的？
+</div>
+
+<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
+<b>6.</b> <code>@PathVariable</code> 跟 <code>@RequestParam</code> 都能從網址拿值，那它們兩個的網址寫法跟使用情境有什麼不同？<code>@RequestParam</code> 的 <code>defaultValue</code> 是用來解決什麼問題？
+</div>
+
+<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
+<b>7.</b> 前端送一包 JSON（例如 <code>{"name":"Amy","age":20}</code>）當作 request body，方法參數要怎麼寫才能自動接成一個 <code>User</code> 物件？
+</div>
+
+<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:4px;">
+<b>8.</b>（綜合題）設計一個 API：更新某使用者第幾頁的某筆訂單，網址長這樣 <code>PUT /users/{userId}/orders?page=1</code>，body 帶更新後的訂單內容。請說出這裡的 <code>userId</code>、<code>page</code>、body 分別該用哪個標籤接？
+</div>
+</div>
+
+<div style="background:#ffffff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);border-left:4px solid #5b8def;">
+<div style="font-size:16px;font-weight:700;color:#3b6cf6;margin-bottom:12px;">—— 解答 ——</div>
+
+<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
+<b>1.</b> 回傳值會直接變成 HTTP response body（通常轉成 JSON）送回去，不會經過 View 樣板排版。<code>@Controller</code> 預設回傳值是要去找對應的畫面（View）。
+</div>
+
+<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
+<b>2.</b> <code>value</code> 是網址路徑（這個方法對應哪個路徑），<code>method</code> 是請求方式（GET/POST/PUT/DELETE，這個方法要處理哪種動作）。
+</div>
+
+<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
+<b>3.</b> 用 <code>@PostMapping</code>，因為「新增」對應 POST 動作；GET 是查詢、PUT 是更新既有資料，語意上都不是「新增」。
+</div>
+
+<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
+<b>4.</b> <code>GET /api/users/{id}</code>，class 上的路徑是共同前綴，方法上的路徑接在後面，兩者合併才是完整網址。
+</div>
+
+<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
+<b>5.</b> 網址範本裡的 <code>{id}</code> 是一個會變動的占位，Spring 看到方法參數上有 <code>@PathVariable</code> 且名字對上 <code>id</code>，就把網址裡實際的值（3）塞進去。
+</div>
+
+<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
+<b>6.</b> <code>@PathVariable</code> 抓的是網址路徑本身的一部分（如 <code>/users/3</code> 裡的 3），通常代表「這是誰/哪一個」；<code>@RequestParam</code> 抓的是 <code>?</code> 後面 key=value 的查詢參數（如 <code>?page=2</code>），通常是可有可無的篩選/分頁條件。<code>defaultValue</code> 是用來處理「client 沒帶這個查詢參數」的情況，給一個預設值，避免沒傳就出錯或變成 null。
+</div>
+
+<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
+<b>7.</b> <code>createUser(@RequestBody User user)</code>。Spring 會自動把 request body 的 JSON 轉成對應的 Java 物件（DTO）。
+</div>
+
+<div style="font-size:14px;line-height:1.7;color:#555;">
+<b>8.</b> <code>userId</code> 是路徑的一部分 → <code>@PathVariable</code>；<code>page</code> 是 <code>?</code> 後面的查詢參數 → <code>@RequestParam</code>；訂單內容是整包結構化資料放在 body → <code>@RequestBody</code>。三者合起來就是這週學的「REST API 接收資料的完整方式」。
+</div>
+</div>
+
+</div>
