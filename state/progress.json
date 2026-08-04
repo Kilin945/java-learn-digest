@@ -1,11 +1,7 @@
 {
-  "current_index": 12,
-  "step": 4,
-  "covered": [
-    "@RestController 這個標籤會讓一個類別變成專門處理 HTTP 請求的「外帶窗口」，方法的回傳值會直接變成 response body 送回去，不會經過 View 樣板排版。",
-    "@RequestMapping 是貼在方法上的號碼牌，用 value（網址路徑）和 method（請求方式，如 RequestMethod.GET）告訴 Spring 這個方法該對應哪個網址、處理哪種請求。",
-    "@GetMapping、@PostMapping、@PutMapping、@DeleteMapping 是 @RequestMapping(method=...) 的捷徑寫法，各自代表一種固定的 HTTP 動作（查詢/新增/更新/刪除）。"
-  ],
+  "current_index": 13,
+  "step": 1,
+  "covered": [],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
@@ -65,6 +61,11 @@
     {
       "topic": "內嵌 Tomcat 與 main() 啟動流程",
       "finished": "2026-07-31",
+      "steps": 4
+    },
+    {
+      "topic": "@RestController 與 @RequestMapping 家族",
+      "finished": "2026-08-04",
       "steps": 4
     }
   ]
