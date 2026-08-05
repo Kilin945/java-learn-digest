@@ -53,3 +53,4 @@
 {"date": "2026-08-02", "topic": "@RestController 與 @RequestMapping 家族", "step": 2, "summary": "@RequestMapping 是貼在方法上的號碼牌，用 value（網址路徑）和 method（請求方式，如 RequestMethod.GET）告訴 Spring 這個方法該對應哪個網址、處理哪種請求。"}
 {"date": "2026-08-03", "topic": "@RestController 與 @RequestMapping 家族", "step": 3, "summary": "@GetMapping、@PostMapping、@PutMapping、@DeleteMapping 是 @RequestMapping(method=...) 的捷徑寫法，各自代表一種固定的 HTTP 動作（查詢/新增/更新/刪除）。"}
 {"date": "2026-08-04", "topic": "@RestController 與 @RequestMapping 家族", "step": 4, "summary": "class 上的 @RequestMapping 可以設定共同前綴路徑，method 上的 @GetMapping 等捷徑標籤路徑會接在後面，兩者合併才是最終的完整網址，這也是 @RestController 家族的完整用法收尾。"}
+{"date": "2026-08-05", "topic": "路徑參數、查詢參數、@RequestBody", "step": 1, "summary": "今天教了 @PathVariable：網址路徑裡用 {名字} 這種路徑範本占住一個會變動的位置（例如 /users/{id}），方法參數上貼 @PathVariable 且名字對上，Spring 就會自動把網址裡實際的值（如 /users/3 的 3）塞進這個參數。"}
