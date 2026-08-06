@@ -1,8 +1,9 @@
 {
   "current_index": 13,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "今天教了 @PathVariable：網址路徑裡用 {名字} 這種路徑範本占住一個會變動的位置（例如 /users/{id}），方法參數上貼 @PathVariable 且名字對上，Spring 就會自動把網址裡實際的值（如 /users/3 的 3）塞進這個參數。"
+    "今天教了 @PathVariable：網址路徑裡用 {名字} 這種路徑範本占住一個會變動的位置（例如 /users/{id}），方法參數上貼 @PathVariable 且名字對上，Spring 就會自動把網址裡實際的值（如 /users/3 的 3）塞進這個參數。",
+    "今天教了 @RequestParam：網址 ? 後面 key=value 形式的查詢參數（如 /users?page=2&size=10），方法參數貼 @RequestParam 就能抓到值，還能用 defaultValue 設定沒帶時的預設值。"
   ],
   "completed_topics": [
     {
