@@ -56,3 +56,4 @@
 {"date": "2026-08-05", "topic": "路徑參數、查詢參數、@RequestBody", "step": 1, "summary": "今天教了 @PathVariable：網址路徑裡用 {名字} 這種路徑範本占住一個會變動的位置（例如 /users/{id}），方法參數上貼 @PathVariable 且名字對上，Spring 就會自動把網址裡實際的值（如 /users/3 的 3）塞進這個參數。"}
 {"date": "2026-08-06", "topic": "路徑參數、查詢參數、@RequestBody", "step": 2, "summary": "今天教了 @RequestParam：網址 ? 後面 key=value 形式的查詢參數（如 /users?page=2&size=10），方法參數貼 @RequestParam 就能抓到值，還能用 defaultValue 設定沒帶時的預設值。"}
 {"date": "2026-08-07", "topic": "路徑參數、查詢參數、@RequestBody", "step": 3, "summary": "今天教了 @RequestBody：貼在方法參數上，Spring 會自動把 HTTP 請求 body 裡的 JSON 轉成對應的 Java 物件（DTO），適合傳一整包結構化資料，跟只能傳單一小值的 @PathVariable、@RequestParam 互補，三者合起來就是 REST API 接收資料的完整方式。"}
+{"date": "2026-08-08", "topic": "DTO 與 entity 為什麼要分開", "step": 1, "summary": "今天教了為什麼不能把 Entity 直接回傳給前端：Entity 是對應資料庫表格的類別，裡面包含所有欄位（甚至密碼、身分證號這類機密資料），Controller 若直接回傳 entity，Spring 會把全部欄位一起序列化成 JSON 送出去，這正是之後要用 DTO 來把關的原因。"}

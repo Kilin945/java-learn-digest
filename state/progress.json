@@ -1,7 +1,9 @@
 {
   "current_index": 14,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "今天教了為什麼不能把 Entity 直接回傳給前端：Entity 是對應資料庫表格的類別，裡面包含所有欄位（甚至密碼、身分證號這類機密資料），Controller 若直接回傳 entity，Spring 會把全部欄位一起序列化成 JSON 送出去，這正是之後要用 DTO 來把關的原因。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
