@@ -1,8 +1,9 @@
 {
   "current_index": 14,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "今天教了為什麼不能把 Entity 直接回傳給前端：Entity 是對應資料庫表格的類別，裡面包含所有欄位（甚至密碼、身分證號這類機密資料），Controller 若直接回傳 entity，Spring 會把全部欄位一起序列化成 JSON 送出去，這正是之後要用 DTO 來把關的原因。"
+    "今天教了為什麼不能把 Entity 直接回傳給前端：Entity 是對應資料庫表格的類別，裡面包含所有欄位（甚至密碼、身分證號這類機密資料），Controller 若直接回傳 entity，Spring 會把全部欄位一起序列化成 JSON 送出去，這正是之後要用 DTO 來把關的原因。",
+    "今天教了 DTO 是什麼：一個自己寫的、只放要給前端看欄位的普通類別（例如把 User entity 轉成只含 id、name、email 的 UserDto），藏起 password、身分證號等機密欄位，DTO 跟資料庫表格沒有直接關係。"
   ],
   "completed_topics": [
     {
