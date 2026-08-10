@@ -58,3 +58,4 @@
 {"date": "2026-08-07", "topic": "路徑參數、查詢參數、@RequestBody", "step": 3, "summary": "今天教了 @RequestBody：貼在方法參數上，Spring 會自動把 HTTP 請求 body 裡的 JSON 轉成對應的 Java 物件（DTO），適合傳一整包結構化資料，跟只能傳單一小值的 @PathVariable、@RequestParam 互補，三者合起來就是 REST API 接收資料的完整方式。"}
 {"date": "2026-08-08", "topic": "DTO 與 entity 為什麼要分開", "step": 1, "summary": "今天教了為什麼不能把 Entity 直接回傳給前端：Entity 是對應資料庫表格的類別，裡面包含所有欄位（甚至密碼、身分證號這類機密資料），Controller 若直接回傳 entity，Spring 會把全部欄位一起序列化成 JSON 送出去，這正是之後要用 DTO 來把關的原因。"}
 {"date": "2026-08-09", "topic": "DTO 與 entity 為什麼要分開", "step": 2, "summary": "今天教了 DTO 是什麼：一個自己寫的、只放要給前端看欄位的普通類別（例如把 User entity 轉成只含 id、name、email 的 UserDto），藏起 password、身分證號等機密欄位，DTO 跟資料庫表格沒有直接關係。"}
+{"date": "2026-08-10", "topic": "DTO 與 entity 為什麼要分開", "step": 3, "summary": "今天教了怎麼把 Entity 轉成 DTO：在 DTO 裡寫一個吃 Entity 的建構子，把要留的欄位一個個複製過去，機密欄位沒被複製進去，自然就不會被序列化送出去。"}
