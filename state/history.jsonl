@@ -60,3 +60,4 @@
 {"date": "2026-08-09", "topic": "DTO 與 entity 為什麼要分開", "step": 2, "summary": "今天教了 DTO 是什麼：一個自己寫的、只放要給前端看欄位的普通類別（例如把 User entity 轉成只含 id、name、email 的 UserDto），藏起 password、身分證號等機密欄位，DTO 跟資料庫表格沒有直接關係。"}
 {"date": "2026-08-10", "topic": "DTO 與 entity 為什麼要分開", "step": 3, "summary": "今天教了怎麼把 Entity 轉成 DTO：在 DTO 裡寫一個吃 Entity 的建構子，把要留的欄位一個個複製過去，機密欄位沒被複製進去，自然就不會被序列化送出去。"}
 {"date": "2026-08-11", "topic": "DTO 與 entity 為什麼要分開", "step": 4, "summary": "今天教了 Request DTO：接收前端資料時也不能直接用 entity 接，要另寫一個只放允許填寫欄位（如 name、email）的 DTO，讓前端就算硬塞 id、role 這類欄位也不會被綁定進去，避免竄改。"}
+{"date": "2026-08-12", "topic": "Bean Validation：@Valid 與 @NotNull", "step": 1, "summary": "今天教了 Bean Validation 入門：在 DTO 欄位上貼 @NotNull 宣告規則，並在 controller 參數加上 @Valid 讓 Spring 真正觸發檢查，不合法的資料會直接被擋下並回 400 Bad Request。"}
