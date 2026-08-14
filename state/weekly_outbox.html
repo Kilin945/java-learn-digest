@@ -1,86 +1,82 @@
-直接依使用者提供的規格產出本週回顧信 HTML，不需要額外技能介入（純內容產出、規格已明確）。
+<div style="max-width:680px;margin:0 auto;padding:24px 16px;background-color:#edeefb;font-family:'Helvetica Neue',Arial,'PingFang TC','Microsoft JhengHei',sans-serif;">
 
-<div style="max-width:680px;margin:0 auto;padding:24px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:#eef4ff;color:#333;">
+  <div style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
 
-<div style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:20px;">
-<div style="background:#5b8def;padding:16px 20px;">
-<span style="color:#ffffff;font-size:18px;font-weight:700;">📘 每週回顧 · Java / Spring Boot · 2026-08-07</span>
-</div>
-<div style="padding:18px 20px;font-size:14px;line-height:1.7;color:#555;">
-這週把 <b>@RestController 家族</b> 跟 <b>接收資料的三種方式</b> 兩個主題都學完了。趁記憶還熱，用下面幾題把這週的東西串起來，別急著看解答，先自己想一遍再對照 👇
-</div>
-</div>
+    <div style="border-left:6px solid #6b72d6;padding:20px 24px;">
+      <div style="font-size:20px;font-weight:700;color:#5159c9;line-height:1.4;">
+        📘 每週回顧 · Java / Spring Boot · 2026-08-14
+      </div>
+      <div style="font-size:13px;color:#8a8fd8;margin-top:4px;">
+        這週你學了 DTO / Entity 分離 與 Bean Validation，來把它們串起來想一遍吧
+      </div>
+    </div>
 
-<div style="background:#ffffff;border-radius:12px;padding:20px 20px 8px 20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:20px;border-left:4px solid #5b8def;">
-<div style="font-size:16px;font-weight:700;color:#3b6cf6;margin-bottom:12px;">🧠 回想題</div>
+    <div style="padding:4px 24px 24px 24px;font-size:15px;line-height:1.7;color:#333333;">
 
-<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
-<b>1.</b> 一個類別貼了 <code>@RestController</code>，它的方法回傳一個 Java 物件，這個物件最後會變成什麼？跟一般 MVC 的 <code>@Controller</code> 差在哪裡？
-</div>
+      <p style="margin:16px 0 20px 0;">
+        這週我們從「為什麼不能把 Entity 直接回傳給前端」出發，一路學到用 DTO 把關輸出入欄位，再加上 Bean Validation 做資料驗證。以下 8 題，混合這週的主題，幫你做主動回想（active recall）。建議先自己想過一輪答案，再往下對答案。
+      </p>
 
-<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
-<b>2.</b> <code>@RequestMapping(value = "/hello", method = RequestMethod.GET)</code> 這句話裡，<code>value</code> 跟 <code>method</code> 分別在告訴 Spring 什麼？
-</div>
+      <ol style="padding-left:20px;margin:0;">
+        <li style="margin-bottom:14px;">
+          <b>（基礎）</b> Controller 如果直接把 User entity 回傳給前端，實際上會發生什麼事？為什麼這樣做很危險？
+        </li>
+        <li style="margin-bottom:14px;">
+          <b>（基礎）</b> DTO 和 Entity 是什麼關係？DTO 可以說是「對應資料庫表格的類別」嗎？
+        </li>
+        <li style="margin-bottom:14px;">
+          <b>（應用）</b> 要把 User entity 轉成只含 id、name、email 的 UserDto，通常怎麼寫這個轉換？
+        </li>
+        <li style="margin-bottom:14px;">
+          <b>（應用）</b> 前端呼叫「更新使用者」API 時，如果 Controller 參數直接用 User entity 接收，可能會被動什麼手腳？要怎麼設計 Request DTO 來避免？
+        </li>
+        <li style="margin-bottom:14px;">
+          <b>（應用）</b> 只在 DTO 欄位上寫 <code>@NotNull</code> 就會生效嗎？Controller 端還要加上什麼，Spring 才會真的觸發檢查、擋下不合法資料？
+        </li>
+        <li style="margin-bottom:14px;">
+          <b>（混合思考）</b> 如果 Request DTO 的 <code>name</code> 欄位傳進來的是空字串 <code>""</code> 或純空白字串 <code>"   "</code>，<code>@NotNull</code> 擋得住嗎？該換成哪個 annotation？
+        </li>
+        <li style="margin-bottom:14px;">
+          <b>（混合思考）</b> 承上題，如果還想限制 <code>name</code> 長度要在 2～20 字之間，並且驗證失敗時要回傳自訂錯誤訊息，要加上哪個 annotation、怎麼寫？它可以跟 <code>@NotBlank</code> 一起疊加使用嗎？
+        </li>
+        <li style="margin-bottom:14px;">
+          <b>（綜合）</b> 現在要設計一個「使用者註冊」用的 Request DTO：前端只能填 name、email，不能填 id、role；name 不可空白，長度限制 2～20 字。這個 DTO 會用到這週學的哪些技巧？請整合說明。
+        </li>
+      </ol>
 
-<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
-<b>3.</b> 如果要「新增一筆訂單」，你會用 <code>@GetMapping</code>、<code>@PostMapping</code> 還是 <code>@PutMapping</code>？為什麼不能用另外兩個？
-</div>
+      <div style="margin-top:28px;padding-top:16px;border-top:2px dashed #c9cbf0;">
+        <div style="font-size:16px;font-weight:700;color:#5159c9;margin-bottom:12px;">
+          —— 解答 ——
+        </div>
 
-<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
-<b>4.</b> class 上寫 <code>@RequestMapping("/api/users")</code>，方法上寫 <code>@GetMapping("/{id}")</code>，最後 client 要打的完整網址是什麼？
-</div>
+        <ol style="padding-left:20px;margin:0;">
+          <li style="margin-bottom:12px;">
+            Entity 對應資料庫表格，包含所有欄位（甚至 password、身分證號等機密資料）。直接回傳 entity，Spring 會把「全部欄位」一起序列化成 JSON 送出去，等於把機密資料也一起洩漏給前端。
+          </li>
+          <li style="margin-bottom:12px;">
+            DTO（Data Transfer Object）是自己寫的普通類別，只放要給前端看的欄位，跟資料庫表格<b>沒有直接關係</b>。它的角色是在 Entity 和前端之間做「欄位把關」，不是資料庫的對應物。
+          </li>
+          <li style="margin-bottom:12px;">
+            在 DTO 裡寫一個吃 Entity 的建構子（constructor），把要留下的欄位（id、name、email）一個一個複製過去；password 等機密欄位不寫進建構子，自然就不會出現在轉出來的 DTO、也不會被序列化送出。
+          </li>
+          <li style="margin-bottom:12px;">
+            如果直接用 entity 接收，前端可以硬塞 id、role 等不該由使用者決定的欄位，造成資料被竄改（例如把自己 role 改成 admin）。解法是另外寫一個 Request DTO，裡面只放允許填寫的欄位（如 name、email），沒宣告的欄位就算前端塞了也不會被綁定進來。
+          </li>
+          <li style="margin-bottom:12px;">
+            不夠。欄位上的 <code>@NotNull</code> 只是「宣告規則」，要在 Controller 方法的參數前加上 <code>@Valid</code>，Spring 才會真正觸發驗證；不合法的資料會被擋下並自動回傳 400 Bad Request。
+          </li>
+          <li style="margin-bottom:12px;">
+            擋不住。<code>@NotNull</code> 只檢查欄位是不是 <code>null</code>，空字串或純空白字串仍會通過。字串型別要用更嚴格的 <code>@NotBlank</code>，才能真正擋下空值 / 空字串 / 純空白字串。
+          </li>
+          <li style="margin-bottom:12px;">
+            用 <code>@Size(min = 2, max = 20, message = "name 長度需介於 2 到 20 字")</code>。可以，<code>@Size</code> 跟 <code>@NotBlank</code> 可以疊加在同一個欄位上一起使用，各自負責不同的驗證面向。
+          </li>
+          <li style="margin-bottom:12px;">
+            會用到：① 寫一個獨立的 Request DTO（只放 name、email 兩個欄位，不含 id、role，避免竄改）；② 在 name 欄位疊加 <code>@NotBlank</code>（擋空值/空字串/純空白）與 <code>@Size(min=2, max=20)</code>（限制長度並自訂錯誤訊息）；③ Controller 方法參數加上 <code>@Valid</code>，讓 Spring 真正觸發這些驗證，不合法就回 400。
+          </li>
+        </ol>
+      </div>
 
-<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
-<b>5.</b> <code>GET /users/3</code> 這個請求，如果方法簽名是 <code>getUser(@PathVariable Long id)</code>，Spring 是怎麼知道 <code>id</code> 要填 3 的？
-</div>
-
-<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
-<b>6.</b> <code>@PathVariable</code> 跟 <code>@RequestParam</code> 都能從網址拿值，那它們兩個的網址寫法跟使用情境有什麼不同？<code>@RequestParam</code> 的 <code>defaultValue</code> 是用來解決什麼問題？
-</div>
-
-<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:16px;">
-<b>7.</b> 前端送一包 JSON（例如 <code>{"name":"Amy","age":20}</code>）當作 request body，方法參數要怎麼寫才能自動接成一個 <code>User</code> 物件？
-</div>
-
-<div style="font-size:14px;line-height:1.8;color:#333;margin-bottom:4px;">
-<b>8.</b>（綜合題）設計一個 API：更新某使用者第幾頁的某筆訂單，網址長這樣 <code>PUT /users/{userId}/orders?page=1</code>，body 帶更新後的訂單內容。請說出這裡的 <code>userId</code>、<code>page</code>、body 分別該用哪個標籤接？
-</div>
-</div>
-
-<div style="background:#ffffff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);border-left:4px solid #5b8def;">
-<div style="font-size:16px;font-weight:700;color:#3b6cf6;margin-bottom:12px;">—— 解答 ——</div>
-
-<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
-<b>1.</b> 回傳值會直接變成 HTTP response body（通常轉成 JSON）送回去，不會經過 View 樣板排版。<code>@Controller</code> 預設回傳值是要去找對應的畫面（View）。
-</div>
-
-<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
-<b>2.</b> <code>value</code> 是網址路徑（這個方法對應哪個路徑），<code>method</code> 是請求方式（GET/POST/PUT/DELETE，這個方法要處理哪種動作）。
-</div>
-
-<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
-<b>3.</b> 用 <code>@PostMapping</code>，因為「新增」對應 POST 動作；GET 是查詢、PUT 是更新既有資料，語意上都不是「新增」。
-</div>
-
-<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
-<b>4.</b> <code>GET /api/users/{id}</code>，class 上的路徑是共同前綴，方法上的路徑接在後面，兩者合併才是完整網址。
-</div>
-
-<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
-<b>5.</b> 網址範本裡的 <code>{id}</code> 是一個會變動的占位，Spring 看到方法參數上有 <code>@PathVariable</code> 且名字對上 <code>id</code>，就把網址裡實際的值（3）塞進去。
-</div>
-
-<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
-<b>6.</b> <code>@PathVariable</code> 抓的是網址路徑本身的一部分（如 <code>/users/3</code> 裡的 3），通常代表「這是誰/哪一個」；<code>@RequestParam</code> 抓的是 <code>?</code> 後面 key=value 的查詢參數（如 <code>?page=2</code>），通常是可有可無的篩選/分頁條件。<code>defaultValue</code> 是用來處理「client 沒帶這個查詢參數」的情況，給一個預設值，避免沒傳就出錯或變成 null。
-</div>
-
-<div style="font-size:14px;line-height:1.7;color:#555;margin-bottom:14px;">
-<b>7.</b> <code>createUser(@RequestBody User user)</code>。Spring 會自動把 request body 的 JSON 轉成對應的 Java 物件（DTO）。
-</div>
-
-<div style="font-size:14px;line-height:1.7;color:#555;">
-<b>8.</b> <code>userId</code> 是路徑的一部分 → <code>@PathVariable</code>；<code>page</code> 是 <code>?</code> 後面的查詢參數 → <code>@RequestParam</code>；訂單內容是整包結構化資料放在 body → <code>@RequestBody</code>。三者合起來就是這週學的「REST API 接收資料的完整方式」。
-</div>
-</div>
-
+    </div>
+  </div>
 </div>
