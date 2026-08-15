@@ -1,11 +1,7 @@
 {
-  "current_index": 15,
-  "step": 4,
-  "covered": [
-    "今天教了 Bean Validation 入門：在 DTO 欄位上貼 @NotNull 宣告規則，並在 controller 參數加上 @Valid 讓 Spring 真正觸發檢查，不合法的資料會直接被擋下並回 400 Bad Request。",
-    "今天教了 @NotBlank：@NotNull 只檢查欄位是不是 null，但空字串或純空白字串仍會通過檢查，字串型別的欄位要用更嚴格的 @NotBlank 才能真正擋下無效輸入。",
-    "今天教了 @Size：可以幫字串（或清單）設定長度上下限（min/max），並能搭配 message 屬性自訂驗證失敗時的錯誤訊息，跟前面教的 @NotBlank 可以疊加使用。"
-  ],
+  "current_index": 16,
+  "step": 1,
+  "covered": [],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
@@ -80,6 +76,11 @@
     {
       "topic": "DTO 與 entity 為什麼要分開",
       "finished": "2026-08-11",
+      "steps": 4
+    },
+    {
+      "topic": "Bean Validation：@Valid 與 @NotNull",
+      "finished": "2026-08-15",
       "steps": 4
     }
   ]
