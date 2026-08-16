@@ -1,8 +1,9 @@
 {
   "current_index": 16,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "今天說明了「沒有統一例外處理」的痛點：每個 Controller 方法各自寫 try-catch 處理自訂例外（如 ResourceNotFoundException），會造成程式碼重複又分散，這是引入 @RestControllerAdvice 的動機。"
+    "今天說明了「沒有統一例外處理」的痛點：每個 Controller 方法各自寫 try-catch 處理自訂例外（如 ResourceNotFoundException），會造成程式碼重複又分散，這是引入 @RestControllerAdvice 的動機。",
+    "今天認識了 @RestControllerAdvice（全域例外處理中心）和 @ExceptionHandler（指定處理哪種例外的方法標註），並看了一個最簡單的 GlobalExceptionHandler class 範例，把 ResourceNotFoundException 的處理從各個 Controller 集中到單一地方。"
   ],
   "completed_topics": [
     {
