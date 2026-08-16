@@ -489,6 +489,12 @@ send_local_alert() {  # $1=失敗原因
   git_push_state
 }
 
+# 測試用：只載入函式、不執行任何班次。
+# 這一行是 2026-08-17 00:10 換來的：測試為了取用函式而 source 本檔，當時沒有這道閘，
+# 整支腳本一路跑到 do_send，把當天的信提早八小時寄了出去。
+# 位置不可下移——底下第一件事就是寫 run.log，再往下就是真的在跑班次了。
+[ -n "${LEARN_LIB_ONLY:-}" ] && return 0
+
 echo "===== $(date '+%Y-%m-%d %H:%M:%S') 開始 [mode=$MODE] =====" >> "$LOG"
 RC=0
 case "$MODE" in
