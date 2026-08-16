@@ -123,6 +123,21 @@ git_push_state() {
   log "WARN: git push 連續 3 次失敗（下次再試）。"
   return 1
 }
+# 斷網時回答一個問題：「本機這份庫存，雲端手上有沒有？」
+# 靠的是本機快取的 @{upstream} ref——它停在上次成功同步的位置，所以問的其實是
+# 「我最後一次跟遠端對上之後，有沒有東西還沒送出去」。這個問題不需要連線就能答，
+# 正好適合 git pull 失敗的當下。答「有」才代表雲端明天寄得出去。
+state_synced_with_origin() {
+  # 純本機模式沒有雲端可代寄，本機備不出來就是真的沒有，不能靠這條放行。
+  [ "$REPO_SYNC" = 1 ] || return 1
+  # 有未提交的變更 → 那份內容鐵定還沒送出去
+  [ -n "$(git -C "$STATE_WT" status --porcelain 2>/dev/null)" ] && return 1
+  local ahead
+  # 查不出 upstream（剛建的分支之類）就當作沒同步——寧可多警示，不可漏警示。
+  ahead="$(git -C "$STATE_WT" rev-list --count '@{upstream}..HEAD' 2>/dev/null)" || return 1
+  [ -n "$ahead" ] && [ "$ahead" = 0 ]
+}
+outbox_ready() { "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>>"$LOG"; }
 
 MARKER_DAILY="$STATE_DIR/daily-$(date +%F)"
 MARKER_WEEKLY="$STATE_DIR/weekly-$(date +%G-W%V)"
@@ -191,12 +206,22 @@ do_prepare() {
     return 1
   fi
   if ! git_pull; then
+    # pull 失敗一律不產新稿：不知道雲端有沒有把庫存寄掉、進度推到哪，硬產會疊在過期進度上。
+    # 但「不能產」不等於「明天沒信」，這兩件事以前混在一起，代價是誤報：
+    # 2026-08-16 19:50 那班，稿 10:17 就備妥也推上去了，整天 16 個時段都回 SKIP，
+    # 只因為那一刻斷網就寄了「明天早上 08:00 會收不到信」——而隔天照常收到。
+    # 庫存已經在雲端手上時，雲端自己就寄得出去，這種時候該安靜。
+    if outbox_ready && state_synced_with_origin; then
+      log "INFO: git pull 失敗，但庫存已備妥且已同步 origin，雲端仍寄得出去；本時段略過不產新稿。"
+      result SKIP "庫存已備妥且已同步（git pull 失敗，暫不產新稿）"
+      return 0
+    fi
     log "INFO: git pull 失敗、本機 outbox 不可信，本時段略過（不誤判已備妥，待下次同步後再產）。"
     notify "⚠️ 學習信備稿失敗" "無法連線 GitHub：${GITPULL_LAST_ERR:-詳見 run.log}。明天的課程尚未備妥。"
     PREPARE_WHY="state 分支同步失敗：${GITPULL_LAST_ERR:-詳見 run.log}"; result FAIL "$PREPARE_WHY"
     return 1
   fi
-  if "$PYTHON" "$DIR/apply_result.py" --outbox-ready 2>>"$LOG"; then
+  if outbox_ready; then
     log "INFO: outbox 已備妥，略過產生。"
     git_push_state   # 前次 push 若失敗，這裡補推，否則備好的稿永遠到不了雲端。
     result SKIP "outbox 已備妥"
@@ -261,6 +286,16 @@ do_prepare_batch() {
     return 1
   fi
   if ! git_pull; then
+    # 同 do_prepare：不產新稿，但要分清楚「不能產」跟「不用產」。
+    # 已同步 origin 時本機庫存數就是雲端看到的數，已經達標就是本來沒事做，
+    # 記 FAIL 只會讓當天的 attempts 紀錄多一筆看起來出事的行——那份紀錄會原樣貼進警示信。
+    local have
+    have="$("$PYTHON" "$DIR/apply_result.py" --queue-len 2>/dev/null || echo 0)"
+    if print -r -- "$have" | grep -qE '^[0-9]+$' && [ "$have" -ge "$want" ] && state_synced_with_origin; then
+      log "INFO: git pull 失敗，但庫存已有 $have 篇（目標 $want）且已同步 origin，本次無事可做。"
+      result SKIP "庫存已達標（$have/$want 篇，已同步）"
+      return 0
+    fi
     log "WARN: git pull 失敗，批次備稿放棄（庫存狀態不可信，硬產會疊在過期進度上）。"
     PREPARE_WHY="state 分支同步失敗：${GITPULL_LAST_ERR:-詳見 run.log}"; result FAIL "$PREPARE_WHY"
     return 1
@@ -490,8 +525,8 @@ send_local_alert() {  # $1=失敗原因
 }
 
 # 測試用：只載入函式、不執行任何班次。
-# 這一行是 2026-08-17 00:10 換來的：測試為了取用函式而 source 本檔，當時沒有這道閘，
-# 整支腳本一路跑到 do_send，把當天的信提早八小時寄了出去。
+# 這一行是 2026-08-17 00:10 換來的：tests/test_sync_guard.sh 為了取用函式而 source
+# 本檔，當時沒有這道閘，整支腳本一路跑到 do_send，把當天的信提早八小時寄了出去。
 # 位置不可下移——底下第一件事就是寫 run.log，再往下就是真的在跑班次了。
 [ -n "${LEARN_LIB_ONLY:-}" ] && return 0
 
