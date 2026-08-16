@@ -1,7 +1,9 @@
 {
   "current_index": 16,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "今天說明了「沒有統一例外處理」的痛點：每個 Controller 方法各自寫 try-catch 處理自訂例外（如 ResourceNotFoundException），會造成程式碼重複又分散，這是引入 @RestControllerAdvice 的動機。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
