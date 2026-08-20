@@ -1,12 +1,7 @@
 {
-  "current_index": 16,
-  "step": 5,
-  "covered": [
-    "今天說明了「沒有統一例外處理」的痛點：每個 Controller 方法各自寫 try-catch 處理自訂例外（如 ResourceNotFoundException），會造成程式碼重複又分散，這是引入 @RestControllerAdvice 的動機。",
-    "今天認識了 @RestControllerAdvice（全域例外處理中心）和 @ExceptionHandler（指定處理哪種例外的方法標註），並看了一個最簡單的 GlobalExceptionHandler class 範例，把 ResourceNotFoundException 的處理從各個 Controller 集中到單一地方。",
-    "今天把昨天最簡單的例外處理範例，從回傳純文字 String 升級為用 ResponseEntity<ErrorResponse> 回傳結構化 JSON 錯誤內容，並正確設定 HTTP 狀態碼（如 404 Not Found）。",
-    "今天在 GlobalExceptionHandler 裡加了一個 @ExceptionHandler(Exception.class) 當作萬用備援，把所有沒被特別處理的例外統一包成 ErrorResponse 並回傳 500 狀態碼，不再讓使用者看到原始的錯誤堆疊。"
-  ],
+  "current_index": 17,
+  "step": 1,
+  "covered": [],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
@@ -87,6 +82,11 @@
       "topic": "Bean Validation：@Valid 與 @NotNull",
       "finished": "2026-08-15",
       "steps": 4
+    },
+    {
+      "topic": "統一例外處理：@RestControllerAdvice",
+      "finished": "2026-08-20",
+      "steps": 5
     }
   ]
 }
