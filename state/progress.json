@@ -1,7 +1,9 @@
 {
   "current_index": 17,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "今天認識了 ORM 與 JPA 的概念，並學會 Repository 介面只要繼承 JpaRepository，CRUD 方法就會由 Spring Data JPA 自動實作出來。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
