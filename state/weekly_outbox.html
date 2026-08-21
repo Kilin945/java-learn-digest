@@ -1,82 +1,58 @@
-<div style="max-width:680px;margin:0 auto;padding:24px 16px;background-color:#edeefb;font-family:'Helvetica Neue',Arial,'PingFang TC','Microsoft JhengHei',sans-serif;">
+<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background-color:#e8f6f5;padding:24px;">
 
-  <div style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-
-    <div style="border-left:6px solid #6b72d6;padding:20px 24px;">
-      <div style="font-size:20px;font-weight:700;color:#5159c9;line-height:1.4;">
-        📘 每週回顧 · Java / Spring Boot · 2026-08-14
-      </div>
-      <div style="font-size:13px;color:#8a8fd8;margin-top:4px;">
-        這週你學了 DTO / Entity 分離 與 Bean Validation，來把它們串起來想一遍吧
-      </div>
-    </div>
-
-    <div style="padding:4px 24px 24px 24px;font-size:15px;line-height:1.7;color:#333333;">
-
-      <p style="margin:16px 0 20px 0;">
-        這週我們從「為什麼不能把 Entity 直接回傳給前端」出發，一路學到用 DTO 把關輸出入欄位，再加上 Bean Validation 做資料驗證。以下 8 題，混合這週的主題，幫你做主動回想（active recall）。建議先自己想過一輪答案，再往下對答案。
-      </p>
-
-      <ol style="padding-left:20px;margin:0;">
-        <li style="margin-bottom:14px;">
-          <b>（基礎）</b> Controller 如果直接把 User entity 回傳給前端，實際上會發生什麼事？為什麼這樣做很危險？
-        </li>
-        <li style="margin-bottom:14px;">
-          <b>（基礎）</b> DTO 和 Entity 是什麼關係？DTO 可以說是「對應資料庫表格的類別」嗎？
-        </li>
-        <li style="margin-bottom:14px;">
-          <b>（應用）</b> 要把 User entity 轉成只含 id、name、email 的 UserDto，通常怎麼寫這個轉換？
-        </li>
-        <li style="margin-bottom:14px;">
-          <b>（應用）</b> 前端呼叫「更新使用者」API 時，如果 Controller 參數直接用 User entity 接收，可能會被動什麼手腳？要怎麼設計 Request DTO 來避免？
-        </li>
-        <li style="margin-bottom:14px;">
-          <b>（應用）</b> 只在 DTO 欄位上寫 <code>@NotNull</code> 就會生效嗎？Controller 端還要加上什麼，Spring 才會真的觸發檢查、擋下不合法資料？
-        </li>
-        <li style="margin-bottom:14px;">
-          <b>（混合思考）</b> 如果 Request DTO 的 <code>name</code> 欄位傳進來的是空字串 <code>""</code> 或純空白字串 <code>"   "</code>，<code>@NotNull</code> 擋得住嗎？該換成哪個 annotation？
-        </li>
-        <li style="margin-bottom:14px;">
-          <b>（混合思考）</b> 承上題，如果還想限制 <code>name</code> 長度要在 2～20 字之間，並且驗證失敗時要回傳自訂錯誤訊息，要加上哪個 annotation、怎麼寫？它可以跟 <code>@NotBlank</code> 一起疊加使用嗎？
-        </li>
-        <li style="margin-bottom:14px;">
-          <b>（綜合）</b> 現在要設計一個「使用者註冊」用的 Request DTO：前端只能填 name、email，不能填 id、role；name 不可空白，長度限制 2～20 字。這個 DTO 會用到這週學的哪些技巧？請整合說明。
-        </li>
-      </ol>
-
-      <div style="margin-top:28px;padding-top:16px;border-top:2px dashed #c9cbf0;">
-        <div style="font-size:16px;font-weight:700;color:#5159c9;margin-bottom:12px;">
-          —— 解答 ——
-        </div>
-
-        <ol style="padding-left:20px;margin:0;">
-          <li style="margin-bottom:12px;">
-            Entity 對應資料庫表格，包含所有欄位（甚至 password、身分證號等機密資料）。直接回傳 entity，Spring 會把「全部欄位」一起序列化成 JSON 送出去，等於把機密資料也一起洩漏給前端。
-          </li>
-          <li style="margin-bottom:12px;">
-            DTO（Data Transfer Object）是自己寫的普通類別，只放要給前端看的欄位，跟資料庫表格<b>沒有直接關係</b>。它的角色是在 Entity 和前端之間做「欄位把關」，不是資料庫的對應物。
-          </li>
-          <li style="margin-bottom:12px;">
-            在 DTO 裡寫一個吃 Entity 的建構子（constructor），把要留下的欄位（id、name、email）一個一個複製過去；password 等機密欄位不寫進建構子，自然就不會出現在轉出來的 DTO、也不會被序列化送出。
-          </li>
-          <li style="margin-bottom:12px;">
-            如果直接用 entity 接收，前端可以硬塞 id、role 等不該由使用者決定的欄位，造成資料被竄改（例如把自己 role 改成 admin）。解法是另外寫一個 Request DTO，裡面只放允許填寫的欄位（如 name、email），沒宣告的欄位就算前端塞了也不會被綁定進來。
-          </li>
-          <li style="margin-bottom:12px;">
-            不夠。欄位上的 <code>@NotNull</code> 只是「宣告規則」，要在 Controller 方法的參數前加上 <code>@Valid</code>，Spring 才會真正觸發驗證；不合法的資料會被擋下並自動回傳 400 Bad Request。
-          </li>
-          <li style="margin-bottom:12px;">
-            擋不住。<code>@NotNull</code> 只檢查欄位是不是 <code>null</code>，空字串或純空白字串仍會通過。字串型別要用更嚴格的 <code>@NotBlank</code>，才能真正擋下空值 / 空字串 / 純空白字串。
-          </li>
-          <li style="margin-bottom:12px;">
-            用 <code>@Size(min = 2, max = 20, message = "name 長度需介於 2 到 20 字")</code>。可以，<code>@Size</code> 跟 <code>@NotBlank</code> 可以疊加在同一個欄位上一起使用，各自負責不同的驗證面向。
-          </li>
-          <li style="margin-bottom:12px;">
-            會用到：① 寫一個獨立的 Request DTO（只放 name、email 兩個欄位，不含 id、role，避免竄改）；② 在 name 欄位疊加 <code>@NotBlank</code>（擋空值/空字串/純空白）與 <code>@Size(min=2, max=20)</code>（限制長度並自訂錯誤訊息）；③ Controller 方法參數加上 <code>@Valid</code>，讓 Spring 真正觸發這些驗證，不合法就回 400。
-          </li>
-        </ol>
-      </div>
-
-    </div>
+  <div style="border-left:6px solid #2bb0a6;background:#ffffff;border-radius:8px;padding:16px 20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+    <span style="font-size:18px;font-weight:700;color:#0f9b9b;">📘 每週回顧 · Java / Spring Boot · 2026-08-21</span>
   </div>
+
+  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.08);color:#333;font-size:15px;line-height:1.7;">
+    <p style="margin-top:0;color:#0f9b9b;font-weight:600;">這週我們從 Bean Validation 收尾，一路把「統一例外處理」蓋成一棟完整的房子，最後又開了一扇新窗——Spring Data JPA。來做幾題主動回想，把這些串起來 💪</p>
+
+    <ol style="padding-left:20px;margin:0;">
+      <li style="margin-bottom:14px;">
+        <b>Q1（Bean Validation 收尾）：</b> 當 <code>@Valid</code> 標註的欄位驗證失敗時，Spring 預設會丟出哪種例外？我們用什麼註解組合把它攔下來、整理成「欄位對應錯誤原因」的乾淨 JSON？
+      </li>
+      <li style="margin-bottom:14px;">
+        <b>Q2（動機回想）：</b> 在還沒有 <code>@RestControllerAdvice</code> 之前，每個 Controller 各自 try-catch 處理 <code>ResourceNotFoundException</code> 會遇到什麼具體痛點？這個痛點怎麼促成了「統一例外處理」這個主題？
+      </li>
+      <li style="margin-bottom:14px;">
+        <b>Q3（角色分工）：</b> <code>@RestControllerAdvice</code> 和 <code>@ExceptionHandler</code> 各自負責什麼？請用一句話說明兩者如何合作，把分散在各 Controller 的例外處理集中到一個 <code>GlobalExceptionHandler</code>。
+      </li>
+      <li style="margin-bottom:14px;">
+        <b>Q4（進化過程）：</b> 我們把最早回傳純文字 String 的例外處理範例，升級成回傳 <code>ResponseEntity&lt;ErrorResponse&gt;</code>。這個升級解決了什麼問題？為什麼順便設定正確的 HTTP 狀態碼（例如 404）很重要？
+      </li>
+      <li style="margin-bottom:14px;">
+        <b>Q5（萬用備援）：</b> 為什麼要在 <code>GlobalExceptionHandler</code> 裡額外加一個 <code>@ExceptionHandler(Exception.class)</code>？它回傳的狀態碼通常是多少？如果沒有它，使用者會看到什麼？
+      </li>
+      <li style="margin-bottom:14px;">
+        <b>Q6（整合＋原則）：</b> 假設同一個 <code>GlobalExceptionHandler</code> 裡同時有 <code>ResourceNotFoundException</code> 專屬的 handler 和 <code>Exception.class</code> 萬用 handler，當丟出 <code>ResourceNotFoundException</code> 時，Spring 會選哪一個？依據的是什麼原則？
+      </li>
+      <li style="margin-bottom:14px;">
+        <b>Q7（新主題）：</b> 什麼是 ORM？在 Spring Data JPA 裡，Repository 介面只要繼承 <code>JpaRepository</code>，就能得到哪些 CRUD 方法而不用自己寫實作？
+      </li>
+      <li style="margin-bottom:0;">
+        <b>Q8（跨主題整合，進階）：</b> 如果在一個繼承 <code>JpaRepository</code> 的 Repository 中用 <code>findById(id)</code> 查不到資料，你會怎麼設計程式碼，讓它丟出 <code>ResourceNotFoundException</code>，並讓這週學到的 <code>GlobalExceptionHandler</code> 正確接手、回傳結構化的 404 JSON？
+      </li>
+    </ol>
+  </div>
+
+  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);color:#333;font-size:15px;line-height:1.7;">
+    <p style="margin-top:0;font-weight:700;color:#2bb0a6;">—— 解答 ——</p>
+
+    <p><b>A1：</b> 會丟出 <code>MethodArgumentNotValidException</code>。用 <code>@RestControllerAdvice</code> 搭配 <code>@ExceptionHandler(MethodArgumentNotValidException.class)</code> 攔截它，再從例外物件裡取出每個欄位的錯誤訊息，組成乾淨的 JSON 回應。</p>
+
+    <p><b>A2：</b> 痛點是程式碼重複又分散——每個 Controller 方法都要自己寫一次 try-catch，難以維護、容易漏掉、風格也不一致。這個痛點正是引入 <code>@RestControllerAdvice</code>（全域例外處理中心）的動機：把邏輯集中到一個地方。</p>
+
+    <p><b>A3：</b> <code>@RestControllerAdvice</code> 標註「這是一個全域例外處理中心」的 class；<code>@ExceptionHandler</code> 標註在 class 裡的方法上，指定「這個方法要處理哪一種例外」。兩者合作，就能把原本散落各 Controller 的處理邏輯，集中變成一個 <code>GlobalExceptionHandler</code>。</p>
+
+    <p><b>A4：</b> 純文字 String 對前端來說不好解析、資訊也不夠結構化；升級成 <code>ResponseEntity&lt;ErrorResponse&gt;</code> 後，回應變成一致的 JSON 結構（例如包含 message、status 等欄位），前端可以穩定地解析。正確設定狀態碼（如 404）則讓 HTTP 語意正確，前端也能依狀態碼做不同處理，而不是永遠拿到 200。</p>
+
+    <p><b>A5：</b> 因為程式一定還有沒被特別預期、沒被個別 handler 涵蓋到的例外（例如 NullPointerException），如果沒有萬用備援，使用者會直接看到伺服器原始的錯誤堆疊（stack trace），既不專業也可能洩漏系統細節。加上 <code>@ExceptionHandler(Exception.class)</code> 後，這些例外會被統一包成 <code>ErrorResponse</code>，回傳 500 Internal Server Error。</p>
+
+    <p><b>A6：</b> Spring 會選 <code>ResourceNotFoundException</code> 專屬的 handler。依據的原則是「最精確符合」（most specific match）——Spring 會優先挑選跟實際丟出的例外型別最接近、最具體的 <code>@ExceptionHandler</code>，只有在找不到更精確的對應時，才會落到 <code>Exception.class</code> 這個萬用備援。</p>
+
+    <p><b>A7：</b> ORM（Object-Relational Mapping）是把資料庫的資料表對應成程式裡的物件，讓開發者用物件操作取代直接寫 SQL。在 Spring Data JPA 中，Repository 介面只要 <code>extends JpaRepository</code>，就會自動獲得 <code>save()</code>、<code>findById()</code>、<code>findAll()</code>、<code>deleteById()</code> 等基本 CRUD 方法，完全不用自己寫實作。</p>
+
+    <p style="margin-bottom:0;"><b>A8：</b> 可以在 Service 層呼叫 <code>repository.findById(id)</code>，它回傳的是 <code>Optional&lt;T&gt;</code>；用 <code>.orElseThrow(() -&gt; new ResourceNotFoundException(...))</code> 在查不到資料時主動丟出例外。因為這個例外型別已經在這週建好的 <code>GlobalExceptionHandler</code> 裡有對應的 <code>@ExceptionHandler</code>，Spring 會自動接手，回傳結構化的 <code>ErrorResponse</code> JSON 並設定 404 狀態碼——這正是這週兩個主題串起來的地方。</p>
+  </div>
+
 </div>
