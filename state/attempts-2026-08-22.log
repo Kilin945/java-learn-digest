@@ -7,3 +7,4 @@
 2026-08-22 18:38:29 RESULT prepare SKIP outbox 已備妥
 2026-08-22 18:38:34 RESULT prepare-weekly SKIP 週報已備妥（2026-W34）
 2026-08-22 23:01:27 RESULT prepare FAIL 網路未就緒
+2026-08-22 23:09:19 RESULT prepare-weekly FAIL 網路未就緒
