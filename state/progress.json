@@ -1,9 +1,10 @@
 {
   "current_index": 17,
-  "step": 3,
+  "step": 4,
   "covered": [
     "今天認識了 ORM 與 JPA 的概念，並學會 Repository 介面只要繼承 JpaRepository，CRUD 方法就會由 Spring Data JPA 自動實作出來。",
-    "Spring Data JPA 可以用方法名稱（例如 findByEmail、findByNameContaining）自動產生查詢，不需要自己寫 SQL 或實作邏輯。"
+    "Spring Data JPA 可以用方法名稱（例如 findByEmail、findByNameContaining）自動產生查詢，不需要自己寫 SQL 或實作邏輯。",
+    "當方法名稱查詢無法應付複雜條件時，可以用 @Query 搭配 JPQL 自己寫查詢語法，並用 @Param 安全地綁定參數，回傳值常包成 Optional 來表示可能查無資料。"
   ],
   "completed_topics": [
     {
