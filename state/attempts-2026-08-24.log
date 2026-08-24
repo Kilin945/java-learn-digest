@@ -1,0 +1,7 @@
+2026-08-24 11:56:38 RESULT prepare OK 備稿完成（明天要寄的課）
+2026-08-24 12:00:10 RESULT prepare SKIP outbox 已備妥
+2026-08-24 12:46:36 RESULT prepare SKIP 庫存已備妥且已同步（git pull 失敗，暫不產新稿）
+2026-08-24 13:39:33 RESULT prepare SKIP outbox 已備妥
+2026-08-24 13:53:30 RESULT prepare SKIP outbox 已備妥
+2026-08-24 13:56:30 RESULT prepare SKIP outbox 已備妥
+2026-08-24 15:31:38 RESULT prepare FAIL 網路未就緒
