@@ -1,12 +1,7 @@
 {
-  "current_index": 17,
-  "step": 5,
-  "covered": [
-    "今天認識了 ORM 與 JPA 的概念，並學會 Repository 介面只要繼承 JpaRepository，CRUD 方法就會由 Spring Data JPA 自動實作出來。",
-    "Spring Data JPA 可以用方法名稱（例如 findByEmail、findByNameContaining）自動產生查詢，不需要自己寫 SQL 或實作邏輯。",
-    "當方法名稱查詢無法應付複雜條件時，可以用 @Query 搭配 JPQL 自己寫查詢語法，並用 @Param 安全地綁定參數，回傳值常包成 Optional 來表示可能查無資料。",
-    "Repository 方法只要多加一個 Pageable 參數（可用 PageRequest.of() 建立，並可帶入 Sort 排序條件），Spring Data JPA 就會自動處理分頁與排序，回傳的 Page<T> 除了資料本身還附帶總筆數、總頁數等資訊。"
-  ],
+  "current_index": 18,
+  "step": 1,
+  "covered": [],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
@@ -91,6 +86,11 @@
     {
       "topic": "統一例外處理：@RestControllerAdvice",
       "finished": "2026-08-20",
+      "steps": 5
+    },
+    {
+      "topic": "Spring Data JPA 與 Repository 介面",
+      "finished": "2026-08-25",
       "steps": 5
     }
   ]
