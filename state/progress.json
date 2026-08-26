@@ -1,7 +1,9 @@
 {
   "current_index": 18,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "Entity 用 @Entity 標記成對應資料表的 class，並用 @Id 標記其中的主鍵欄位，作為每一列資料的唯一識別依據。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
