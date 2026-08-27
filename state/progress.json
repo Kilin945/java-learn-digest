@@ -1,8 +1,9 @@
 {
   "current_index": 18,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "Entity 用 @Entity 標記成對應資料表的 class，並用 @Id 標記其中的主鍵欄位，作為每一列資料的唯一識別依據。"
+    "Entity 用 @Entity 標記成對應資料表的 class，並用 @Id 標記其中的主鍵欄位，作為每一列資料的唯一識別依據。",
+    "Entity class 裡的一般欄位會自動對應到資料表的欄位（column），Java 的駝峰式命名（camelCase）會自動轉成資料庫慣用的蛇形命名（snake_case），不需要額外手動設定。"
   ],
   "completed_topics": [
     {

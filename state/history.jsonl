@@ -75,3 +75,4 @@
 {"date": "2026-08-24", "topic": "Spring Data JPA 與 Repository 介面", "step": 4, "summary": "Repository 方法只要多加一個 Pageable 參數（可用 PageRequest.of() 建立，並可帶入 Sort 排序條件），Spring Data JPA 就會自動處理分頁與排序，回傳的 Page<T> 除了資料本身還附帶總筆數、總頁數等資訊。"}
 {"date": "2026-08-25", "topic": "Spring Data JPA 與 Repository 介面", "step": 5, "summary": "Repository 介面把 JpaRepository 繼承而來的基本 CRUD、方法名稱查詢（Derived Query）、@Query 自訂 JPQL 查詢、以及 Pageable 分頁排序這四項工具整合成一套完整的資料存取寫法：你只描述「要什麼資料」，Spring Data JPA 就幫你把「怎麼拿」的實作生出來。"}
 {"date": "2026-08-26", "topic": "Entity 對應：@Entity / @Id / 關聯", "step": 1, "summary": "Entity 用 @Entity 標記成對應資料表的 class，並用 @Id 標記其中的主鍵欄位，作為每一列資料的唯一識別依據。"}
+{"date": "2026-08-27", "topic": "Entity 對應：@Entity / @Id / 關聯", "step": 2, "summary": "Entity class 裡的一般欄位會自動對應到資料表的欄位（column），Java 的駝峰式命名（camelCase）會自動轉成資料庫慣用的蛇形命名（snake_case），不需要額外手動設定。"}
