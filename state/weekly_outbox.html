@@ -1,58 +1,67 @@
-<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background-color:#e8f6f5;padding:24px;">
+<div style="max-width:680px;margin:0 auto;padding:24px;background:#eef4ff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang TC','Microsoft JhengHei',sans-serif;color:#333;font-size:15px;line-height:1.7;">
 
-  <div style="border-left:6px solid #2bb0a6;background:#ffffff;border-radius:8px;padding:16px 20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <span style="font-size:18px;font-weight:700;color:#0f9b9b;">📘 每週回顧 · Java / Spring Boot · 2026-08-21</span>
+  <div style="background:#ffffff;border-left:6px solid #5b8def;border-radius:10px;padding:16px 20px;margin-bottom:22px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+    <span style="font-size:19px;font-weight:600;color:#3b6cf6;">📘 每週回顧 · Java / Spring Boot · 2026-08-28</span>
   </div>
 
-  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.08);color:#333;font-size:15px;line-height:1.7;">
-    <p style="margin-top:0;color:#0f9b9b;font-weight:600;">這週我們從 Bean Validation 收尾，一路把「統一例外處理」蓋成一棟完整的房子，最後又開了一扇新窗——Spring Data JPA。來做幾題主動回想，把這些串起來 💪</p>
-
-    <ol style="padding-left:20px;margin:0;">
+  <div style="background:#ffffff;border-radius:10px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+    <p style="margin:0 0 12px 0;">這週你走完了 <strong>Spring Data JPA 與 Repository 介面</strong> 整個系列，並開始踏入 <strong>Entity 對應</strong>。在看解答之前，先自己想想看，這樣記憶才會黏得住 💪</p>
+    <ol style="margin:0;padding-left:20px;">
       <li style="margin-bottom:14px;">
-        <b>Q1（Bean Validation 收尾）：</b> 當 <code>@Valid</code> 標註的欄位驗證失敗時，Spring 預設會丟出哪種例外？我們用什麼註解組合把它攔下來、整理成「欄位對應錯誤原因」的乾淨 JSON？
+        <strong>Entity 基礎：</strong> <code>@Entity</code> 和 <code>@Id</code> 這兩個 annotation 各自的作用是什麼？沒有 <code>@Id</code> 會發生什麼問題？
       </li>
       <li style="margin-bottom:14px;">
-        <b>Q2（動機回想）：</b> 在還沒有 <code>@RestControllerAdvice</code> 之前，每個 Controller 各自 try-catch 處理 <code>ResourceNotFoundException</code> 會遇到什麼具體痛點？這個痛點怎麼促成了「統一例外處理」這個主題？
+        <strong>命名轉換：</strong> 如果 Entity 裡有一個欄位叫 <code>userName</code>，資料表裡對應的欄位名稱長怎樣？這個轉換是你要自己設定，還是 Spring 自動處理？
       </li>
       <li style="margin-bottom:14px;">
-        <b>Q3（角色分工）：</b> <code>@RestControllerAdvice</code> 和 <code>@ExceptionHandler</code> 各自負責什麼？請用一句話說明兩者如何合作，把分散在各 Controller 的例外處理集中到一個 <code>GlobalExceptionHandler</code>。
+        <strong>Derived Query：</strong> 想查詢「email 包含某個關鍵字」的使用者，方法名稱該怎麼寫？完全不用寫 SQL 是怎麼辦到的？
       </li>
       <li style="margin-bottom:14px;">
-        <b>Q4（進化過程）：</b> 我們把最早回傳純文字 String 的例外處理範例，升級成回傳 <code>ResponseEntity&lt;ErrorResponse&gt;</code>。這個升級解決了什麼問題？為什麼順便設定正確的 HTTP 狀態碼（例如 404）很重要？
+        <strong>@Query：</strong> 什麼情況下方法名稱查詢（Derived Query）不夠用，得改用 <code>@Query</code>？回傳型別為什麼常常包成 <code>Optional</code>？
       </li>
       <li style="margin-bottom:14px;">
-        <b>Q5（萬用備援）：</b> 為什麼要在 <code>GlobalExceptionHandler</code> 裡額外加一個 <code>@ExceptionHandler(Exception.class)</code>？它回傳的狀態碼通常是多少？如果沒有它，使用者會看到什麼？
+        <strong>分頁排序：</strong> 想要「查全部使用者、依註冊時間新到舊排序、每頁 20 筆」，Repository 方法要怎麼設計？回傳的 <code>Page&lt;T&gt;</code> 除了資料本身還多帶了什麼？
       </li>
       <li style="margin-bottom:14px;">
-        <b>Q6（整合＋原則）：</b> 假設同一個 <code>GlobalExceptionHandler</code> 裡同時有 <code>ResourceNotFoundException</code> 專屬的 handler 和 <code>Exception.class</code> 萬用 handler，當丟出 <code>ResourceNotFoundException</code> 時，Spring 會選哪一個？依據的是什麼原則？
+        <strong>綜合整理：</strong> Repository 介面裡「CRUD（繼承 JpaRepository）」「Derived Query」「@Query」「Pageable」這四樣工具，各自解決什麼問題？為什麼說它們是「你描述要什麼，Spring Data JPA 生出怎麼拿」？
       </li>
       <li style="margin-bottom:14px;">
-        <b>Q7（新主題）：</b> 什麼是 ORM？在 Spring Data JPA 裡，Repository 介面只要繼承 <code>JpaRepository</code>，就能得到哪些 CRUD 方法而不用自己寫實作？
+        <strong>主鍵產生：</strong> <code>@GeneratedValue(strategy = GenerationType.IDENTITY)</code> 是做什麼用的？它跟 <code>@Id</code> 是什麼關係？不加這個 annotation 的話，新增資料時 id 要怎麼給？
       </li>
-      <li style="margin-bottom:0;">
-        <b>Q8（跨主題整合，進階）：</b> 如果在一個繼承 <code>JpaRepository</code> 的 Repository 中用 <code>findById(id)</code> 查不到資料，你會怎麼設計程式碼，讓它丟出 <code>ResourceNotFoundException</code>，並讓這週學到的 <code>GlobalExceptionHandler</code> 正確接手、回傳結構化的 404 JSON？
+      <li>
+        <strong>跨主題整合：</strong> 假設你要做一個對應 <code>user_profiles</code> 表的 Entity，主鍵自動遞增，並提供「依姓名關鍵字查詢 + 分頁 + 依註冊時間排序」的功能——這牽涉到本週哪幾個概念？大致的實作流程會是什麼樣子？
       </li>
     </ol>
   </div>
 
-  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);color:#333;font-size:15px;line-height:1.7;">
-    <p style="margin-top:0;font-weight:700;color:#2bb0a6;">—— 解答 ——</p>
-
-    <p><b>A1：</b> 會丟出 <code>MethodArgumentNotValidException</code>。用 <code>@RestControllerAdvice</code> 搭配 <code>@ExceptionHandler(MethodArgumentNotValidException.class)</code> 攔截它，再從例外物件裡取出每個欄位的錯誤訊息，組成乾淨的 JSON 回應。</p>
-
-    <p><b>A2：</b> 痛點是程式碼重複又分散——每個 Controller 方法都要自己寫一次 try-catch，難以維護、容易漏掉、風格也不一致。這個痛點正是引入 <code>@RestControllerAdvice</code>（全域例外處理中心）的動機：把邏輯集中到一個地方。</p>
-
-    <p><b>A3：</b> <code>@RestControllerAdvice</code> 標註「這是一個全域例外處理中心」的 class；<code>@ExceptionHandler</code> 標註在 class 裡的方法上，指定「這個方法要處理哪一種例外」。兩者合作，就能把原本散落各 Controller 的處理邏輯，集中變成一個 <code>GlobalExceptionHandler</code>。</p>
-
-    <p><b>A4：</b> 純文字 String 對前端來說不好解析、資訊也不夠結構化；升級成 <code>ResponseEntity&lt;ErrorResponse&gt;</code> 後，回應變成一致的 JSON 結構（例如包含 message、status 等欄位），前端可以穩定地解析。正確設定狀態碼（如 404）則讓 HTTP 語意正確，前端也能依狀態碼做不同處理，而不是永遠拿到 200。</p>
-
-    <p><b>A5：</b> 因為程式一定還有沒被特別預期、沒被個別 handler 涵蓋到的例外（例如 NullPointerException），如果沒有萬用備援，使用者會直接看到伺服器原始的錯誤堆疊（stack trace），既不專業也可能洩漏系統細節。加上 <code>@ExceptionHandler(Exception.class)</code> 後，這些例外會被統一包成 <code>ErrorResponse</code>，回傳 500 Internal Server Error。</p>
-
-    <p><b>A6：</b> Spring 會選 <code>ResourceNotFoundException</code> 專屬的 handler。依據的原則是「最精確符合」（most specific match）——Spring 會優先挑選跟實際丟出的例外型別最接近、最具體的 <code>@ExceptionHandler</code>，只有在找不到更精確的對應時，才會落到 <code>Exception.class</code> 這個萬用備援。</p>
-
-    <p><b>A7：</b> ORM（Object-Relational Mapping）是把資料庫的資料表對應成程式裡的物件，讓開發者用物件操作取代直接寫 SQL。在 Spring Data JPA 中，Repository 介面只要 <code>extends JpaRepository</code>，就會自動獲得 <code>save()</code>、<code>findById()</code>、<code>findAll()</code>、<code>deleteById()</code> 等基本 CRUD 方法，完全不用自己寫實作。</p>
-
-    <p style="margin-bottom:0;"><b>A8：</b> 可以在 Service 層呼叫 <code>repository.findById(id)</code>，它回傳的是 <code>Optional&lt;T&gt;</code>；用 <code>.orElseThrow(() -&gt; new ResourceNotFoundException(...))</code> 在查不到資料時主動丟出例外。因為這個例外型別已經在這週建好的 <code>GlobalExceptionHandler</code> 裡有對應的 <code>@ExceptionHandler</code>，Spring 會自動接手，回傳結構化的 <code>ErrorResponse</code> JSON 並設定 404 狀態碼——這正是這週兩個主題串起來的地方。</p>
+  <div style="background:#ffffff;border-radius:10px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+    <p style="margin:0 0 14px 0;font-weight:600;color:#3b6cf6;">—— 解答 ——</p>
+    <ol style="margin:0;padding-left:20px;">
+      <li style="margin-bottom:12px;">
+        <code>@Entity</code> 把一個 class 標記成「對應到資料表」的物件；<code>@Id</code> 標記其中一個欄位作為主鍵（primary key），是每一列資料的唯一識別依據。沒有 <code>@Id</code>，JPA 不知道哪個欄位能唯一辨識一筆資料，整個 Entity 會設定失敗。
+      </li>
+      <li style="margin-bottom:12px;">
+        會自動轉成 <code>user_name</code>（snake_case）。這是 Spring Data JPA 的預設命名策略（naming strategy）自動處理的，camelCase → snake_case，不需要手動設定。
+      </li>
+      <li style="margin-bottom:12px;">
+        寫 <code>findByEmailContaining(String keyword)</code> 就可以。Spring Data JPA 會解析方法名稱裡的 <code>findBy</code>、欄位名 <code>Email</code>、關鍵字 <code>Containing</code>，自動生成對應的查詢實作，不需要你寫 SQL 或實作邏輯。
+      </li>
+      <li style="margin-bottom:12px;">
+        當查詢條件變複雜（多表 join、動態條件、聚合等）到方法名稱寫不出來或會變得又臭又長時，就改用 <code>@Query</code> 搭配 JPQL 自己寫查詢語法，並用 <code>@Param</code> 安全地綁定參數（避免 SQL injection）。回傳包成 <code>Optional</code> 是因為查詢結果可能查無資料（no data found），用 <code>Optional</code> 明確表達「可能是空的」，逼呼叫端處理這個情況。
+      </li>
+      <li style="margin-bottom:12px;">
+        在 Repository 方法多加一個 <code>Pageable</code> 參數即可，呼叫時用 <code>PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending())</code> 建立。回傳的 <code>Page&lt;T&gt;</code> 除了這一頁的資料，還附帶總筆數（total elements）、總頁數（total pages）等分頁資訊。
+      </li>
+      <li style="margin-bottom:12px;">
+        CRUD（繼承 <code>JpaRepository</code>）處理最基本的新增/查詢/修改/刪除；Derived Query 處理「條件明確、可以用方法名稱描述」的查詢；<code>@Query</code> 處理「條件太複雜，方法名稱寫不出來」的查詢；Pageable 處理「資料量大，需要分頁與排序」的情境。四者合起來，你只要「描述想要什麼資料」，Spring Data JPA 就把「怎麼拿」的實作生出來，這就是它的核心設計哲學。
+      </li>
+      <li style="margin-bottom:12px;">
+        它讓資料庫在新增資料時自動遞增產生主鍵值（auto-increment），你不用自己指定 id。它是搭配 <code>@Id</code> 使用的：<code>@Id</code> 宣告「這是主鍵」，<code>@GeneratedValue</code> 進一步宣告「這個主鍵值怎麼產生」。如果不加，新增資料時就得自己手動設定一個唯一的 id 值。
+      </li>
+      <li>
+        會用到：<code>@Entity</code> + <code>@Id</code> + <code>@GeneratedValue(strategy = GenerationType.IDENTITY)</code> 定義 Entity 與主鍵產生方式；欄位命名交給 Spring 自動轉 snake_case；Repository 用 Derived Query（如 <code>findByNameContaining</code>）或 <code>@Query</code> 處理姓名關鍵字查詢；最後在方法簽名加上 <code>Pageable</code> 參數，呼叫時傳入 <code>PageRequest.of(page, size, Sort.by("registeredAt"))</code>，回傳 <code>Page&lt;UserProfile&gt;</code>。整個流程就是這週學的四塊拼在一起。
+      </li>
+    </ol>
   </div>
 
 </div>
