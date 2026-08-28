@@ -76,3 +76,4 @@
 {"date": "2026-08-25", "topic": "Spring Data JPA 與 Repository 介面", "step": 5, "summary": "Repository 介面把 JpaRepository 繼承而來的基本 CRUD、方法名稱查詢（Derived Query）、@Query 自訂 JPQL 查詢、以及 Pageable 分頁排序這四項工具整合成一套完整的資料存取寫法：你只描述「要什麼資料」，Spring Data JPA 就幫你把「怎麼拿」的實作生出來。"}
 {"date": "2026-08-26", "topic": "Entity 對應：@Entity / @Id / 關聯", "step": 1, "summary": "Entity 用 @Entity 標記成對應資料表的 class，並用 @Id 標記其中的主鍵欄位，作為每一列資料的唯一識別依據。"}
 {"date": "2026-08-27", "topic": "Entity 對應：@Entity / @Id / 關聯", "step": 2, "summary": "Entity class 裡的一般欄位會自動對應到資料表的欄位（column），Java 的駝峰式命名（camelCase）會自動轉成資料庫慣用的蛇形命名（snake_case），不需要額外手動設定。"}
+{"date": "2026-08-28", "topic": "Entity 對應：@Entity / @Id / 關聯", "step": 3, "summary": "主鍵欄位可以再加上 @GeneratedValue(strategy = GenerationType.IDENTITY)，讓資料庫自動遞增產生主鍵值，不用自己手動指定 id。"}
