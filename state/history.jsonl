@@ -78,3 +78,4 @@
 {"date": "2026-08-27", "topic": "Entity 對應：@Entity / @Id / 關聯", "step": 2, "summary": "Entity class 裡的一般欄位會自動對應到資料表的欄位（column），Java 的駝峰式命名（camelCase）會自動轉成資料庫慣用的蛇形命名（snake_case），不需要額外手動設定。"}
 {"date": "2026-08-28", "topic": "Entity 對應：@Entity / @Id / 關聯", "step": 3, "summary": "主鍵欄位可以再加上 @GeneratedValue(strategy = GenerationType.IDENTITY)，讓資料庫自動遞增產生主鍵值，不用自己手動指定 id。"}
 {"date": "2026-08-29", "topic": "Entity 對應：@Entity / @Id / 關聯", "step": 4, "summary": "Entity 之間的關聯可以用 @ManyToOne 標記在「多」的那一方，並搭配 @JoinColumn 指定外鍵欄位名稱，讓多筆資料能指向同一筆另一個 Entity 的資料。"}
+{"date": "2026-08-30", "topic": "Entity 對應：@Entity / @Id / 關聯", "step": 5, "summary": "Entity 之間的雙向關聯可以在「一」的那方用 @OneToMany(mappedBy = \"欄位名\") 建立唯讀清單，指向「多」的那方，不會在資料庫多建外鍵，因為外鍵已經由 @ManyToOne 那邊維護。"}
