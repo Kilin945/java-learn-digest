@@ -1,7 +1,9 @@
 {
   "current_index": 19,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "Derived Query Method（衍生查詢方法）是靠 Repository 方法名稱的命名規則（例如 findByUsername），讓 Spring Data JPA 自動翻譯成 SQL 查詢，不用自己手寫查詢語法。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
