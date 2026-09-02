@@ -81,3 +81,4 @@
 {"date": "2026-08-30", "topic": "Entity 對應：@Entity / @Id / 關聯", "step": 5, "summary": "Entity 之間的雙向關聯可以在「一」的那方用 @OneToMany(mappedBy = \"欄位名\") 建立唯讀清單，指向「多」的那方，不會在資料庫多建外鍵，因為外鍵已經由 @ManyToOne 那邊維護。"}
 {"date": "2026-08-31", "topic": "衍生查詢 vs @Query", "step": 1, "summary": "Derived Query Method（衍生查詢方法）是靠 Repository 方法名稱的命名規則（例如 findByUsername），讓 Spring Data JPA 自動翻譯成 SQL 查詢，不用自己手寫查詢語法。"}
 {"date": "2026-09-01", "topic": "衍生查詢 vs @Query", "step": 2, "summary": "衍生查詢方法可以用 And / Or 把兩個以上的欄位條件組合成一個方法名稱（例如 findByUsernameAndStatus），Spring Data JPA 會自動組成對應的 SQL WHERE 條件，且方法名稱裡欄位的順序要跟參數順序一致。"}
+{"date": "2026-09-02", "topic": "衍生查詢 vs @Query", "step": 3, "summary": "當衍生查詢方法名稱因為條件太多變得又長又難讀時，可以改用 @Query 標註直接寫 JPQL 查詢語法，並搭配 @Param 把方法參數對應到 JPQL 裡的 :佔位符。"}

@@ -1,9 +1,10 @@
 {
   "current_index": 19,
-  "step": 3,
+  "step": 4,
   "covered": [
     "Derived Query Method（衍生查詢方法）是靠 Repository 方法名稱的命名規則（例如 findByUsername），讓 Spring Data JPA 自動翻譯成 SQL 查詢，不用自己手寫查詢語法。",
-    "衍生查詢方法可以用 And / Or 把兩個以上的欄位條件組合成一個方法名稱（例如 findByUsernameAndStatus），Spring Data JPA 會自動組成對應的 SQL WHERE 條件，且方法名稱裡欄位的順序要跟參數順序一致。"
+    "衍生查詢方法可以用 And / Or 把兩個以上的欄位條件組合成一個方法名稱（例如 findByUsernameAndStatus），Spring Data JPA 會自動組成對應的 SQL WHERE 條件，且方法名稱裡欄位的順序要跟參數順序一致。",
+    "當衍生查詢方法名稱因為條件太多變得又長又難讀時，可以改用 @Query 標註直接寫 JPQL 查詢語法，並搭配 @Param 把方法參數對應到 JPQL 裡的 :佔位符。"
   ],
   "completed_topics": [
     {
