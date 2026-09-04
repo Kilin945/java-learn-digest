@@ -1,67 +1,77 @@
-<div style="max-width:680px;margin:0 auto;padding:24px;background:#eef4ff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang TC','Microsoft JhengHei',sans-serif;color:#333;font-size:15px;line-height:1.7;">
+```html
+<div style="max-width:680px;margin:0 auto;padding:24px;background:#e8f4fb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#333;line-height:1.7;">
 
-  <div style="background:#ffffff;border-left:6px solid #5b8def;border-radius:10px;padding:16px 20px;margin-bottom:22px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-    <span style="font-size:19px;font-weight:600;color:#3b6cf6;">📘 每週回顧 · Java / Spring Boot · 2026-08-28</span>
+  <div style="background:#ffffff;border-left:6px solid #3f97c9;border-radius:8px;padding:16px 20px;margin-bottom:20px;font-size:18px;font-weight:600;color:#2b7fb0;">
+    📘 每週回顧 · Java / Spring Boot · 2026-09-04
   </div>
 
-  <div style="background:#ffffff;border-radius:10px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-    <p style="margin:0 0 12px 0;">這週你走完了 <strong>Spring Data JPA 與 Repository 介面</strong> 整個系列，並開始踏入 <strong>Entity 對應</strong>。在看解答之前，先自己想想看，這樣記憶才會黏得住 💪</p>
-    <ol style="margin:0;padding-left:20px;">
+  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:16px;">
+    <p style="margin:0 0 12px 0;font-size:15px;color:#555;">
+      這週從 Entity 關聯一路走到 @Transactional，資訊量不小。花幾分鐘試著先自己回想再看解答，記憶會扎實很多。
+    </p>
+  </div>
+
+  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:16px;">
+    <p style="margin:0 0 14px 0;font-size:16px;font-weight:600;color:#2b7fb0;">🧠 本週回想題</p>
+    <ol style="margin:0;padding-left:20px;font-size:15px;">
       <li style="margin-bottom:14px;">
-        <strong>Entity 基礎：</strong> <code>@Entity</code> 和 <code>@Id</code> 這兩個 annotation 各自的作用是什麼？沒有 <code>@Id</code> 會發生什麼問題？
+        <b>@ManyToOne</b> 通常標在關聯的哪一方（「一」還是「多」）？搭配的 <code>@JoinColumn</code> 又是用來做什麼的？
       </li>
       <li style="margin-bottom:14px;">
-        <strong>命名轉換：</strong> 如果 Entity 裡有一個欄位叫 <code>userName</code>，資料表裡對應的欄位名稱長怎樣？這個轉換是你要自己設定，還是 Spring 自動處理？
+        如果 Order 有很多 OrderItem，你想在 Order 這邊也能直接拿到它的 OrderItem 清單，該怎麼寫？這個關聯會不會在資料庫多一個外鍵？
       </li>
       <li style="margin-bottom:14px;">
-        <strong>Derived Query：</strong> 想查詢「email 包含某個關鍵字」的使用者，方法名稱該怎麼寫？完全不用寫 SQL 是怎麼辦到的？
+        什麼是 Derived Query Method（衍生查詢方法）？寫一個範例：用 username 查使用者的方法名稱該怎麼命名？
       </li>
       <li style="margin-bottom:14px;">
-        <strong>@Query：</strong> 什麼情況下方法名稱查詢（Derived Query）不夠用，得改用 <code>@Query</code>？回傳型別為什麼常常包成 <code>Optional</code>？
+        如果要用衍生查詢同時依 username 和 status 查詢，方法名稱怎麼寫？方法參數的順序需要注意什麼？
       </li>
       <li style="margin-bottom:14px;">
-        <strong>分頁排序：</strong> 想要「查全部使用者、依註冊時間新到舊排序、每頁 20 筆」，Repository 方法要怎麼設計？回傳的 <code>Page&lt;T&gt;</code> 除了資料本身還多帶了什麼？
+        承上題，如果條件變成 5 個欄位、還要 JOIN 另一張表，你會怎麼選擇（繼續用衍生查詢，還是換方式）？換的話該怎麼寫？
       </li>
       <li style="margin-bottom:14px;">
-        <strong>綜合整理：</strong> Repository 介面裡「CRUD（繼承 JpaRepository）」「Derived Query」「@Query」「Pageable」這四樣工具，各自解決什麼問題？為什麼說它們是「你描述要什麼，Spring Data JPA 生出怎麼拿」？
+        <code>@Query</code> 搭配 <code>@Param</code> 是怎麼運作的？請寫一個簡單的 JPQL 範例，包含一個 <code>:</code> 佔位符。
       </li>
       <li style="margin-bottom:14px;">
-        <strong>主鍵產生：</strong> <code>@GeneratedValue(strategy = GenerationType.IDENTITY)</code> 是做什麼用的？它跟 <code>@Id</code> 是什麼關係？不加這個 annotation 的話，新增資料時 id 要怎麼給？
+        <b>綜合題</b>：判斷「用衍生查詢還是 @Query」的原則是什麼？請用一兩句話說明你的判斷依據。
       </li>
-      <li>
-        <strong>跨主題整合：</strong> 假設你要做一個對應 <code>user_profiles</code> 表的 Entity，主鍵自動遞增，並提供「依姓名關鍵字查詢 + 分頁 + 依註冊時間排序」的功能——這牽涉到本週哪幾個概念？大致的實作流程會是什麼樣子？
+      <li style="margin-bottom:0;">
+        <b>@Transactional</b> 標在方法上代表什麼？如果方法中途丟出例外，資料庫會發生什麼事？
       </li>
     </ol>
   </div>
 
-  <div style="background:#ffffff;border-radius:10px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-    <p style="margin:0 0 14px 0;font-weight:600;color:#3b6cf6;">—— 解答 ——</p>
-    <ol style="margin:0;padding-left:20px;">
+  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;">
+    <p style="margin:0 0 14px 0;font-size:16px;font-weight:600;color:#2b7fb0;">—— 解答 ——</p>
+    <ol style="margin:0;padding-left:20px;font-size:14px;color:#555;">
       <li style="margin-bottom:12px;">
-        <code>@Entity</code> 把一個 class 標記成「對應到資料表」的物件；<code>@Id</code> 標記其中一個欄位作為主鍵（primary key），是每一列資料的唯一識別依據。沒有 <code>@Id</code>，JPA 不知道哪個欄位能唯一辨識一筆資料，整個 Entity 會設定失敗。
+        標在「多」的那一方。<code>@JoinColumn</code> 用來指定這個關聯在資料庫裡對應的外鍵欄位名稱。
       </li>
       <li style="margin-bottom:12px;">
-        會自動轉成 <code>user_name</code>（snake_case）。這是 Spring Data JPA 的預設命名策略（naming strategy）自動處理的，camelCase → snake_case，不需要手動設定。
+        在 Order（「一」的那方）用 <code>@OneToMany(mappedBy = "order")</code>（假設 OrderItem 裡的欄位叫 order）。這只是唯讀清單，不會多建外鍵，外鍵已經由 OrderItem 那邊的 <code>@ManyToOne</code> 維護。
       </li>
       <li style="margin-bottom:12px;">
-        寫 <code>findByEmailContaining(String keyword)</code> 就可以。Spring Data JPA 會解析方法名稱裡的 <code>findBy</code>、欄位名 <code>Email</code>、關鍵字 <code>Containing</code>，自動生成對應的查詢實作，不需要你寫 SQL 或實作邏輯。
+        靠方法名稱的命名規則讓 Spring Data JPA 自動翻譯成 SQL，不用手寫查詢。範例：<code>findByUsername(String username)</code>。
       </li>
       <li style="margin-bottom:12px;">
-        當查詢條件變複雜（多表 join、動態條件、聚合等）到方法名稱寫不出來或會變得又臭又長時，就改用 <code>@Query</code> 搭配 JPQL 自己寫查詢語法，並用 <code>@Param</code> 安全地綁定參數（避免 SQL injection）。回傳包成 <code>Optional</code> 是因為查詢結果可能查無資料（no data found），用 <code>Optional</code> 明確表達「可能是空的」，逼呼叫端處理這個情況。
+        <code>findByUsernameAndStatus(String username, String status)</code>。參數順序要跟方法名稱裡欄位出現的順序一致。
       </li>
       <li style="margin-bottom:12px;">
-        在 Repository 方法多加一個 <code>Pageable</code> 參數即可，呼叫時用 <code>PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending())</code> 建立。回傳的 <code>Page&lt;T&gt;</code> 除了這一頁的資料，還附帶總筆數（total elements）、總頁數（total pages）等分頁資訊。
+        條件太多、需要 JOIN 時改用 <code>@Query</code> 寫 JPQL，例如：<code>@Query("SELECT o FROM Order o JOIN o.items i WHERE ...")</code> 搭配 <code>@Param</code>。
       </li>
       <li style="margin-bottom:12px;">
-        CRUD（繼承 <code>JpaRepository</code>）處理最基本的新增/查詢/修改/刪除；Derived Query 處理「條件明確、可以用方法名稱描述」的查詢；<code>@Query</code> 處理「條件太複雜，方法名稱寫不出來」的查詢；Pageable 處理「資料量大，需要分頁與排序」的情境。四者合起來，你只要「描述想要什麼資料」，Spring Data JPA 就把「怎麼拿」的實作生出來，這就是它的核心設計哲學。
+        <code>@Query</code> 直接寫 JPQL 查詢語法，<code>@Param</code> 把方法參數對應到 JPQL 裡的 <code>:</code> 佔位符。範例：<br/>
+        <code>@Query("SELECT u FROM User u WHERE u.username = :username")</code><br/>
+        <code>User findByUsername(@Param("username") String username);</code>
       </li>
       <li style="margin-bottom:12px;">
-        它讓資料庫在新增資料時自動遞增產生主鍵值（auto-increment），你不用自己指定 id。它是搭配 <code>@Id</code> 使用的：<code>@Id</code> 宣告「這是主鍵」，<code>@GeneratedValue</code> 進一步宣告「這個主鍵值怎麼產生」。如果不加，新增資料時就得自己手動設定一個唯一的 id 值。
+        條件簡單（1~2 個）用衍生查詢方法名稱最清楚易讀；條件變多（3 個以上）、需要 JOIN 或聚合、或方法名稱長到難理解，就改用 <code>@Query</code> + JPQL + <code>@Param</code> 較好維護。
       </li>
-      <li>
-        會用到：<code>@Entity</code> + <code>@Id</code> + <code>@GeneratedValue(strategy = GenerationType.IDENTITY)</code> 定義 Entity 與主鍵產生方式；欄位命名交給 Spring 自動轉 snake_case；Repository 用 Derived Query（如 <code>findByNameContaining</code>）或 <code>@Query</code> 處理姓名關鍵字查詢；最後在方法簽名加上 <code>Pageable</code> 參數，呼叫時傳入 <code>PageRequest.of(page, size, Sort.by("registeredAt"))</code>，回傳 <code>Page&lt;UserProfile&gt;</code>。整個流程就是這週學的四塊拼在一起。
+      <li style="margin-bottom:0;">
+        代表該方法變成一個交易邊界：方法正常結束會自動 commit；若丟出例外，會自動 rollback，確保一組資料庫操作要嘛全部成功、要嘛全部復原。
       </li>
     </ol>
   </div>
 
 </div>
+```
