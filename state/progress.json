@@ -1,7 +1,9 @@
 {
   "current_index": 20,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "@Transactional 標在方法上會讓該方法變成一個交易邊界：方法正常結束自動 commit，丟出例外則自動 rollback，確保一組資料庫操作要嘛全部成功、要嘛全部復原。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
