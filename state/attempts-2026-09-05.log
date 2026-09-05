@@ -14,3 +14,5 @@
 2026-09-05 14:39:22 RESULT prepare SKIP outbox 已備妥
 2026-09-05 14:39:25 RESULT prepare-weekly SKIP 週報已備妥（2026-W36）
 2026-09-05 19:21:42 RESULT prepare FAIL 網路未就緒
+2026-09-05 20:57:00 RESULT prepare-weekly SKIP 週報已備妥（2026-W36）
+2026-09-05 21:32:06 RESULT prepare FAIL state 分支同步失敗：ssh: Could not resolve hostname ssh.github.com: nodename nor servname provided, or not known
