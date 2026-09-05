@@ -64,10 +64,15 @@ STATE_WT="${STATE_WT:-$(dirname "$DIR")/java-learn-state}"
 # BatchMode / TERMINAL_PROMPT 讓 git 不要問（要問就直接失敗，交給重試邏輯）；
 # watchdog 是保險：就算還是卡住，時限一到強制收掉，至少 log 留下痕跡、班次能往下走。
 GIT_NET_TIMEOUT="${GIT_NET_TIMEOUT:-60}"
+# ConnectTimeout 只管 TCP 建連的那 10 秒；一旦連上，對端不再回應（半開連線）ssh 就無限等下去。
+# 2026-09-04 18:08 那班 pull 的 ssh 就是這樣卡了 17 小時，launchd 同 label 不再啟動，
+# 吃掉隔天一整天班次，稿沒備成也沒有任何通知（卡在 pull 裡，走不到 notify）。
+# ServerAlive*：連上後每 10s 探一次，連 3 次沒回應就斷（約 30s），補住 ConnectTimeout 管不到的區間。
+GIT_SSH_OPTS='ssh -o ConnectTimeout=10 -o BatchMode=yes -o ServerAliveInterval=10 -o ServerAliveCountMax=3'
 git_timeout() {
   local pid wd rc
   GIT_TERMINAL_PROMPT=0 \
-  GIT_SSH_COMMAND='ssh -o ConnectTimeout=10 -o BatchMode=yes' \
+  GIT_SSH_COMMAND="$GIT_SSH_OPTS" \
     "$@" >>"$LOG" 2>&1 &
   pid=$!
   # 先收子進程再收自己：git 會生 remote-https / credential 這些孫子，只殺父的話它們會留著。
@@ -79,13 +84,46 @@ git_timeout() {
   return "$rc"
 }
 
+# 同 git_timeout，但輸出收進 $GIT_OUT 供呼叫端判讀失敗原因，而不是直接倒進 $LOG。
+# 為什麼不讓 git_pull 自己用 out="$(...)"：command substitution 是同步的，掛不上 watchdog。
+git_capture() {
+  local pid wd rc tmp mark
+  tmp="$(mktemp -t learngit)"; mark="$tmp.timeout"
+  GIT_TERMINAL_PROMPT=0 \
+  GIT_SSH_COMMAND="$GIT_SSH_OPTS" \
+    "$@" >"$tmp" 2>&1 &
+  pid=$!
+  # 逾時與否用 marker 檔判定，不看 rc>=128：git 自己的 fatal 就是 exit 128，
+  # 只看 rc 會把正常的 git 失敗誤報成「被強制中止」，log 和 reason 都會指錯方向。
+  # kill -0 先確認程序真的還活著才標記，避免它剛好同時正常結束造成誤判。
+  ( sleep "$GIT_NET_TIMEOUT"
+    kill -0 "$pid" 2>/dev/null || exit 0
+    : > "$mark"
+    pkill -9 -P "$pid" 2>/dev/null; kill -9 "$pid" 2>/dev/null ) >/dev/null 2>&1 &
+  wd=$!
+  wait "$pid"; rc=$?
+  kill "$wd" 2>/dev/null
+  GIT_OUT="$(cat "$tmp" 2>/dev/null)"
+  # 被 watchdog 收掉時 git 自己不會留下訊息，補一行讓上層的 reason 擷取抓得到（grep 有 timed out）。
+  if [ -f "$mark" ]; then
+    log "WARN: git 操作超過 ${GIT_NET_TIMEOUT}s 被強制中止（若不中止會無限等待）。"
+    GIT_OUT="${GIT_OUT}
+fatal: git timed out after ${GIT_NET_TIMEOUT}s"
+  fi
+  rm -f "$tmp" "$mark"
+  return "$rc"
+}
+
 git_pull() {
   [ "$REPO_SYNC" = 1 ] || return 0
-  local i=1 out reason
+  local i=1 out reason rc
   while [ $i -le 3 ]; do
     # ConnectTimeout=10：連不上（例如 port 22 被擋）10 秒內失敗，不要等到預設逾時。
     # BatchMode/TERMINAL_PROMPT：不准問憑證或 host key，要問就失敗——問了就是卡死。
-    if out="$(GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND='ssh -o ConnectTimeout=10 -o BatchMode=yes' git -C "$STATE_WT" pull --rebase --autostash 2>&1)"; then
+    # 走 git_capture 而不是 command substitution：後者卡住時整支腳本跟著卡，沒有救援機制。
+    git_capture git -C "$STATE_WT" pull --rebase --autostash
+    rc=$?; out="$GIT_OUT"
+    if [ "$rc" -eq 0 ]; then
       [ -n "$out" ] && echo "$out" >> "$LOG"
       return 0
     fi
