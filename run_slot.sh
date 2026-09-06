@@ -37,6 +37,43 @@ if [ "$NOW" -lt "$WINDOW_START" ] || [ "$NOW" -gt "$WINDOW_END" ]; then
   exit 0
 fi
 
+# ── 卡死防護 ─────────────────────────────────────────────────────────
+# 2026-09-04 18:08 那班卡在 git pull 底下的 ssh 整整 17 小時。launchd 不會啟動
+# 前一次仍活著的同 label job，所以隔天一整天的班次全部沒跑，而且完全沒有通知
+# （卡在 pull 裡，走不到 notify）。單一 git 指令有 git_timeout 顧，這裡顧的是「整輪」：
+# 就算日後冒出新的、沒人預料到的卡點，時間到一樣收場，不必事先知道會卡在哪。
+SLOT_MAX_SECONDS="${SLOT_MAX_SECONDS:-1800}"
+SLOT_PGID="$(ps -o pgid= -p $$ | tr -d ' ')"
+
+# 第二層：上一輪若還活著就先收掉。launchd 正常不會讓兩輪並存，能走到這裡
+# 表示上一輪已經失控（或它的看門狗自己被殺了），這是最後一道保險。
+# 同 process group 的要跳過——launchd 包在外面的 caffeinate 也吃得到這個 pattern，
+# 那是本輪自己人，殺了等於自盡。
+for pid in ${(f)"$(pgrep -f "$DIR/run_slot.sh" 2>/dev/null)"}; do
+  [ "$pid" = "$$" ] && continue
+  pg="$(ps -o pgid= -p "$pid" 2>/dev/null | tr -d ' ')"
+  [ -z "$pg" ] && continue
+  [ "$pg" = "$SLOT_PGID" ] && continue
+  [ "$pg" -gt 1 ] || continue
+  kill -0 "$pid" 2>/dev/null || continue
+  echo "$(date '+%Y-%m-%d %H:%M:%S') WARN: 發現上一輪殘留（pid=$pid, pgid=$pg），先收掉再開工。" >> "$DIR/run.log"
+  # 收整個 group，不是 pkill -P：真正卡住的是孫子輩的 ssh，只殺直接子程序
+  # 會留下一票孤兒繼續跑（實測過，run_learn.sh 底下的 sleep 全部活著）。
+  kill -9 -"$pg" 2>/dev/null
+done
+
+# 第一層：本輪超時就收掉整個 process group，連 launchd 包在外面的 caffeinate 一起
+# （昨天那支 caffeinate 陪著卡了 17 小時，順便讓機器整晚沒睡）。
+# 殺 group 而不是單一 pid：真正卡住的是孫子輩的 ssh，只殺自己救不了場。
+if [ -n "$SLOT_PGID" ] && [ "$SLOT_PGID" -gt 1 ]; then
+  ( sleep "$SLOT_MAX_SECONDS"
+    kill -0 $$ 2>/dev/null || exit 0
+    echo "$(date '+%Y-%m-%d %H:%M:%S') WARN: 本輪超過 ${SLOT_MAX_SECONDS}s 仍未結束，強制收場（避免卡住吃掉後續班次）。" >> "$DIR/run.log"
+    kill -9 -"$SLOT_PGID" 2>/dev/null ) &
+  SLOT_WD=$!
+  trap 'kill "$SLOT_WD" 2>/dev/null' EXIT
+fi
+
 "$DIR/run_learn.sh" prepare
 
 DOW="$(date +%u)"          # 1=週一 … 5=週五 6=週六 7=週日
