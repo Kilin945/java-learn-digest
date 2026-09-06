@@ -96,8 +96,11 @@ notify()            { NOTIFIED=1 }
 result()            { RESULT_STATUS="$1"; RESULT_WHY="$2" }
 run_claude()        { bad "斷網時不該呼叫 claude 產稿（會疊在過期進度上）"; return 1 }
 
-run_case() {  # $1=outbox_ready 的回傳  $2=state_synced_with_origin 的回傳
+NOTIFY_MARK_DIR="$TESTROOT"   # 去抖 marker 寫進暫存目錄，不要弄髒專案
+
+run_case() {  # $1=outbox_ready 的回傳  $2=state_synced_with_origin 的回傳  $3=START_HHMM（預設 1400）
   NOTIFIED=0; RESULT_STATUS=""; RESULT_WHY=""
+  START_HHMM="${3:-1400}"
   eval "outbox_ready() { return $1 }"
   eval "state_synced_with_origin() { return $2 }"
   do_prepare; DO_RC=$?
@@ -110,13 +113,31 @@ run_case 0 0
 [ "$RESULT_STATUS" = SKIP ] && ok "庫存已同步 → 記 SKIP" || bad "庫存已同步卻記 $RESULT_STATUS"
 [ "$NOTIFIED" = 0 ]      && ok "庫存已同步 → 不跳桌面通知" || bad "庫存已同步卻跳了桌面通知"
 
-# B. 庫存備妥但還沒推上去 → 雲端手上沒有，明天真的沒信，要叫
+# B. 庫存備妥但還沒推上去 → 雲端手上沒有，明天真的沒信，要叫。
+#    但「什麼時候叫」有講究：白天失敗，後面還有一整排班次會自動重推
+#    （WatchPaths 一換網路就觸發），那時叫只是噪音——2026-09-05 白天就這樣
+#    跳了 7 次，全部都是自己好的。所以時間門檻與去抖也一起釘在這裡。
+rm -f "$TESTROOT"/.notified-*(N)   # (N) = 沒匹配到就當空，zsh 預設會為此報錯
 run_case 0 1
 [ "$DO_RC" = 1 ]         && ok "庫存未同步 → 回傳 1（主流程會發警示）" || bad "庫存未同步卻回傳 $DO_RC"
 [ "$RESULT_STATUS" = FAIL ] && ok "庫存未同步 → 記 FAIL" || bad "庫存未同步卻記 $RESULT_STATUS"
-[ "$NOTIFIED" = 1 ]      && ok "庫存未同步 → 跳桌面通知" || bad "庫存未同步卻沒跳桌面通知"
+[ "$NOTIFIED" = 1 ]      && ok "庫存未同步 + 已過警示時點 → 跳桌面通知" || bad "庫存未同步卻沒跳桌面通知"
+
+# B2. 同樣沒同步，但還在白天 → 記 FAIL 照舊，不吵人
+rm -f "$TESTROOT"/.notified-*(N)   # (N) = 沒匹配到就當空，zsh 預設會為此報錯
+run_case 0 1 1000
+[ "$RESULT_STATUS" = FAIL ] && ok "庫存未同步（白天）→ 仍記 FAIL" || bad "庫存未同步（白天）卻記 $RESULT_STATUS"
+[ "$NOTIFIED" = 0 ]      && ok "庫存未同步 + 未到警示時點 → 不跳桌面通知" || bad "白天就跳了桌面通知"
+
+# B3. 去抖：同一天同一 MODE 只吵一次
+rm -f "$TESTROOT"/.notified-*(N)   # (N) = 沒匹配到就當空，zsh 預設會為此報錯
+run_case 0 1
+[ "$NOTIFIED" = 1 ]      && ok "當天第一次失敗 → 跳桌面通知" || bad "當天第一次卻沒跳"
+run_case 0 1
+[ "$NOTIFIED" = 0 ]      && ok "當天第二次失敗 → 不重複吵" || bad "當天第二次又跳了一次"
 
 # C. 根本沒庫存 → 就算已同步也代表雲端同樣沒有，明天沒信，要叫
+rm -f "$TESTROOT"/.notified-*(N)   # (N) = 沒匹配到就當空，zsh 預設會為此報錯
 run_case 1 0
 [ "$DO_RC" = 1 ]         && ok "沒庫存 → 回傳 1（主流程會發警示）" || bad "沒庫存卻回傳 $DO_RC"
 [ "$RESULT_STATUS" = FAIL ] && ok "沒庫存 → 記 FAIL" || bad "沒庫存卻記 $RESULT_STATUS"

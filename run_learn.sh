@@ -28,6 +28,10 @@ MODE="${1:-daily}"
 SUBJECT_DAILY="每日 Java/Spring Boot"
 SUBJECT_WEEKLY="每週 Java/Spring Boot 回顧"
 
+# 通知標題用的短名：「每日 Java/Spring Boot」→「Java/Spring Boot」。
+# 從 SUBJECT_DAILY 派生而不是各專案各寫一份，複製到別的學科時少一個要改的字串。
+LEARN_NAME="${SUBJECT_DAILY#每日 }"
+
 MAX_TRIES=3
 CLAUDE_TIMEOUT=600
 # 網路就緒最多等 90×5=450 秒（7.5 分鐘）。
@@ -39,6 +43,50 @@ NET_WAIT_MAX=90
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$LOG"; }
 notify() { /usr/bin/osascript -e "display notification \"$2\" with title \"$1\" sound name \"Basso\"" >/dev/null 2>&1; }
+
+# 這次失敗該不該吵人？只有「今天不會再自動好」才吵：已經過了最後一個備稿班，
+# 而且稿是真的沒備成。其餘一律只寫 log——網路瞬斷、稿已備妥只差同步，
+# 後續時段都會自己補回來，跳通知只是噪音。
+# 2026-09-05 21:32 的教訓：稿早就備妥、只是本機領先 origin 兩個 commit，
+# 卻跳了「明天的課程尚未備妥」，2 分 39 秒後自己推上去了。
+# 對照組：雲端 14:00 的體檢問的是「稿在不在」（--outbox-ready），不是「這班順不順」。
+ALERT_AFTER_HHMM="${ALERT_AFTER_HHMM:-1300}"
+NOTIFY_MARK_DIR="${NOTIFY_MARK_DIR:-$DIR}"   # 測試會改指到暫存目錄
+weekly_ready() {   # 本週週報備妥了嗎。週別算法必須跟 MARKER_WEEKLY 一致。
+  [ -f "$STATE_DIR/weekly_outbox.html" ] \
+    && [ "$(cat "$STATE_DIR/weekly_outbox.week" 2>/dev/null)" = "$(date +%G-W%V)" ]
+}
+
+# 稿到底備妥了沒（依 MODE 分每日／週報）。雲端 14:00 的體檢問的也是這一句。
+draft_ready() {
+  case "$MODE" in
+    prepare-weekly|weekly) weekly_ready ;;
+    *)                     outbox_ready ;;
+  esac
+}
+
+# 這次失敗值得驚動人嗎？兩個條件都成立才不值得：稿備妥「而且」已推上 origin——
+# 那表示雲端手上有貨，它自己寄得出去，本機這邊斷不斷網都無所謂。
+# 少任何一項，明天早上就真的會沒信。
+# 時間門檻的意義：白天失敗，後面還有一整排班次會自動重試（WatchPaths 一換網路就觸發），
+# 這種時候叫人沒有用，因為多半會自己好。
+alert_worthy() {
+  [ "$START_HHMM" -ge "$ALERT_AFTER_HHMM" ] || return 1
+  draft_ready && state_synced_with_origin && return 1
+  return 0
+}
+
+# 桌面通知在 alert_worthy 之上再加一層去抖：同一天同一 MODE 只吵一次。
+# 2026-09-05 白天跳了 7 次、晚上 2 次，內容一模一樣——知道一次就會去開專案，
+# 後面每一次都只是噪音。marker 放本機而不是 state/：這是這台機器的顯示狀態，
+# 不需要跨機器共享，也不該讓 state 分支每天多一個檔案要 push。
+should_notify() {
+  alert_worthy || return 1
+  local mark="$NOTIFY_MARK_DIR/.notified-$MODE-$(date +%F)"
+  [ -f "$mark" ] && return 1
+  : > "$mark"
+  return 0
+}
 
 # 每個時段留一行結果，方便事後一眼看完當天發生什麼事：
 #   2026-07-26 13:00:12 RESULT prepare FAIL 網路未就緒
@@ -70,17 +118,26 @@ GIT_NET_TIMEOUT="${GIT_NET_TIMEOUT:-60}"
 # ServerAlive*：連上後每 10s 探一次，連 3 次沒回應就斷（約 30s），補住 ConnectTimeout 管不到的區間。
 GIT_SSH_OPTS='ssh -o ConnectTimeout=10 -o BatchMode=yes -o ServerAliveInterval=10 -o ServerAliveCountMax=3'
 git_timeout() {
-  local pid wd rc
+  local pid wd rc mark
+  mark="$(mktemp -t learngitwd)"; rm -f "$mark"   # 只取路徑，檔案由 watchdog 動手時才建
   GIT_TERMINAL_PROMPT=0 \
   GIT_SSH_COMMAND="$GIT_SSH_OPTS" \
     "$@" >>"$LOG" 2>&1 &
   pid=$!
   # 先收子進程再收自己：git 會生 remote-https / credential 這些孫子，只殺父的話它們會留著。
-  ( sleep "$GIT_NET_TIMEOUT"; pkill -9 -P "$pid" 2>/dev/null; kill -9 "$pid" 2>/dev/null ) >/dev/null 2>&1 &
+  # kill -0 先確認還活著才留記號，避免它剛好同時正常結束造成誤判。
+  ( sleep "$GIT_NET_TIMEOUT"
+    kill -0 "$pid" 2>/dev/null || exit 0
+    : > "$mark"
+    pkill -9 -P "$pid" 2>/dev/null; kill -9 "$pid" 2>/dev/null ) >/dev/null 2>&1 &
   wd=$!
   wait "$pid"; rc=$?
   kill "$wd" 2>/dev/null
-  [ "$rc" -ge 128 ] && log "WARN: git 操作超過 ${GIT_NET_TIMEOUT}s 被強制中止（若不中止會無限等待）。"
+  # 用記號檔判定逾時，不看 rc>=128：git 自己的 fatal 就是 exit 128，只看 rc 會把
+  # 每一次普通的 git 失敗都寫成「被強制中止」——2026-09-05 21:33 那三個相隔 5 秒的
+  # 「超過 60s」WARN 全是這樣來的假訊息，真正的原因（DNS 解析失敗）反而沒進 log。
+  [ -f "$mark" ] && log "WARN: git 操作超過 ${GIT_NET_TIMEOUT}s 被強制中止（若不中止會無限等待）。"
+  rm -f "$mark"
   return "$rc"
 }
 
@@ -228,7 +285,7 @@ send_html() {  # $1=html $2=主旨前綴 ；回傳寄信 rc
   if [ $rc -ne 0 ]; then
     local reason="$(echo "$out" | grep -iE 'error' | tail -1 | tr -d '"\\' | cut -c1-180)"
     [ -z "$reason" ] && reason="請查看 run.log"
-    notify "⚠️ 學習信寄送失敗" "$subject：$reason"
+    notify "⚠️ 今日 ${LEARN_NAME} 學習信寄送失敗" "稿件仍在，可手動重寄。"
     log "NOTIFY: 寄送失敗。原因：$reason"
   fi
   return $rc
@@ -255,7 +312,7 @@ do_prepare() {
       return 0
     fi
     log "INFO: git pull 失敗、本機 outbox 不可信，本時段略過（不誤判已備妥，待下次同步後再產）。"
-    notify "⚠️ 學習信備稿失敗" "無法連線 GitHub：${GITPULL_LAST_ERR:-詳見 run.log}。明天的課程尚未備妥。"
+    should_notify && notify "⚠️ 明日 ${LEARN_NAME} 學習信將無法寄出" "今日備稿時段已用盡，請開專案處理。"
     PREPARE_WHY="state 分支同步失敗：${GITPULL_LAST_ERR:-詳見 run.log}"; result FAIL "$PREPARE_WHY"
     return 1
   fi
@@ -298,7 +355,7 @@ do_prepare() {
   done
   rm -f "$tmp"
   log "WARN: 產生 outbox 失敗，待下次補產（不影響已備妥的內容）。"
-  notify "⚠️ 學習信備稿失敗" "claude 連續 $MAX_TRIES 次產生課程失敗：${why:-詳見 run.log}。明天的課程尚未備妥。"
+  should_notify && notify "⚠️ ${LEARN_NAME} 學習信備稿失敗，需手動處理" "課程產生連續失敗，非網路問題。"
   PREPARE_WHY="claude 連續 $MAX_TRIES 次產生課程失敗：${why:-詳見 run.log}"
   result FAIL "$PREPARE_WHY"
   return 1
@@ -546,14 +603,22 @@ send_local_alert() {  # $1=失敗原因
   attempts="$STATE_DIR/attempts-$today.log"
   # 平常成功的日子不留檔，只有出事這天才把當天各時段的結果送上 state 分支供雲端引用
   grep "^$today .*RESULT " "$LOG" > "$attempts" 2>/dev/null || true
+  local what subj
+  if [ "$MODE" = "prepare-weekly" ]; then
+    what="今日最後一個備稿時段仍然失敗，本週週報將無法寄出。"
+    subj="⚠️ ${LEARN_NAME} 週報備稿失敗：本週週報無法寄出"
+  else
+    what="今日最後一個備稿時段仍然失敗，明日 08:00 的每日信將無法寄出。"
+    subj="⚠️ ${LEARN_NAME} 學習信備稿失敗：明日 ($(date -v+1d +%F)) 無法寄出"
+  fi
   body="<div style=\"font-family:-apple-system,sans-serif\">
-<h3>⚠️ 學習信備稿失敗（$MODE）</h3>
-<p>最後一個備稿時段仍然失敗。備的是<b>明天</b>要寄的內容，明天早上 08:00 會收不到信。</p>
+<h3>⚠️ ${LEARN_NAME} 學習信備稿失敗（$MODE）</h3>
+<p>$what</p>
 <p><b>原因：</b>${why:-詳見 run.log}</p>
 <p><b>今天各時段：</b></p>
 <pre style=\"background:#f6f7f9;padding:10px;border-radius:6px;font-size:12px\">$(cat "$attempts" 2>/dev/null)</pre>
 </div>"
-  if print -r -- "$body" | "$PYTHON" "$DIR/send_email.py" "⚠️ 學習信備稿失敗" >>"$LOG" 2>&1; then
+  if print -r -- "$body" | "$PYTHON" "$DIR/send_email.py" "$subj" >>"$LOG" 2>&1; then
     date '+%Y-%m-%d %H:%M:%S' > "$STATE_DIR/alert-$MODE-$today"
     log "INFO: 已從本機寄出警示信並標記 alert-$MODE-$today。"
   else
@@ -584,7 +649,9 @@ esac
 # 判斷用本次啟動時間而非現在時間：12:00 那班若跑很久拖過 13:00，它不該搶著發警示。
 case "$MODE" in
   prepare|prepare-weekly)
-    if [ $RC -ne 0 ] && [ "$START_HHMM" -ge 1300 ] \
+    # should_alert 同時管住「稿其實已備妥」的情況——舊版只看這班失敗沒失敗，
+    # 於是稿好端端在 outbox 裡、只差沒推上 origin，也照寄一封「明天收不到信」的假警報。
+    if [ $RC -ne 0 ] && alert_worthy \
        && [ ! -f "$STATE_DIR/alert-$MODE-$(date +%F)" ]; then
       send_local_alert "${PREPARE_WHY:-詳見 run.log}"
     fi ;;
