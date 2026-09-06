@@ -28,7 +28,7 @@ MODE="${1:-daily}"
 SUBJECT_DAILY="每日 Java/Spring Boot"
 SUBJECT_WEEKLY="每週 Java/Spring Boot 回顧"
 
-# 通知標題用的短名：「每日 Java/Spring Boot」→「Java/Spring Boot」。
+# 通知標題用的短名：SUBJECT_DAILY 去掉「每日 」前綴。
 # 從 SUBJECT_DAILY 派生而不是各專案各寫一份，複製到別的學科時少一個要改的字串。
 LEARN_NAME="${SUBJECT_DAILY#每日 }"
 
