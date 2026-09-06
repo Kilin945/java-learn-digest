@@ -1,9 +1,10 @@
 {
   "current_index": 20,
-  "step": 3,
+  "step": 4,
   "covered": [
     "@Transactional 標在方法上會讓該方法變成一個交易邊界：方法正常結束自動 commit，丟出例外則自動 rollback，確保一組資料庫操作要嘛全部成功、要嘛全部復原。",
-    "Spring 用代理人（proxy）機制實現 @Transactional，所以同一個 class 內部用 this.xxx() 自己呼叫自己的方法（self-invocation）時，沒經過代理人，@Transactional 會失效、不會自動 rollback。"
+    "Spring 用代理人（proxy）機制實現 @Transactional，所以同一個 class 內部用 this.xxx() 自己呼叫自己的方法（self-invocation）時，沒經過代理人，@Transactional 會失效、不會自動 rollback。",
+    "Spring 的 @Transactional 預設只在遇到 unchecked exception（RuntimeException 或 Error）時會自動 rollback；如果丟出的是 checked exception，即使方法真的出錯，預設也不會 rollback，必須用 rollbackFor 屬性額外指定該例外類型才會觸發 rollback。"
   ],
   "completed_topics": [
     {
