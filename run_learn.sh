@@ -99,11 +99,11 @@ result() {  # $1=OK|SKIP|FAIL  $2=說明
 START_HHMM="$(date +%H%M)"   # 本次啟動時間，用來判斷自己是不是當天最後一個備稿班
 
 # 雲端寄信模式：用 git 當同步通道，但「紀錄」放獨立的 state 分支，
-# 透過旁邊的 worktree（預設 ../java-learn-state）讀寫，master 只剩開發、不被每日紀錄洗版。
+# 透過旁邊的 worktree（預設 ../state）讀寫，master 只剩開發、不被每日紀錄洗版。
 # prepare 前先 pull 取得雲端推進的進度，備好下一篇後 push 上去給雲端寄。
 # REPO_SYNC=0 可關掉（純本機模式）；STATE_WT 可覆寫 worktree 路徑。
 REPO_SYNC="${REPO_SYNC:-1}"
-STATE_WT="${STATE_WT:-$(dirname "$DIR")/java-learn-state}"
+STATE_WT="${STATE_WT:-$(dirname "$DIR")/state}"
 # git 網路操作一律包這個，理由是 2026-08-02/03 連兩天的教訓：
 # 憑證助手拿不到 Keychain（errSecInteractionNotAllowed）時不會失敗，而是無限等下去。
 # git push 因此永不返回，launchd 同一個 label 前一次還在跑就不會再啟動，
