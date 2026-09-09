@@ -88,3 +88,4 @@
 {"date": "2026-09-06", "topic": "交易：@Transactional 的邊界與陷阱", "step": 3, "summary": "Spring 的 @Transactional 預設只在遇到 unchecked exception（RuntimeException 或 Error）時會自動 rollback；如果丟出的是 checked exception，即使方法真的出錯，預設也不會 rollback，必須用 rollbackFor 屬性額外指定該例外類型才會觸發 rollback。"}
 {"date": "2026-09-07", "topic": "交易：@Transactional 的邊界與陷阱", "step": 4, "summary": "@Transactional 只有在例外真的「往外拋出方法邊界」時才會發現並觸發 rollback；如果程式碼自己用 try-catch 把例外攔住、只記 log 卻沒有 rethrow（吞掉例外），Spring 完全不知道出事了，交易照樣正常 commit，即使資料其實已經壞掉。"}
 {"date": "2026-09-08", "topic": "交易：@Transactional 的邊界與陷阱", "step": 5, "summary": "@Transactional 的方法只該包資料庫操作，慢的外部呼叫（如打 API、寄信）要搬到交易外面做，否則會長時間占用連線池，拖慢甚至塞住其他無關的請求。"}
+{"date": "2026-09-09", "topic": "單元測試 vs @SpringBootTest 整合測試", "step": 1, "summary": "單元測試（unit test）只測一個方法或 class 本身的邏輯，不依賴資料庫、網路等外部資源，所以跑得很快；今天只用 JUnit 寫了一個不涉及 Spring 的簡單加法測試範例，還沒教到整合測試。"}

@@ -1,7 +1,9 @@
 {
   "current_index": 21,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "單元測試（unit test）只測一個方法或 class 本身的邏輯，不依賴資料庫、網路等外部資源，所以跑得很快；今天只用 JUnit 寫了一個不涉及 Spring 的簡單加法測試範例，還沒教到整合測試。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
