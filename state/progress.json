@@ -1,8 +1,9 @@
 {
   "current_index": 21,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "單元測試（unit test）只測一個方法或 class 本身的邏輯，不依賴資料庫、網路等外部資源，所以跑得很快；今天只用 JUnit 寫了一個不涉及 Spring 的簡單加法測試範例，還沒教到整合測試。"
+    "單元測試（unit test）只測一個方法或 class 本身的邏輯，不依賴資料庫、網路等外部資源，所以跑得很快；今天只用 JUnit 寫了一個不涉及 Spring 的簡單加法測試範例，還沒教到整合測試。",
+    "整合測試（integration test）會用 @SpringBootTest 真的啟動 Spring 應用程式，讓所有元件（bean）兜在一起運作，藉此抓到單元測試測不到的「元件裝不起來」問題，但速度比單元測試慢。"
   ],
   "completed_topics": [
     {
