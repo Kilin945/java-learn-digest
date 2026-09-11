@@ -1,77 +1,36 @@
-```html
-<div style="max-width:680px;margin:0 auto;padding:24px;background:#e8f4fb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#333;line-height:1.7;">
+<div style="max-width:680px;margin:0 auto;background:#fbf3e3;padding:24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#3a2f1d;">
 
-  <div style="background:#ffffff;border-left:6px solid #3f97c9;border-radius:8px;padding:16px 20px;margin-bottom:20px;font-size:18px;font-weight:600;color:#2b7fb0;">
-    📘 每週回顧 · Java / Spring Boot · 2026-09-04
+  <div style="background:#ffffff;border-left:6px solid #d99b3f;border-radius:8px;padding:16px 20px;margin-bottom:20px;">
+    <span style="font-size:20px;font-weight:700;color:#b9791f;">📘 每週回顧 · Java / Spring Boot · 2026-09-11</span>
   </div>
 
-  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:16px;">
-    <p style="margin:0 0 12px 0;font-size:15px;color:#555;">
-      這週從 Entity 關聯一路走到 @Transactional，資訊量不小。花幾分鐘試著先自己回想再看解答，記憶會扎實很多。
-    </p>
-  </div>
+  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:20px;">
+    <h2 style="font-size:16px;color:#b9791f;margin-top:0;">🧠 主動回想：這週學了什麼？</h2>
+    <p style="font-size:14px;line-height:1.6;margin-bottom:16px;">別急著往下滑看解答，先自己想想看每一題怎麼回答，這樣記得才牢。</p>
 
-  <div style="background:#ffffff;border-radius:8px;padding:20px 24px;margin-bottom:16px;">
-    <p style="margin:0 0 14px 0;font-size:16px;font-weight:600;color:#2b7fb0;">🧠 本週回想題</p>
-    <ol style="margin:0;padding-left:20px;font-size:15px;">
-      <li style="margin-bottom:14px;">
-        <b>@ManyToOne</b> 通常標在關聯的哪一方（「一」還是「多」）？搭配的 <code>@JoinColumn</code> 又是用來做什麼的？
-      </li>
-      <li style="margin-bottom:14px;">
-        如果 Order 有很多 OrderItem，你想在 Order 這邊也能直接拿到它的 OrderItem 清單，該怎麼寫？這個關聯會不會在資料庫多一個外鍵？
-      </li>
-      <li style="margin-bottom:14px;">
-        什麼是 Derived Query Method（衍生查詢方法）？寫一個範例：用 username 查使用者的方法名稱該怎麼命名？
-      </li>
-      <li style="margin-bottom:14px;">
-        如果要用衍生查詢同時依 username 和 status 查詢，方法名稱怎麼寫？方法參數的順序需要注意什麼？
-      </li>
-      <li style="margin-bottom:14px;">
-        承上題，如果條件變成 5 個欄位、還要 JOIN 另一張表，你會怎麼選擇（繼續用衍生查詢，還是換方式）？換的話該怎麼寫？
-      </li>
-      <li style="margin-bottom:14px;">
-        <code>@Query</code> 搭配 <code>@Param</code> 是怎麼運作的？請寫一個簡單的 JPQL 範例，包含一個 <code>:</code> 佔位符。
-      </li>
-      <li style="margin-bottom:14px;">
-        <b>綜合題</b>：判斷「用衍生查詢還是 @Query」的原則是什麼？請用一兩句話說明你的判斷依據。
-      </li>
-      <li style="margin-bottom:0;">
-        <b>@Transactional</b> 標在方法上代表什麼？如果方法中途丟出例外，資料庫會發生什麼事？
-      </li>
+    <ol style="font-size:15px;line-height:1.9;padding-left:20px;">
+      <li><b>Self-invocation：</b>如果一個 Service 裡的 <code>methodA()</code> 內部直接用 <code>this.methodB()</code> 呼叫另一個標了 <code>@Transactional</code> 的方法 <code>methodB()</code>，這個交易會生效嗎？為什麼？</li>
+      <li><b>Rollback 預設行為：</b><code>@Transactional</code> 的方法丟出 <code>IOException</code>（一個 checked exception）時，預設會不會 rollback？要怎麼讓它會 rollback？</li>
+      <li><b>吞掉例外：</b>如果方法內用 try-catch 抓到例外只寫了 <code>log.error(...)</code>，沒有 rethrow，@Transactional 會不會 rollback？為什麼 Spring「不知道出事」？</li>
+      <li><b>交易邊界設計：</b>一個 <code>@Transactional</code> 的方法裡，先更新 DB、再呼叫外部 API 寄一封 Email 通知，這樣設計有什麼問題？你會怎麼改？</li>
+      <li><b>測試分類：</b>單元測試（unit test）和整合測試（@SpringBootTest）最核心的差異是什麼？各自的優缺點？</li>
+      <li><b>contextLoads()：</b>一個內容完全空白的 <code>contextLoads()</code> 測試方法，加上 <code>@SpringBootTest</code> 之後在測什麼？為什麼方法內什麼都不寫也有意義？</li>
+      <li><b>綜合題：</b>如果你要測試「交易 rollback 邏輯有沒有正確設定 <code>rollbackFor</code>」，你覺得該用單元測試還是整合測試？為什麼？</li>
     </ol>
   </div>
 
   <div style="background:#ffffff;border-radius:8px;padding:20px 24px;">
-    <p style="margin:0 0 14px 0;font-size:16px;font-weight:600;color:#2b7fb0;">—— 解答 ——</p>
-    <ol style="margin:0;padding-left:20px;font-size:14px;color:#555;">
-      <li style="margin-bottom:12px;">
-        標在「多」的那一方。<code>@JoinColumn</code> 用來指定這個關聯在資料庫裡對應的外鍵欄位名稱。
-      </li>
-      <li style="margin-bottom:12px;">
-        在 Order（「一」的那方）用 <code>@OneToMany(mappedBy = "order")</code>（假設 OrderItem 裡的欄位叫 order）。這只是唯讀清單，不會多建外鍵，外鍵已經由 OrderItem 那邊的 <code>@ManyToOne</code> 維護。
-      </li>
-      <li style="margin-bottom:12px;">
-        靠方法名稱的命名規則讓 Spring Data JPA 自動翻譯成 SQL，不用手寫查詢。範例：<code>findByUsername(String username)</code>。
-      </li>
-      <li style="margin-bottom:12px;">
-        <code>findByUsernameAndStatus(String username, String status)</code>。參數順序要跟方法名稱裡欄位出現的順序一致。
-      </li>
-      <li style="margin-bottom:12px;">
-        條件太多、需要 JOIN 時改用 <code>@Query</code> 寫 JPQL，例如：<code>@Query("SELECT o FROM Order o JOIN o.items i WHERE ...")</code> 搭配 <code>@Param</code>。
-      </li>
-      <li style="margin-bottom:12px;">
-        <code>@Query</code> 直接寫 JPQL 查詢語法，<code>@Param</code> 把方法參數對應到 JPQL 裡的 <code>:</code> 佔位符。範例：<br/>
-        <code>@Query("SELECT u FROM User u WHERE u.username = :username")</code><br/>
-        <code>User findByUsername(@Param("username") String username);</code>
-      </li>
-      <li style="margin-bottom:12px;">
-        條件簡單（1~2 個）用衍生查詢方法名稱最清楚易讀；條件變多（3 個以上）、需要 JOIN 或聚合、或方法名稱長到難理解，就改用 <code>@Query</code> + JPQL + <code>@Param</code> 較好維護。
-      </li>
-      <li style="margin-bottom:0;">
-        代表該方法變成一個交易邊界：方法正常結束會自動 commit；若丟出例外，會自動 rollback，確保一組資料庫操作要嘛全部成功、要嘛全部復原。
-      </li>
+    <h2 style="font-size:16px;color:#b9791f;margin-top:0;">—— 解答 ——</h2>
+
+    <ol style="font-size:14px;line-height:1.8;padding-left:20px;">
+      <li><b>Self-invocation：</b>不會生效。Spring 的 <code>@Transactional</code> 是靠代理人（proxy）機制實作的，只有「從代理人外部」呼叫方法時才會經過代理人、觸發交易邏輯。用 <code>this.xxx()</code> 是繞過代理人的內部呼叫（self-invocation），所以交易不會啟動，也不會 rollback。</li>
+      <li><b>Rollback 預設行為：</b>不會。<code>@Transactional</code> 預設只在遇到 unchecked exception（<code>RuntimeException</code> / <code>Error</code>）時才 rollback。要讓 checked exception（如 <code>IOException</code>）也觸發 rollback，必須明確指定 <code>@Transactional(rollbackFor = IOException.class)</code>。</li>
+      <li><b>吞掉例外：</b>不會 rollback。@Transactional 只有在例外「真的往外拋出方法邊界」時才會發現。try-catch 抓住例外又不 rethrow，等於把錯誤訊息藏起來，Spring 從頭到尾沒看到任何例外，交易照樣正常 commit——即使資料其實已經壞掉。</li>
+      <li><b>交易邊界設計：</b>問題是外部 API／寄信這類慢操作會佔用資料庫連線，讓交易被拉長，進而拖住連線池（connection pool），塞住其他無關請求。改法：把 DB 操作留在交易內，交易結束（commit 後）再另外呼叫外部 API/寄信，例如拆成兩個方法或用事件（event）非同步觸發。</li>
+      <li><b>測試分類：</b>單元測試只測一個方法或 class 本身的邏輯，不碰資料庫、網路，跑得快；整合測試用 <code>@SpringBootTest</code> 真的啟動整個 Spring 應用程式、把所有 bean 兜起來運作，能抓到「元件裝不起來」的問題，但速度慢很多。</li>
+      <li><b>contextLoads()：</b>它在測「整個 Spring 應用程式的所有 bean 能不能成功組裝並啟動」。方法體是空的沒關係，因為重點根本不是方法裡的程式碼邏輯，而是 <code>@SpringBootTest</code> 這個 annotation 觸發的 Spring context 啟動過程——只要啟動失敗（例如某個 bean 缺依賴），這個測試就會噴錯。</li>
+      <li><b>綜合題：</b>用整合測試（@SpringBootTest）比較合適。因為要驗證 rollback 是否真的發生，需要一個真正跑起來的 transaction manager 和資料庫（或內嵌資料庫）互動，這已經超出「單一方法邏輯」的範圍，屬於「元件兜在一起是否正確運作」的整合層級問題。</li>
     </ol>
   </div>
 
 </div>
-```
