@@ -1,7 +1,9 @@
 {
   "current_index": 22,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "MockMvc 可以在不啟動真正伺服器的情況下，模擬 HTTP 請求測試 Controller 的回應；搭配 @WebMvcTest 只載入網頁層相關元件（這種只測一部分的測試叫 slice test），比整個 @SpringBootTest 更輕量快速。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
