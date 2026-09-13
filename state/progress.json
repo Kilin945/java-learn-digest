@@ -1,8 +1,9 @@
 {
   "current_index": 22,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "MockMvc 可以在不啟動真正伺服器的情況下，模擬 HTTP 請求測試 Controller 的回應；搭配 @WebMvcTest 只載入網頁層相關元件（這種只測一部分的測試叫 slice test），比整個 @SpringBootTest 更輕量快速。"
+    "MockMvc 可以在不啟動真正伺服器的情況下，模擬 HTTP 請求測試 Controller 的回應；搭配 @WebMvcTest 只載入網頁層相關元件（這種只測一部分的測試叫 slice test），比整個 @SpringBootTest 更輕量快速。",
+    "MockMvc 測試用 mockMvc.perform(get(\"/路徑\")) 送出模擬請求，再用 .andExpect(status().isOk())、.andExpect(content().string(...)) 這類斷言，一項一項檢查回應的狀態碼與內容對不對。"
   ],
   "completed_topics": [
     {
