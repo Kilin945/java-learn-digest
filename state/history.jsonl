@@ -95,3 +95,4 @@
 {"date": "2026-09-13", "topic": "MockMvc 測 Controller", "step": 2, "summary": "MockMvc 測試用 mockMvc.perform(get(\"/路徑\")) 送出模擬請求，再用 .andExpect(status().isOk())、.andExpect(content().string(...)) 這類斷言，一項一項檢查回應的狀態碼與內容對不對。"}
 {"date": "2026-09-14", "topic": "MockMvc 測 Controller", "step": 3, "summary": "檢查 JSON 回應時改用 jsonPath(\"$.欄位\").value(...) 只針對特定欄位比對，比 content().string() 整包死板比對更彈性、更好除錯。"}
 {"date": "2026-09-15", "topic": "MockMvc 測 Controller", "step": 4, "summary": "@WebMvcTest 不會建立真正的 Service bean，所以要用 @MockitoBean 塞一個假的 Service 進 Spring 測試環境，再用 when(...).thenReturn(...) 指定這個假物件被呼叫時要回傳什麼資料，這樣 Controller 測試就不用依賴真正的商業邏輯。"}
+{"date": "2026-09-16", "topic": "MockMvc 測 Controller", "step": 5, "summary": "測試 POST 請求要用 .contentType(MediaType.APPLICATION_JSON) 加 .content(json字串) 帶入 request body，而 Java 物件要先用 ObjectMapper.writeValueAsString(...) 轉成 JSON 字串才能塞進去。"}
