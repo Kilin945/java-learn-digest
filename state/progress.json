@@ -1,7 +1,9 @@
 {
   "current_index": 23,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "@DataJpaTest 是一種 test slice(測試切片),只啟動跟資料庫存取相關的 Bean(不含 Controller/Service),預設用記憶體資料庫(H2)跑測試,每個測試結束後資料會自動 rollback,不會互相汙染。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
