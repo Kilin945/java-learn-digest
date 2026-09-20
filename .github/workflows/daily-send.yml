@@ -110,7 +110,8 @@ jobs:
             echo "非最後一班（且未過 15:00），本機備稿可能還在跑，先不體檢。"; exit 0
           fi
           TODAY="$(date +%F)"
-          MISSING=""
+          # 標題要指名是哪一封——「有缺口」看了還要再查一次缺的是哪個。
+          MISSING=""; NAMES=""
 
           # ① 明天的課備好了嗎？
           # outbox 存的是「下一篇」——早上寄完會清空，當天 12:00/13:00 再填進明天的。
@@ -122,6 +123,7 @@ jobs:
               echo "[每日] 本機已寄過警示信，不重複。"
             else
               MISSING="$MISSING<li><b>明天的每日課</b>——本機今天沒有備成，明天早上 08:00 會收不到信</li>"
+              NAMES="${NAMES:+${NAMES}、}每日課沒備成"
             fi
           fi
 
@@ -133,38 +135,21 @@ jobs:
                 echo "[週報] 本機已寄過警示信，不重複。"
               else
                 MISSING="$MISSING<li><b>本週週報</b>——週五的備稿沒成功，今天早上的週報沒寄出</li>"
+                NAMES="${NAMES:+${NAMES}、}週報沒寄出"
               fi
             fi
           fi
 
           if [ -z "$MISSING" ]; then echo "體檢通過，該備的都備了。"; exit 0; fi
 
-          # 本機每個備稿時段都會留一行 RESULT，出事那天才會把它推上 state 分支。
-          # 檔案不在 = 本機一次都沒能連上 GitHub，這本身就是答案，不能寫成「查無資料」。
-          # 但別把原因寫死成「沒開機」——機器醒著卻沒網路也會長一樣，
-          # 兩者要靠本機 run.log 有沒有當天的「開始」那幾行才分得出來。
-          ATT="state/attempts-$TODAY.log"
-          if [ -s "$ATT" ]; then
-            DETAIL="<p><b>本機今天各備稿時段：</b></p><pre style=\"background:#f6f7f9;padding:10px;border-radius:6px;font-size:12px\">$(cat "$ATT")</pre>"
-          else
-            DETAIL="<p><b>本機今天沒有留下任何時段紀錄</b>——備稿程式一次都沒能連上 GitHub。兩種可能：</p>
-          <ul>
-            <li><b>筆電整天沒醒</b>：闔蓋加電池時 launchd 只會把機器叫進 DarkWake，那個狀態下沒有網路。</li>
-            <li><b>醒著但沒有可用網路</b>：WiFi 沒開、不在範圍內，或連上了卻連不出去。</li>
-          </ul>
-          <p>開電腦跑 <code>grep '$TODAY' run.log | head</code> 就能分辨：有「開始」那幾行代表機器是醒的、缺的是網路；完全沒有才是沒醒。</p>"
-          fi
-
           NOW="$(date '+%Y-%m-%d %H:%M')"
           BODY="<div style=\"font-family:-apple-system,sans-serif\">
-          <h3>⚠️ 學習信有缺口</h3>
+          <h3>${NAMES}</h3>
           <p>雲端於 $NOW 體檢，發現：</p>
           <ul>$MISSING</ul>
-          $DETAIL
-          <p>現在補跑還來得及：<code>cd ~/Workspace/java-learn-digest &amp;&amp; ./run_slot.sh</code></p>
           </div>"
 
-          if printf '%s' "$BODY" | python3 send_email.py "⚠️ 學習信有缺口"; then
+          if printf '%s' "$BODY" | python3 send_email.py "Java 學習信 ${NAMES}"; then
             date '+%Y-%m-%d %H:%M:%S' > "state/alert-prepare-$TODAY"
             if [ "$(date +%u)" = "6" ]; then
               date '+%Y-%m-%d %H:%M:%S' > "state/alert-prepare-weekly-$TODAY"
