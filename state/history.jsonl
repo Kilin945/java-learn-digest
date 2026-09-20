@@ -99,3 +99,4 @@
 {"date": "2026-09-17", "topic": "MockMvc 測 Controller", "step": 6, "summary": "測試 Controller 時,除了用 when().thenReturn() 決定假 Service 要回什麼,還可以用 verify(mockService).方法名(參數) 確認 Controller 真的有呼叫到 Service、且傳入的參數是對的,這行要寫在 mockMvc.perform(...) 之後。"}
 {"date": "2026-09-18", "topic": "@DataJpaTest 等測試切片", "step": 1, "summary": "@DataJpaTest 是一種 test slice(測試切片),只啟動跟資料庫存取相關的 Bean(不含 Controller/Service),預設用記憶體資料庫(H2)跑測試,每個測試結束後資料會自動 rollback,不會互相汙染。"}
 {"date": "2026-09-19", "topic": "@DataJpaTest 等測試切片", "step": 2, "summary": "今天學會用 TestEntityManager 在 @DataJpaTest 裡手動塞一筆假資料，再呼叫 Repository 方法驗證查詢結果，並認識 AAA（Arrange-Act-Assert）測試結構。"}
+{"date": "2026-09-20", "topic": "@DataJpaTest 等測試切片", "step": 3, "summary": "今天學會 entityManager.persist() 只是把資料放進 Persistence Context 暫存區,還沒真的寫進資料庫,要用 persistAndFlush() 才能確保資料真的落地,避免測試出現假陽性。"}
