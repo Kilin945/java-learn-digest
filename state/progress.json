@@ -1,11 +1,7 @@
 {
-  "current_index": 23,
-  "step": 4,
-  "covered": [
-    "@DataJpaTest 是一種 test slice(測試切片),只啟動跟資料庫存取相關的 Bean(不含 Controller/Service),預設用記憶體資料庫(H2)跑測試,每個測試結束後資料會自動 rollback,不會互相汙染。",
-    "今天學會用 TestEntityManager 在 @DataJpaTest 裡手動塞一筆假資料，再呼叫 Repository 方法驗證查詢結果，並認識 AAA（Arrange-Act-Assert）測試結構。",
-    "今天學會 entityManager.persist() 只是把資料放進 Persistence Context 暫存區,還沒真的寫進資料庫,要用 persistAndFlush() 才能確保資料真的落地,避免測試出現假陽性。"
-  ],
+  "current_index": 24,
+  "step": 1,
+  "covered": [],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
@@ -121,6 +117,11 @@
       "topic": "MockMvc 測 Controller",
       "finished": "2026-09-17",
       "steps": 6
+    },
+    {
+      "topic": "@DataJpaTest 等測試切片",
+      "finished": "2026-09-21",
+      "steps": 4
     }
   ]
 }
