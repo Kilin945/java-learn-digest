@@ -1,7 +1,9 @@
 {
   "current_index": 24,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "今天學會 Spring Boot Actuator 是內建的監控模組，加上 spring-boot-starter-actuator 依賴並開啟 health 端點後，打 /actuator/health 就能得到 App 的健康狀態（UP/DOWN），不用自己寫程式碼。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
