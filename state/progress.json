@@ -1,8 +1,9 @@
 {
   "current_index": 24,
-  "step": 2,
+  "step": 3,
   "covered": [
-    "今天學會 Spring Boot Actuator 是內建的監控模組，加上 spring-boot-starter-actuator 依賴並開啟 health 端點後，打 /actuator/health 就能得到 App 的健康狀態（UP/DOWN），不用自己寫程式碼。"
+    "今天學會 Spring Boot Actuator 是內建的監控模組，加上 spring-boot-starter-actuator 依賴並開啟 health 端點後，打 /actuator/health 就能得到 App 的健康狀態（UP/DOWN），不用自己寫程式碼。",
+    "今天學會 Actuator 預設只曝露 health 端點，想看 info、metrics 等其他端點，要在 application.properties 加上 management.endpoints.web.exposure.include=health,info,metrics 才能打開。"
   ],
   "completed_topics": [
     {

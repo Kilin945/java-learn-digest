@@ -102,3 +102,4 @@
 {"date": "2026-09-20", "topic": "@DataJpaTest 等測試切片", "step": 3, "summary": "今天學會 entityManager.persist() 只是把資料放進 Persistence Context 暫存區,還沒真的寫進資料庫,要用 persistAndFlush() 才能確保資料真的落地,避免測試出現假陽性。"}
 {"date": "2026-09-21", "topic": "@DataJpaTest 等測試切片", "step": 4, "summary": "今天學會 @DataJpaTest 只是 test slice 家族的一種，還有 @WebMvcTest（只測 Controller）、@JsonTest（只測 JSON 轉換）等，共同邏輯是「只蓋你要測的那層樓，其他換假貨」。"}
 {"date": "2026-09-22", "topic": "Actuator：健康檢查與指標", "step": 1, "summary": "今天學會 Spring Boot Actuator 是內建的監控模組，加上 spring-boot-starter-actuator 依賴並開啟 health 端點後，打 /actuator/health 就能得到 App 的健康狀態（UP/DOWN），不用自己寫程式碼。"}
+{"date": "2026-09-23", "topic": "Actuator：健康檢查與指標", "step": 2, "summary": "今天學會 Actuator 預設只曝露 health 端點，想看 info、metrics 等其他端點，要在 application.properties 加上 management.endpoints.web.exposure.include=health,info,metrics 才能打開。"}
