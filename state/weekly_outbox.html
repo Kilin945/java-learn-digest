@@ -1,79 +1,66 @@
-<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background-color:#ecf7ef;padding:24px;">
+<div style="max-width:680px;margin:0 auto;font-family:'Helvetica Neue',Arial,'PingFang TC','Microsoft JhengHei',sans-serif;font-size:15px;line-height:1.7;color:#333333;background:#f2f6e8;border-left:6px solid #88a83f;border-radius:8px;padding:24px 28px;">
 
-  <div style="background:#ffffff;border-radius:12px;border-left:6px solid #4caf72;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-    <div style="font-size:20px;font-weight:700;color:#1e9e57;">📘 每週回顧 · Java / Spring Boot · 2026-09-18</div>
-    <div style="font-size:14px;color:#555;margin-top:6px;">這週你把 MockMvc 測 Controller 的完整流程走了一遍，從基本設定到驗證呼叫參數。先自己回想，答案在信末。</div>
+  <div style="font-size:19px;font-weight:bold;color:#6e8c28;margin-bottom:18px;">
+    📘 每週回顧 · Java / Spring Boot · 2026-09-25
   </div>
 
-  <div style="background:#ffffff;border-radius:12px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-    <div style="font-size:16px;font-weight:700;color:#1e9e57;margin-bottom:14px;">🧠 本週回想題</div>
+  <p style="margin:0 0 16px 0;">
+    這週你從測試切片（test slice）一路走到 Actuator 監控，今天又踏進設定外部化的第一步。
+    在往下一週前，先靠「主動回想」（active recall）把這些串起來——不用翻筆記，先自己想，想不出來再看解答。
+  </p>
 
-    <div style="font-size:15px;color:#222;margin-bottom:14px;">
-      <b>1.</b> <code>@WebMvcTest</code> 和 <code>@SpringBootTest</code> 有什麼不同？為什麼測 Controller 通常選 <code>@WebMvcTest</code>？
-    </div>
+  <h3 style="color:#6e8c28;font-size:16px;margin:22px 0 10px 0;">🧠 本週回想題</h3>
 
-    <div style="font-size:15px;color:#222;margin-bottom:14px;">
-      <b>2.</b> <code>mockMvc.perform(get("/api/users"))</code> 之後，要怎麼斷言回應狀態碼是 200？
-    </div>
+  <ol style="margin:0 0 8px 0;padding-left:20px;">
+    <li style="margin-bottom:14px;">
+      在 <code>@DataJpaTest</code> 裡，如果你只呼叫 <code>entityManager.persist()</code>，接著馬上呼叫 Repository 的查詢方法，可能會發生什麼問題？為什麼？
+    </li>
+    <li style="margin-bottom:14px;">
+      AAA（Arrange-Act-Assert）是哪三個階段？各自對應測試方法裡的哪個動作？
+    </li>
+    <li style="margin-bottom:14px;">
+      <code>@DataJpaTest</code>、<code>@WebMvcTest</code>、<code>@JsonTest</code> 都是 test slice 家族的成員，它們共同的設計邏輯是什麼？
+    </li>
+    <li style="margin-bottom:14px;">
+      預設打 <code>/actuator/health</code> 有回應，但打 <code>/actuator/metrics</code> 卻沒有東西，要加哪一行設定才能打開更多端點？
+    </li>
+    <li style="margin-bottom:14px;">
+      承上題，就算打開了 <code>/actuator/metrics</code>，看到的也只是一串名稱清單，要怎麼做才能看到某個指標的實際數值？<code>availableTags</code> 的作用又是什麼？
+    </li>
+    <li style="margin-bottom:14px;">
+      今天學的 <code>@Value("${'$'}{key}")</code> 讀取 <code>application.properties</code>，跟本週稍早的 <code>management.endpoints.web.exposure.include</code> 設定，本質上在解決同一類什麼問題？
+    </li>
+    <li style="margin-bottom:0;">
+      如果要寫一個 <code>@DataJpaTest</code>，測試「先塞一筆假資料、再驗證 Repository 查得到」，你會怎麼組合這週學到的 <code>TestEntityManager</code> 方法與 AAA 結構寫出這個測試？
+    </li>
+  </ol>
 
-    <div style="font-size:15px;color:#222;margin-bottom:14px;">
-      <b>3.</b> 如果只想檢查 JSON 回應裡「某一個欄位」的值，該用 <code>content().string()</code> 還是 <code>jsonPath()</code>？為什麼？
-    </div>
+  <hr style="border:none;border-top:1px solid #d7e2bd;margin:24px 0;">
 
-    <div style="font-size:15px;color:#222;margin-bottom:14px;">
-      <b>4.</b> <code>@WebMvcTest</code> 環境下沒有真正的 Service bean，這會造成什麼問題？要怎麼解決？
-    </div>
+  <h3 style="color:#6e8c28;font-size:16px;margin:0 0 10px 0;">—— 解答 ——</h3>
 
-    <div style="font-size:15px;color:#222;margin-bottom:14px;">
-      <b>5.</b> 測試一個 <code>POST /api/users</code> 的 Controller，Java 物件要怎麼轉成 JSON 塞進 request body？需要哪個 annotation 和哪個方法？
-    </div>
-
-    <div style="font-size:15px;color:#222;margin-bottom:14px;">
-      <b>6.</b> 除了確認回應內容對不對，要怎麼確認 Controller 真的呼叫到 Service、而且參數正確？這行程式碼要寫在 <code>perform</code> 前面還是後面？
-    </div>
-
-    <div style="font-size:15px;color:#222;">
-      <b>7.</b>（綜合題）假設你要測 <code>POST /api/orders</code>，Controller 呼叫 <code>OrderService.create(order)</code> 並回傳建立好的訂單 JSON。請說出完整測試會用到的工具／annotation（至少 5 個），並排出大致使用順序。
-    </div>
-  </div>
-
-  <div style="background:#ffffff;border-radius:12px;padding:20px 24px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-    <div style="font-size:16px;font-weight:700;color:#1e9e57;margin-bottom:14px;">—— 解答 ——</div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>1.</b> <code>@WebMvcTest</code> 只載入 Web 層相關元件（Controller、Filter 等），不啟動整個 Spring context，是一種 slice test（只測一部分）；<code>@SpringBootTest</code> 會載入整個應用程式的 context，較重、較慢。測 Controller 只需驗證 HTTP 層邏輯，不需要真正跑起 Service/Repository，所以用 <code>@WebMvcTest</code> 比較快。
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>2.</b> <code>.andExpect(status().isOk())</code>。
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>3.</b> 用 <code>jsonPath("$.欄位").value(...)</code>。<code>content().string()</code> 是整包字串死板比對，多一個空白或欄位順序不同就會失敗；<code>jsonPath</code> 可以只鎖定要驗證的欄位，更彈性也更好除錯。
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>4.</b> Controller 注入的 Service 會是 null，一呼叫就丟 <code>NullPointerException</code>。解法是用 <code>@MockitoBean</code> 塞一個假的 Service 進測試環境，再用 <code>when(...).thenReturn(...)</code> 指定它被呼叫時要回傳什麼。
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>5.</b> 先用 <code>ObjectMapper.writeValueAsString(物件)</code> 把 Java 物件轉成 JSON 字串，再用 <code>.contentType(MediaType.APPLICATION_JSON).content(json字串)</code> 帶進 <code>perform(post("/路徑")...)</code>。
-    </div>
-
-    <div style="font-size:14px;color:#333;margin-bottom:14px;">
-      <b>6.</b> 用 <code>verify(mockService).方法名(參數)</code>。這行要寫在 <code>mockMvc.perform(...)</code> 之後——要先讓請求真正跑過，才有呼叫紀錄可以驗證。
-    </div>
-
-    <div style="font-size:14px;color:#333;">
-      <b>7.</b> 大致順序：
-      <br>① <code>@WebMvcTest(OrderController.class)</code> 標註測試類別，只載入 Web 層
-      <br>② <code>@MockitoBean</code> 塞一個假的 <code>OrderService</code>
-      <br>③ <code>when(orderService.create(any())).thenReturn(建立好的訂單)</code> 設定假資料
-      <br>④ <code>ObjectMapper.writeValueAsString(order)</code> 把要送出的訂單轉成 JSON
-      <br>⑤ <code>mockMvc.perform(post("/api/orders").contentType(MediaType.APPLICATION_JSON).content(json))</code> 送出請求
-      <br>⑥ <code>.andExpect(status().isOk())</code>、<code>.andExpect(jsonPath("$.欄位").value(...))</code> 驗證回應
-      <br>⑦ <code>verify(orderService).create(...)</code> 確認 Service 真的被呼叫、參數正確
-    </div>
-  </div>
+  <ol style="margin:0;padding-left:20px;">
+    <li style="margin-bottom:12px;">
+      <code>persist()</code> 只把資料放進 Persistence Context 暫存區，還沒真的寫進資料庫；緊接著查詢可能讀到暫存區裡的物件而「測試通過」，卻掩蓋了資料其實沒落地的問題（假陽性）。要用 <code>persistAndFlush()</code> 才能確保真的寫進去。
+    </li>
+    <li style="margin-bottom:12px;">
+      Arrange（準備）＝建立測試資料與情境；Act（執行）＝呼叫被測方法；Assert（驗證）＝檢查結果是否符合預期。
+    </li>
+    <li style="margin-bottom:12px;">
+      「只蓋你要測的那層樓，其他換假貨」——每個 test slice 只載入該層需要的元件（例如 <code>@DataJpaTest</code> 只載入 JPA 相關 bean），其餘（Controller、Service 等）不啟動或用假的，讓測試更快、更聚焦。
+    </li>
+    <li style="margin-bottom:12px;">
+      在 <code>application.properties</code> 加上 <code>management.endpoints.web.exposure.include=health,info,metrics</code>。
+    </li>
+    <li style="margin-bottom:12px;">
+      要打 <code>/actuator/metrics/{名稱}</code>（例如 <code>/actuator/metrics/jvm.memory.used</code>）才能看到實際數值與 <code>baseUnit</code>；<code>availableTags</code> 則列出可以用來篩選這個指標的維度（例如依 area、id 篩選）。
+    </li>
+    <li style="margin-bottom:12px;">
+      兩者都是「把會變動的東西抽離程式碼，改成外部設定」——一個是應用參數（<code>@Value</code>），一個是監控端點的開關；共同精神是換設定不用改程式碼、不用重新編譯。
+    </li>
+    <li style="margin-bottom:0;">
+      在 Arrange 階段用 <code>entityManager.persistAndFlush(entity)</code> 塞入假資料並確保真的落地；Act 階段呼叫 Repository 的查詢方法；Assert 階段驗證回傳結果是否包含剛剛塞入的那筆資料。
+    </li>
+  </ol>
 
 </div>
