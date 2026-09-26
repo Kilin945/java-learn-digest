@@ -105,3 +105,4 @@
 {"date": "2026-09-23", "topic": "Actuator：健康檢查與指標", "step": 2, "summary": "今天學會 Actuator 預設只曝露 health 端點，想看 info、metrics 等其他端點，要在 application.properties 加上 management.endpoints.web.exposure.include=health,info,metrics 才能打開。"}
 {"date": "2026-09-24", "topic": "Actuator：健康檢查與指標", "step": 3, "summary": "今天學會 /actuator/metrics 只是指標名稱清單，要接上 /actuator/metrics/{名稱} 才能看到實際數值（含 baseUnit 單位與 availableTags 可篩選維度），至此 Actuator 健康檢查與指標主題告一段落。"}
 {"date": "2026-09-25", "topic": "設定外部化與機密管理", "step": 1, "summary": "今天學會不要把設定值寫死在程式碼裡，改成放進 application.properties，用 @Value(\"${key}\") 這種 placeholder 寫法把值讀進 Java 變數，之後要換設定不用改程式碼也不用重新編譯。"}
+{"date": "2026-09-26", "topic": "設定外部化與機密管理", "step": 2, "summary": "今天學會不要把密碼直接寫進 application.properties，改用環境變數（例如 DB_PASSWORD），Spring Boot 的寬鬆綁定會自動對應到 db.password，Java 的 @Value 完全不用改，密碼就不會被 git 記錄下來。"}
