@@ -1,7 +1,9 @@
 {
   "current_index": 26,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "今天學會用 SLF4J 的 Logger（搭配 Spring Boot 預設實作 Logback）取代 System.out.println 來記錄訊息，並用 {} 佔位符傳參數，避免手動字串拼接。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
