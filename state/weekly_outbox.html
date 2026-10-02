@@ -1,66 +1,51 @@
-<div style="max-width:680px;margin:0 auto;font-family:'Helvetica Neue',Arial,'PingFang TC','Microsoft JhengHei',sans-serif;font-size:15px;line-height:1.7;color:#333333;background:#f2f6e8;border-left:6px solid #88a83f;border-radius:8px;padding:24px 28px;">
+<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;color:#333;line-height:1.7;font-size:15px;">
 
-  <div style="font-size:19px;font-weight:bold;color:#6e8c28;margin-bottom:18px;">
-    📘 每週回顧 · Java / Spring Boot · 2026-09-25
-  </div>
+<div style="border-left:6px solid #e0738a;padding:8px 14px;margin-bottom:16px;font-size:17px;font-weight:bold;color:#d83a5e;">
+📘 每週回顧 · Java / Spring Boot · 2026-10-02
+</div>
 
-  <p style="margin:0 0 16px 0;">
-    這週你從測試切片（test slice）一路走到 Actuator 監控，今天又踏進設定外部化的第一步。
-    在往下一週前，先靠「主動回想」（active recall）把這些串起來——不用翻筆記，先自己想，想不出來再看解答。
-  </p>
+<div style="background:#fdeef0;border-radius:12px;padding:18px 20px;margin-bottom:16px;">
+<p style="margin:0 0 6px 0;color:#d83a5e;font-weight:bold;">本週走過的路</p>
+<p style="margin:0;">這週你把「設定外部化與機密管理」學完（環境變數、Profiles、@ConfigurationProperties），接著開始「Logging 與結構化日誌」（SLF4J、log 等級、例外記錄、MDC）。下面 7 題先自己想一遍，再往下看解答。</p>
+</div>
 
-  <h3 style="color:#6e8c28;font-size:16px;margin:22px 0 10px 0;">🧠 本週回想題</h3>
+<div style="background:#fdeef0;border-radius:12px;padding:18px 20px;margin-bottom:16px;">
+<p style="margin:0 0 10px 0;color:#d83a5e;font-weight:bold;">🧠 回想題</p>
 
-  <ol style="margin:0 0 8px 0;padding-left:20px;">
-    <li style="margin-bottom:14px;">
-      在 <code>@DataJpaTest</code> 裡，如果你只呼叫 <code>entityManager.persist()</code>，接著馬上呼叫 Repository 的查詢方法，可能會發生什麼問題？為什麼？
-    </li>
-    <li style="margin-bottom:14px;">
-      AAA（Arrange-Act-Assert）是哪三個階段？各自對應測試方法裡的哪個動作？
-    </li>
-    <li style="margin-bottom:14px;">
-      <code>@DataJpaTest</code>、<code>@WebMvcTest</code>、<code>@JsonTest</code> 都是 test slice 家族的成員，它們共同的設計邏輯是什麼？
-    </li>
-    <li style="margin-bottom:14px;">
-      預設打 <code>/actuator/health</code> 有回應，但打 <code>/actuator/metrics</code> 卻沒有東西，要加哪一行設定才能打開更多端點？
-    </li>
-    <li style="margin-bottom:14px;">
-      承上題，就算打開了 <code>/actuator/metrics</code>，看到的也只是一串名稱清單，要怎麼做才能看到某個指標的實際數值？<code>availableTags</code> 的作用又是什麼？
-    </li>
-    <li style="margin-bottom:14px;">
-      今天學的 <code>@Value("${'$'}{key}")</code> 讀取 <code>application.properties</code>，跟本週稍早的 <code>management.endpoints.web.exposure.include</code> 設定，本質上在解決同一類什麼問題？
-    </li>
-    <li style="margin-bottom:0;">
-      如果要寫一個 <code>@DataJpaTest</code>，測試「先塞一筆假資料、再驗證 Repository 查得到」，你會怎麼組合這週學到的 <code>TestEntityManager</code> 方法與 AAA 結構寫出這個測試？
-    </li>
-  </ol>
+<p style="margin:0 0 12px 0;"><b>Q1.</b> 為什麼不要把資料庫密碼直接寫進 application.properties？改用環境變數 <code>DB_PASSWORD</code> 之後，程式裡的 <code>@Value("${db.password}")</code> 需要改嗎？為什麼？</p>
 
-  <hr style="border:none;border-top:1px solid #d7e2bd;margin:24px 0;">
+<p style="margin:0 0 12px 0;"><b>Q2.</b> 你有 <code>application-dev.properties</code> 和 <code>application-prod.properties</code>，要怎麼指定現在用哪一份？密碼該放在 profile 檔案裡嗎？</p>
 
-  <h3 style="color:#6e8c28;font-size:16px;margin:0 0 10px 0;">—— 解答 ——</h3>
+<p style="margin:0 0 12px 0;"><b>Q3.</b> 相較於一堆零散的 <code>@Value</code>，<code>@ConfigurationProperties(prefix="db")</code> 的設定類別有什麼好處？還需要搭配什麼註解才會啟用？</p>
 
-  <ol style="margin:0;padding-left:20px;">
-    <li style="margin-bottom:12px;">
-      <code>persist()</code> 只把資料放進 Persistence Context 暫存區，還沒真的寫進資料庫；緊接著查詢可能讀到暫存區裡的物件而「測試通過」，卻掩蓋了資料其實沒落地的問題（假陽性）。要用 <code>persistAndFlush()</code> 才能確保真的寫進去。
-    </li>
-    <li style="margin-bottom:12px;">
-      Arrange（準備）＝建立測試資料與情境；Act（執行）＝呼叫被測方法；Assert（驗證）＝檢查結果是否符合預期。
-    </li>
-    <li style="margin-bottom:12px;">
-      「只蓋你要測的那層樓，其他換假貨」——每個 test slice 只載入該層需要的元件（例如 <code>@DataJpaTest</code> 只載入 JPA 相關 bean），其餘（Controller、Service 等）不啟動或用假的，讓測試更快、更聚焦。
-    </li>
-    <li style="margin-bottom:12px;">
-      在 <code>application.properties</code> 加上 <code>management.endpoints.web.exposure.include=health,info,metrics</code>。
-    </li>
-    <li style="margin-bottom:12px;">
-      要打 <code>/actuator/metrics/{名稱}</code>（例如 <code>/actuator/metrics/jvm.memory.used</code>）才能看到實際數值與 <code>baseUnit</code>；<code>availableTags</code> 則列出可以用來篩選這個指標的維度（例如依 area、id 篩選）。
-    </li>
-    <li style="margin-bottom:12px;">
-      兩者都是「把會變動的東西抽離程式碼，改成外部設定」——一個是應用參數（<code>@Value</code>），一個是監控端點的開關；共同精神是換設定不用改程式碼、不用重新編譯。
-    </li>
-    <li style="margin-bottom:0;">
-      在 Arrange 階段用 <code>entityManager.persistAndFlush(entity)</code> 塞入假資料並確保真的落地；Act 階段呼叫 Repository 的查詢方法；Assert 階段驗證回傳結果是否包含剛剛塞入的那筆資料。
-    </li>
-  </ol>
+<p style="margin:0 0 12px 0;"><b>Q4.</b> 為什麼要用 SLF4J 的 Logger 取代 <code>System.out.println</code>？下面這行有什麼可以改進的地方？<br>
+<code>log.info("user " + id + " login at " + time);</code></p>
+
+<p style="margin:0 0 12px 0;"><b>Q5.</b> 正式環境的 log 太多，你只想讓某個套件（例如 <code>com.example.service</code>）只輸出 WARN 以上，要怎麼做？需要改程式碼或重新部署嗎？</p>
+
+<p style="margin:0 0 12px 0;"><b>Q6.</b> 下面兩種寫法，哪一種能保留完整 stack trace？為什麼？<br>
+(a) <code>log.error("付款失敗: " + e.getMessage());</code><br>
+(b) <code>log.error("付款失敗 orderId={}", orderId, e);</code></p>
+
+<p style="margin:0;"><b>Q7.</b>（跨主題）你想讓同一個請求的每一行 log 都帶同一個 requestId。請說明：在哪裡放進去、pattern 怎麼寫、結束時要做什麼？如果忘了這一步，在 thread pool 環境下會發生什麼事？</p>
+</div>
+
+<div style="background:#fdeef0;border-radius:12px;padding:18px 20px;">
+<p style="margin:0 0 10px 0;color:#d83a5e;font-weight:bold;">—— 解答 ——</p>
+
+<p style="margin:0 0 10px 0;"><b>A1.</b> 寫進 properties 會被 git 記錄，密碼就外洩到版本歷史。改用環境變數後，Spring Boot 的寬鬆綁定（relaxed binding）會把 <code>DB_PASSWORD</code> 自動對應到 <code>db.password</code>，所以 <code>@Value</code> 完全不用改。</p>
+
+<p style="margin:0 0 10px 0;"><b>A2.</b> 用 <code>spring.profiles.active=dev</code>（或 prod）切換。密碼不放 profile 檔，仍交給環境變數處理，因為 profile 檔也會進 git。</p>
+
+<p style="margin:0 0 10px 0;"><b>A3.</b> 把相關設定打包成一個型別安全（type-safe）的類別，例如 <code>DbProperties</code>，集中管理、好維護、有型別檢查。要搭配 <code>@EnableConfigurationProperties</code> 啟用。密碼欄位一樣由環境變數提供。</p>
+
+<p style="margin:0 0 10px 0;"><b>A4.</b> SLF4J Logger 有等級、可設定輸出位置與格式，println 都做不到。字串拼接應改用 <code>{}</code> 佔位符：<code>log.info("user {} login at {}", id, time);</code>，更乾淨，也避免不必要的字串拼接。</p>
+
+<p style="margin:0 0 10px 0;"><b>A5.</b> 在 application.properties 加 <code>logging.level.com.example.service=WARN</code>。不用改程式碼，也不用重新部署（改設定即可）。等級由輕到重：TRACE → DEBUG → INFO → WARN → ERROR。</p>
+
+<p style="margin:0 0 10px 0;"><b>A6.</b> 是 (b)。把 Exception 物件放在參數的<b>最後一個</b>，SLF4J 就會自動印出完整 stack trace；(a) 只留 <code>e.getMessage()</code>，會丟掉出錯位置等關鍵資訊。</p>
+
+<p style="margin:0;"><b>A7.</b> 在 Filter 裡請求進來時 <code>MDC.put("requestId", ...)</code>；log pattern 用 <code>%X{requestId}</code>；結束時必須在 <code>finally</code> 裡 <code>MDC.clear()</code>。MDC 是綁在 thread 上的，thread pool 會重複使用 thread，忘了清除，下一個請求可能沿用到上一個請求的 requestId，log 會被錯誤歸類。</p>
+</div>
 
 </div>
