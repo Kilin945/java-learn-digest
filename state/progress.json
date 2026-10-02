@@ -1,10 +1,11 @@
 {
   "current_index": 26,
-  "step": 4,
+  "step": 5,
   "covered": [
     "今天學會用 SLF4J 的 Logger（搭配 Spring Boot 預設實作 Logback）取代 System.out.println 來記錄訊息，並用 {} 佔位符傳參數，避免手動字串拼接。",
     "今天學會 log 等級(TRACE/DEBUG/INFO/WARN/ERROR)代表的嚴重程度,以及如何在 application.properties 針對特定套件設定等級來控制輸出多寡,不用改程式碼或重新部署。",
-    "今天學會記錄例外時要把 Exception 物件放在 log 參數的最後一個，SLF4J 就會自動印出完整 stack trace，不要只記 e.getMessage()。"
+    "今天學會記錄例外時要把 Exception 物件放在 log 參數的最後一個，SLF4J 就會自動印出完整 stack trace，不要只記 e.getMessage()。",
+    "今天學會用 MDC 在請求進來時（Filter 內）放入 requestId，並用 %X{requestId} 讓同一請求的每行 log 自動帶編號，結束時必須在 finally 裡 MDC.clear()。"
   ],
   "completed_topics": [
     {
