@@ -1,7 +1,9 @@
 {
   "current_index": 27,
-  "step": 1,
-  "covered": [],
+  "step": 2,
+  "covered": [
+    "Authentication（認證，你是誰，失敗回 401）與 Authorization（授權，你能做什麼，失敗回 403）是兩件不同的事，且永遠先認證再授權。"
+  ],
   "completed_topics": [
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
