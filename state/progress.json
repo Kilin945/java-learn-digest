@@ -1,9 +1,10 @@
 {
   "current_index": 27,
-  "step": 3,
+  "step": 4,
   "covered": [
     "Authentication（認證，你是誰，失敗回 401）與 Authorization（授權，你能做什麼，失敗回 403）是兩件不同的事，且永遠先認證再授權。",
-    "Spring Security 是一條放在 Controller 前面的 Filter Chain(過濾器鏈),每個請求都得先經過它;認證與授權都在鏈上完成,並透過 SecurityFilterChain 設定哪些路徑放行(permitAll)、哪些需登入(authenticated)。"
+    "Spring Security 是一條放在 Controller 前面的 Filter Chain(過濾器鏈),每個請求都得先經過它;認證與授權都在鏈上完成,並透過 SecurityFilterChain 設定哪些路徑放行(permitAll)、哪些需登入(authenticated)。",
+    "密碼不能原文存資料庫，要用 PasswordEncoder（常用 BCryptPasswordEncoder）：存檔時 encode() 轉成帶 salt 的不可逆雜湊，登入時用 matches() 比對。"
   ],
   "completed_topics": [
     {

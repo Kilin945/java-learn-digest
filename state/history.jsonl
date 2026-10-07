@@ -116,3 +116,4 @@
 {"date": "2026-10-04", "topic": "Logging 與結構化日誌", "step": 6, "summary": "今天學會 log 絕對不能記密碼、token、卡號等敏感資料：能不記就只記 userId 等內部編號，必須記就先遮罩，並小心整個物件的 toString() 把敏感欄位一起印出。"}
 {"date": "2026-10-05", "topic": "Spring Security 入門：認證與授權概念", "step": 1, "summary": "Authentication（認證，你是誰，失敗回 401）與 Authorization（授權，你能做什麼，失敗回 403）是兩件不同的事，且永遠先認證再授權。"}
 {"date": "2026-10-06", "topic": "Spring Security 入門：認證與授權概念", "step": 2, "summary": "Spring Security 是一條放在 Controller 前面的 Filter Chain(過濾器鏈),每個請求都得先經過它;認證與授權都在鏈上完成,並透過 SecurityFilterChain 設定哪些路徑放行(permitAll)、哪些需登入(authenticated)。"}
+{"date": "2026-10-07", "topic": "Spring Security 入門：認證與授權概念", "step": 3, "summary": "密碼不能原文存資料庫，要用 PasswordEncoder（常用 BCryptPasswordEncoder）：存檔時 encode() 轉成帶 salt 的不可逆雜湊，登入時用 matches() 比對。"}
