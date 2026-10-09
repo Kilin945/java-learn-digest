@@ -1,11 +1,12 @@
 {
   "current_index": 27,
-  "step": 5,
+  "step": 6,
   "covered": [
     "Authentication（認證，你是誰，失敗回 401）與 Authorization（授權，你能做什麼，失敗回 403）是兩件不同的事，且永遠先認證再授權。",
     "Spring Security 是一條放在 Controller 前面的 Filter Chain(過濾器鏈),每個請求都得先經過它;認證與授權都在鏈上完成,並透過 SecurityFilterChain 設定哪些路徑放行(permitAll)、哪些需登入(authenticated)。",
     "密碼不能原文存資料庫，要用 PasswordEncoder（常用 BCryptPasswordEncoder）：存檔時 encode() 轉成帶 salt 的不可逆雜湊，登入時用 matches() 比對。",
-    "Spring Security 不知道使用者存在哪，所以你要實作 UserDetailsService 的 loadUserByUsername(帳號)，回傳含密碼雜湊的 UserDetails（找不到就丟 UsernameNotFoundException），之後由 Spring 用 PasswordEncoder.matches() 比對密碼。"
+    "Spring Security 不知道使用者存在哪，所以你要實作 UserDetailsService 的 loadUserByUsername(帳號)，回傳含密碼雜湊的 UserDetails（找不到就丟 UsernameNotFoundException），之後由 Spring 用 PasswordEncoder.matches() 比對密碼。",
+    "授權靠角色：在使用者身上用 roles() 貼標籤，再於 SecurityFilterChain 用 requestMatchers().hasRole() 規定路徑（規則由上往下、anyRequest 放最後），已登入但角色不夠回 403。"
   ],
   "completed_topics": [
     {
