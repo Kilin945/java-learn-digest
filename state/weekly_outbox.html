@@ -1,51 +1,79 @@
 <div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;color:#333;line-height:1.7;font-size:15px;">
 
-<div style="border-left:6px solid #e0738a;padding:8px 14px;margin-bottom:16px;font-size:17px;font-weight:bold;color:#d83a5e;">
-📘 每週回顧 · Java / Spring Boot · 2026-10-02
+<div style="border-left:6px solid #8a6bd8;padding:8px 14px;margin-bottom:16px;font-size:17px;font-weight:bold;color:#6b3bf6;">
+📘 每週回顧 · Java / Spring Boot · 2026-10-09
 </div>
 
-<div style="background:#fdeef0;border-radius:12px;padding:18px 20px;margin-bottom:16px;">
-<p style="margin:0 0 6px 0;color:#d83a5e;font-weight:bold;">本週走過的路</p>
-<p style="margin:0;">這週你把「設定外部化與機密管理」學完（環境變數、Profiles、@ConfigurationProperties），接著開始「Logging 與結構化日誌」（SLF4J、log 等級、例外記錄、MDC）。下面 7 題先自己想一遍，再往下看解答。</p>
+<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
+<p style="margin:0;">這週你學了兩大塊：<b style="color:#6b3bf6;">Logging 與結構化日誌</b>（10/3–10/4）和 <b style="color:#6b3bf6;">Spring Security 入門</b>（10/5–10/9）。先不要翻解答，每題在心裡（或紙上）回答一次，再對照信末答案。這種「主動回想」比重讀筆記有效得多。</p>
 </div>
 
-<div style="background:#fdeef0;border-radius:12px;padding:18px 20px;margin-bottom:16px;">
-<p style="margin:0 0 10px 0;color:#d83a5e;font-weight:bold;">🧠 回想題</p>
-
-<p style="margin:0 0 12px 0;"><b>Q1.</b> 為什麼不要把資料庫密碼直接寫進 application.properties？改用環境變數 <code>DB_PASSWORD</code> 之後，程式裡的 <code>@Value("${db.password}")</code> 需要改嗎？為什麼？</p>
-
-<p style="margin:0 0 12px 0;"><b>Q2.</b> 你有 <code>application-dev.properties</code> 和 <code>application-prod.properties</code>，要怎麼指定現在用哪一份？密碼該放在 profile 檔案裡嗎？</p>
-
-<p style="margin:0 0 12px 0;"><b>Q3.</b> 相較於一堆零散的 <code>@Value</code>，<code>@ConfigurationProperties(prefix="db")</code> 的設定類別有什麼好處？還需要搭配什麼註解才會啟用？</p>
-
-<p style="margin:0 0 12px 0;"><b>Q4.</b> 為什麼要用 SLF4J 的 Logger 取代 <code>System.out.println</code>？下面這行有什麼可以改進的地方？<br>
-<code>log.info("user " + id + " login at " + time);</code></p>
-
-<p style="margin:0 0 12px 0;"><b>Q5.</b> 正式環境的 log 太多，你只想讓某個套件（例如 <code>com.example.service</code>）只輸出 WARN 以上，要怎麼做？需要改程式碼或重新部署嗎？</p>
-
-<p style="margin:0 0 12px 0;"><b>Q6.</b> 下面兩種寫法，哪一種能保留完整 stack trace？為什麼？<br>
-(a) <code>log.error("付款失敗: " + e.getMessage());</code><br>
-(b) <code>log.error("付款失敗 orderId={}", orderId, e);</code></p>
-
-<p style="margin:0;"><b>Q7.</b>（跨主題）你想讓同一個請求的每一行 log 都帶同一個 requestId。請說明：在哪裡放進去、pattern 怎麼寫、結束時要做什麼？如果忘了這一步，在 thread pool 環境下會發生什麼事？</p>
+<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
+<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q1　（基礎）</p>
+<p style="margin:0;">Authentication 與 Authorization 各自回答什麼問題？失敗時分別回什麼 HTTP 狀態碼？兩者的先後順序是什麼？</p>
 </div>
 
-<div style="background:#fdeef0;border-radius:12px;padding:18px 20px;">
-<p style="margin:0 0 10px 0;color:#d83a5e;font-weight:bold;">—— 解答 ——</p>
-
-<p style="margin:0 0 10px 0;"><b>A1.</b> 寫進 properties 會被 git 記錄，密碼就外洩到版本歷史。改用環境變數後，Spring Boot 的寬鬆綁定（relaxed binding）會把 <code>DB_PASSWORD</code> 自動對應到 <code>db.password</code>，所以 <code>@Value</code> 完全不用改。</p>
-
-<p style="margin:0 0 10px 0;"><b>A2.</b> 用 <code>spring.profiles.active=dev</code>（或 prod）切換。密碼不放 profile 檔，仍交給環境變數處理，因為 profile 檔也會進 git。</p>
-
-<p style="margin:0 0 10px 0;"><b>A3.</b> 把相關設定打包成一個型別安全（type-safe）的類別，例如 <code>DbProperties</code>，集中管理、好維護、有型別檢查。要搭配 <code>@EnableConfigurationProperties</code> 啟用。密碼欄位一樣由環境變數提供。</p>
-
-<p style="margin:0 0 10px 0;"><b>A4.</b> SLF4J Logger 有等級、可設定輸出位置與格式，println 都做不到。字串拼接應改用 <code>{}</code> 佔位符：<code>log.info("user {} login at {}", id, time);</code>，更乾淨，也避免不必要的字串拼接。</p>
-
-<p style="margin:0 0 10px 0;"><b>A5.</b> 在 application.properties 加 <code>logging.level.com.example.service=WARN</code>。不用改程式碼，也不用重新部署（改設定即可）。等級由輕到重：TRACE → DEBUG → INFO → WARN → ERROR。</p>
-
-<p style="margin:0 0 10px 0;"><b>A6.</b> 是 (b)。把 Exception 物件放在參數的<b>最後一個</b>，SLF4J 就會自動印出完整 stack trace；(a) 只留 <code>e.getMessage()</code>，會丟掉出錯位置等關鍵資訊。</p>
-
-<p style="margin:0;"><b>A7.</b> 在 Filter 裡請求進來時 <code>MDC.put("requestId", ...)</code>；log pattern 用 <code>%X{requestId}</code>；結束時必須在 <code>finally</code> 裡 <code>MDC.clear()</code>。MDC 是綁在 thread 上的，thread pool 會重複使用 thread，忘了清除，下一個請求可能沿用到上一個請求的 requestId，log 會被錯誤歸類。</p>
+<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
+<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q2　（基礎）</p>
+<p style="margin:0;">在 Spring Boot 3.4+ 中，要讓 log 變成「一行一筆 JSON」，要設定哪個 property？可選哪些格式？MDC 裡的 <code>requestId</code> 在輸出中會變成什麼？</p>
 </div>
+
+<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
+<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q3　（基礎）</p>
+<p style="margin:0;">Spring Security 在請求流程中放在哪裡？它是什麼結構？用哪個 bean 來設定「哪些路徑放行、哪些要登入」？</p>
+</div>
+
+<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
+<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q4　（應用）</p>
+<p style="margin:0;">下面這行 log 有什麼問題？你會怎麼改？<br><code>log.info("user login: {}", user);</code>（<code>User</code> 類別有 <code>password</code>、<code>token</code> 欄位，且沒覆寫 <code>toString()</code> 的遮罩）</p>
+</div>
+
+<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
+<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q5　（應用）</p>
+<p style="margin:0;">為什麼密碼不能原文存進資料庫？請說明 <code>PasswordEncoder</code> 的 <code>encode()</code> 與 <code>matches()</code> 各在什麼時機用，以及 BCrypt 的 salt 帶來什麼好處。</p>
+</div>
+
+<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
+<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q6　（應用）</p>
+<p style="margin:0;">Spring Security 不知道你的使用者存在哪裡。你要實作哪個 interface 的哪個方法？該方法回傳什麼？找不到使用者時要做什麼？之後誰負責比對密碼？</p>
+</div>
+
+<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
+<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q7　（綜合）</p>
+<p style="margin:0;">看這段設定：<br>
+<code>.authorizeHttpRequests(a -> a<br>
+&nbsp;&nbsp;.anyRequest().authenticated()<br>
+&nbsp;&nbsp;.requestMatchers("/admin/**").hasRole("ADMIN"))</code><br>
+這樣寫會出什麼問題？正確順序該怎麼排？</p>
+</div>
+
+<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
+<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q8　（綜合）</p>
+<p style="margin:0;">情境：使用者 Amy 帶著正確帳密登入成功，角色只有 <code>USER</code>，去呼叫 <code>/admin/users</code>（規定要 <code>ADMIN</code>）。(a) 會回幾號狀態碼？為什麼？(b) 若她沒登入就直接打這支 API 呢？(c) 這時伺服器要記一筆 log 追蹤這次存取，你會記哪些欄位、避免記哪些？</p>
+</div>
+
+<div style="text-align:center;color:#8a6bd8;font-weight:bold;margin:24px 0 12px 0;">—— 解答 ——</div>
+
+<div style="background:#ffffff;border:1px solid #d9cdf5;border-radius:12px;padding:16px 18px;">
+
+<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A1</b>　Authentication（認證）＝「你是誰」，失敗回 <b>401</b>；Authorization（授權）＝「你能做什麼」，失敗回 <b>403</b>。永遠<b>先認證、再授權</b>。</p>
+
+<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A2</b>　設定 <code>logging.structured.format.console</code>，可選 <code>ecs</code>、<code>logstash</code>、<code>gelf</code>。MDC 的 <code>requestId</code> 會自動成為 JSON 的一個欄位，日誌平台就能依欄位搜尋。</p>
+
+<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A3</b>　它是放在 Controller 前面的 <b>Filter Chain</b>（過濾器鏈），每個請求都要先通過；認證與授權都在鏈上完成。用 <code>SecurityFilterChain</code> bean 設定，<code>permitAll</code> 放行、<code>authenticated</code> 需登入。</p>
+
+<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A4</b>　直接印整個物件，會呼叫 <code>toString()</code>，把 <code>password</code>、<code>token</code> 一起寫進 log，造成敏感資料外洩。改法：只記 <code>userId</code> 這類內部編號，例如 <code>log.info("user login: userId={}", user.getId())</code>；真的必須記就先遮罩；也可以讓 <code>toString()</code> 排除敏感欄位。</p>
+
+<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A5</b>　原文存放一旦資料庫外洩，所有密碼立刻曝光。存檔（註冊／改密碼）時用 <code>encode()</code> 轉成<b>帶 salt 的不可逆雜湊</b>；登入時用 <code>matches(輸入密碼, 資料庫雜湊)</code> 比對。salt 是隨機加進去的值，讓<b>相同密碼產生不同雜湊</b>，無法用彩虹表（rainbow table，預先算好的雜湊對照表）一次破解。</p>
+
+<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A6</b>　實作 <code>UserDetailsService</code> 的 <code>loadUserByUsername(帳號)</code>，回傳含<b>密碼雜湊</b>的 <code>UserDetails</code>；找不到就丟 <code>UsernameNotFoundException</code>。之後由 Spring 用 <code>PasswordEncoder.matches()</code> 比對密碼，你不用自己比。</p>
+
+<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A7</b>　規則是<b>由上往下</b>比對，第一個符合就採用。<code>anyRequest()</code> 會吃掉所有請求，後面的 <code>/admin/**</code> 規則永遠不會生效（新版 Spring Security 甚至會在啟動時直接報錯）。正確：先寫具體的 <code>requestMatchers("/admin/**").hasRole("ADMIN")</code>，<code>anyRequest().authenticated()</code> <b>放最後</b>。</p>
+
+<p style="margin:0;"><b style="color:#6b3bf6;">A8</b>　(a) <b>403</b>：Amy 已通過認證（知道她是誰），但角色 <code>USER</code> 不夠，屬於授權失敗。(b) 沒登入＝認證失敗，回 <b>401</b>（先認證再授權，根本還沒走到角色判斷）。(c) 記 <code>requestId</code>（MDC 自動帶）、<code>userId</code>、路徑、HTTP 方法、結果狀態碼；<b>不要記</b>密碼、token、卡號，也別直接印整個 user 物件。</p>
+
+</div>
+
+<p style="margin:16px 0 0 0;text-align:center;color:#8a6bd8;font-size:13px;">答對幾題不重要，卡住的那題就是明天最值得回頭看的地方。下週繼續加油 💪</p>
 
 </div>
