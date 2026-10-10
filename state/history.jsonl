@@ -119,3 +119,4 @@
 {"date": "2026-10-07", "topic": "Spring Security 入門：認證與授權概念", "step": 3, "summary": "密碼不能原文存資料庫，要用 PasswordEncoder（常用 BCryptPasswordEncoder）：存檔時 encode() 轉成帶 salt 的不可逆雜湊，登入時用 matches() 比對。"}
 {"date": "2026-10-08", "topic": "Spring Security 入門：認證與授權概念", "step": 4, "summary": "Spring Security 不知道使用者存在哪，所以你要實作 UserDetailsService 的 loadUserByUsername(帳號)，回傳含密碼雜湊的 UserDetails（找不到就丟 UsernameNotFoundException），之後由 Spring 用 PasswordEncoder.matches() 比對密碼。"}
 {"date": "2026-10-09", "topic": "Spring Security 入門：認證與授權概念", "step": 5, "summary": "授權靠角色：在使用者身上用 roles() 貼標籤，再於 SecurityFilterChain 用 requestMatchers().hasRole() 規定路徑（規則由上往下、anyRequest 放最後），已登入但角色不夠回 403。"}
+{"date": "2026-10-10", "topic": "Spring Security 入門：認證與授權概念", "step": 6, "summary": "認證成功後登入者會放在 SecurityContext，Controller 可用 @AuthenticationPrincipal UserDetails 或 Authentication 參數直接取得目前使用者與角色（角色會帶 ROLE_ 前綴）。"}
