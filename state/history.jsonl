@@ -121,3 +121,4 @@
 {"date": "2026-10-09", "topic": "Spring Security 入門：認證與授權概念", "step": 5, "summary": "授權靠角色：在使用者身上用 roles() 貼標籤，再於 SecurityFilterChain 用 requestMatchers().hasRole() 規定路徑（規則由上往下、anyRequest 放最後），已登入但角色不夠回 403。"}
 {"date": "2026-10-10", "topic": "Spring Security 入門：認證與授權概念", "step": 6, "summary": "認證成功後登入者會放在 SecurityContext，Controller 可用 @AuthenticationPrincipal UserDetails 或 Authentication 參數直接取得目前使用者與角色（角色會帶 ROLE_ 前綴）。"}
 {"date": "2026-10-11", "topic": "Spring Security 入門：認證與授權概念", "step": 7, "summary": "用 @EnableMethodSecurity 開啟方法層級安全後，可在方法上用 @PreAuthorize（SpEL 規則，如 hasRole('ADMIN') 或 #username == authentication.name）於執行前檢查角色或是否本人，不符回 403。"}
+{"date": "2026-10-12", "topic": "Spring Security 入門：認證與授權概念", "step": 8, "summary": "純 REST API 要在 SecurityFilterChain 設 csrf 關閉與 SessionCreationPolicy.STATELESS（不靠 cookie/session 認人），否則預設開啟的 CSRF 保護會讓帳密正確的 POST／PUT／DELETE 回 403。"}
