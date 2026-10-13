@@ -122,3 +122,4 @@
 {"date": "2026-10-10", "topic": "Spring Security 入門：認證與授權概念", "step": 6, "summary": "認證成功後登入者會放在 SecurityContext，Controller 可用 @AuthenticationPrincipal UserDetails 或 Authentication 參數直接取得目前使用者與角色（角色會帶 ROLE_ 前綴）。"}
 {"date": "2026-10-11", "topic": "Spring Security 入門：認證與授權概念", "step": 7, "summary": "用 @EnableMethodSecurity 開啟方法層級安全後，可在方法上用 @PreAuthorize（SpEL 規則，如 hasRole('ADMIN') 或 #username == authentication.name）於執行前檢查角色或是否本人，不符回 403。"}
 {"date": "2026-10-12", "topic": "Spring Security 入門：認證與授權概念", "step": 8, "summary": "純 REST API 要在 SecurityFilterChain 設 csrf 關閉與 SessionCreationPolicy.STATELESS（不靠 cookie/session 認人），否則預設開啟的 CSRF 保護會讓帳密正確的 POST／PUT／DELETE 回 403。"}
+{"date": "2026-10-13", "topic": "Spring Security 入門：認證與授權概念", "step": 9, "summary": "收尾總結:一個請求先過 Filter Chain,依序認證(失敗 401)→ 授權(失敗 403)→ 進 Controller;完整 SecurityConfig 串起 csrf 關閉、STATELESS、路徑規則、httpBasic、BCrypt;STATELESS 代表每個請求都要自證身分,因此下一步會學 JWT。"}
