@@ -1,0 +1,10 @@
+2026-10-13 08:41:02 RESULT prepare SKIP 課綱已全部完成
+2026-10-13 08:44:02 RESULT prepare SKIP 課綱已全部完成
+2026-10-13 08:47:02 RESULT prepare SKIP 課綱已全部完成
+2026-10-13 09:05:32 RESULT prepare SKIP 課綱已全部完成
+2026-10-13 09:08:45 RESULT prepare SKIP 課綱已全部完成
+2026-10-13 09:42:22 RESULT prepare SKIP 課綱已全部完成
+2026-10-13 09:52:48 RESULT prepare SKIP 課綱已全部完成
+2026-10-13 12:00:04 RESULT prepare SKIP 課綱已全部完成
+2026-10-13 13:00:08 RESULT prepare SKIP 課綱已全部完成
+2026-10-13 13:45:24 RESULT prepare FAIL state 分支同步失敗：ssh: Could not resolve hostname ssh.github.com: nodename nor servname provided, or not known
