@@ -1,79 +1,49 @@
-<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;color:#333;line-height:1.7;font-size:15px;">
+<div style="max-width:680px;margin:0 auto;font-family:-apple-system,'Segoe UI','Noto Sans TC',sans-serif;color:#333;line-height:1.7;">
 
-<div style="border-left:6px solid #8a6bd8;padding:8px 14px;margin-bottom:16px;font-size:17px;font-weight:bold;color:#6b3bf6;">
-📘 每週回顧 · Java / Spring Boot · 2026-10-09
+<div style="border-left:6px solid #c56bb0;padding:8px 14px;margin-bottom:14px;font-size:16px;font-weight:bold;color:#b04b9b;">📘 每週回顧 · Java / Spring Boot · 2026-10-16</div>
+
+<div style="background:#f9edf6;border-radius:10px;padding:16px 18px;margin-bottom:14px;font-size:14px;">
+這週我們把 <b>Spring Security</b> 從頭走了一遍：取得登入者 → 方法層級授權 → REST API 的 CSRF／STATELESS → 整個請求流程。先別翻到最後，每題試著自己回想一下，再對解答。
 </div>
 
-<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
-<p style="margin:0;">這週你學了兩大塊：<b style="color:#6b3bf6;">Logging 與結構化日誌</b>（10/3–10/4）和 <b style="color:#6b3bf6;">Spring Security 入門</b>（10/5–10/9）。先不要翻解答，每題在心裡（或紙上）回答一次，再對照信末答案。這種「主動回想」比重讀筆記有效得多。</p>
+<div style="background:#f9edf6;border-radius:10px;padding:16px 18px;margin-bottom:14px;font-size:14px;">
+<div style="font-weight:bold;color:#b04b9b;margin-bottom:8px;">🧠 回想題</div>
+
+<p style="margin:0 0 10px;"><b>Q1.</b> 認證成功後，登入者的資訊存放在哪裡？Controller 有哪兩種方式可以直接拿到目前使用者？</p>
+
+<p style="margin:0 0 10px;"><b>Q2.</b> 如果使用者的角色是 ADMIN，從 <code>Authentication</code> 的 authorities 看到的字串會是什麼？為什麼？</p>
+
+<p style="margin:0 0 10px;"><b>Q3.</b> 要讓 <code>@PreAuthorize</code> 生效，需要先在設定類別上加什麼 annotation？</p>
+
+<p style="margin:0 0 10px;"><b>Q4.</b> 請各寫出一個 <code>@PreAuthorize</code> 的 SpEL 範例：(a) 只有 ADMIN 能呼叫；(b) 只有「本人」能呼叫（參數名為 <code>username</code>）。檢查不符時回什麼狀態碼？</p>
+
+<p style="margin:0 0 10px;"><b>Q5.</b> 一個純 REST API，帳密完全正確，但 POST／PUT／DELETE 一直回 403，GET 卻正常。最可能的原因是什麼？該怎麼改？</p>
+
+<p style="margin:0 0 10px;"><b>Q6.</b> <code>SessionCreationPolicy.STATELESS</code> 代表什麼？它對「每個請求」帶來什麼要求？</p>
+
+<p style="margin:0 0 10px;"><b>Q7.</b> 請把一個請求的處理順序依序說出來（從 Filter Chain 到 Controller），並指出 401 與 403 各發生在哪一關。</p>
+
+<p style="margin:0 0 0;"><b>Q8.</b> 一份完整的 <code>SecurityConfig</code>（REST API 版）會串起哪幾個設定？為什麼下一步要學 JWT？</p>
 </div>
 
-<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
-<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q1　（基礎）</p>
-<p style="margin:0;">Authentication 與 Authorization 各自回答什麼問題？失敗時分別回什麼 HTTP 狀態碼？兩者的先後順序是什麼？</p>
+<div style="background:#f9edf6;border-radius:10px;padding:16px 18px;font-size:14px;">
+<div style="font-weight:bold;color:#b04b9b;margin-bottom:8px;text-align:center;">—— 解答 ——</div>
+
+<p style="margin:0 0 10px;"><b>A1.</b> 放在 <b>SecurityContext</b>。Controller 可用 <code>@AuthenticationPrincipal UserDetails</code>，或直接宣告 <code>Authentication</code> 參數來取得。</p>
+
+<p style="margin:0 0 10px;"><b>A2.</b> 會是 <code>ROLE_ADMIN</code>。角色會自動帶 <code>ROLE_</code> 前綴；用 <code>hasRole('ADMIN')</code> 時 Spring 會幫你補上前綴再比對。</p>
+
+<p style="margin:0 0 10px;"><b>A3.</b> <code>@EnableMethodSecurity</code>。</p>
+
+<p style="margin:0 0 10px;"><b>A4.</b> (a) <code>@PreAuthorize("hasRole('ADMIN')")</code>；(b) <code>@PreAuthorize("#username == authentication.name")</code>。不符時在方法執行<b>前</b>就擋下，回 <b>403</b>。</p>
+
+<p style="margin:0 0 10px;"><b>A5.</b> Spring Security 預設開啟 <b>CSRF 保護</b>，會擋掉會改資料的請求（POST／PUT／DELETE），GET 不受影響。解法：在 <code>SecurityFilterChain</code> 把 csrf 關閉，並設 <code>STATELESS</code>。</p>
+
+<p style="margin:0 0 10px;"><b>A6.</b> 代表不建立、也不依賴 session／cookie 來認人。因此<b>每個請求都要自己證明身分</b>（例如帶帳密或 token）。</p>
+
+<p style="margin:0 0 10px;"><b>A7.</b> 請求先進 <b>Filter Chain</b> → 認證（失敗回 <b>401</b>）→ 授權（失敗回 <b>403</b>）→ 才進 Controller。401 是「你是誰我不確定」，403 是「我知道你是誰，但你沒權限」。</p>
+
+<p style="margin:0;"><b>A8.</b> 串起：csrf 關閉、<code>STATELESS</code>、路徑規則（哪些路徑要什麼角色）、<code>httpBasic</code>、<code>BCrypt</code>（密碼雜湊）。因為 STATELESS 下每個請求都要自證身分，httpBasic 每次都送帳密不理想，所以下一步學 <b>JWT</b>（用簽章 token 代表身分）。</p>
 </div>
-
-<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
-<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q2　（基礎）</p>
-<p style="margin:0;">在 Spring Boot 3.4+ 中，要讓 log 變成「一行一筆 JSON」，要設定哪個 property？可選哪些格式？MDC 裡的 <code>requestId</code> 在輸出中會變成什麼？</p>
-</div>
-
-<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
-<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q3　（基礎）</p>
-<p style="margin:0;">Spring Security 在請求流程中放在哪裡？它是什麼結構？用哪個 bean 來設定「哪些路徑放行、哪些要登入」？</p>
-</div>
-
-<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
-<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q4　（應用）</p>
-<p style="margin:0;">下面這行 log 有什麼問題？你會怎麼改？<br><code>log.info("user login: {}", user);</code>（<code>User</code> 類別有 <code>password</code>、<code>token</code> 欄位，且沒覆寫 <code>toString()</code> 的遮罩）</p>
-</div>
-
-<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
-<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q5　（應用）</p>
-<p style="margin:0;">為什麼密碼不能原文存進資料庫？請說明 <code>PasswordEncoder</code> 的 <code>encode()</code> 與 <code>matches()</code> 各在什麼時機用，以及 BCrypt 的 salt 帶來什麼好處。</p>
-</div>
-
-<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
-<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q6　（應用）</p>
-<p style="margin:0;">Spring Security 不知道你的使用者存在哪裡。你要實作哪個 interface 的哪個方法？該方法回傳什麼？找不到使用者時要做什麼？之後誰負責比對密碼？</p>
-</div>
-
-<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
-<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q7　（綜合）</p>
-<p style="margin:0;">看這段設定：<br>
-<code>.authorizeHttpRequests(a -> a<br>
-&nbsp;&nbsp;.anyRequest().authenticated()<br>
-&nbsp;&nbsp;.requestMatchers("/admin/**").hasRole("ADMIN"))</code><br>
-這樣寫會出什麼問題？正確順序該怎麼排？</p>
-</div>
-
-<div style="background:#f1ecfb;border-radius:12px;padding:16px 18px;margin-bottom:12px;">
-<p style="margin:0 0 6px 0;font-weight:bold;color:#6b3bf6;">Q8　（綜合）</p>
-<p style="margin:0;">情境：使用者 Amy 帶著正確帳密登入成功，角色只有 <code>USER</code>，去呼叫 <code>/admin/users</code>（規定要 <code>ADMIN</code>）。(a) 會回幾號狀態碼？為什麼？(b) 若她沒登入就直接打這支 API 呢？(c) 這時伺服器要記一筆 log 追蹤這次存取，你會記哪些欄位、避免記哪些？</p>
-</div>
-
-<div style="text-align:center;color:#8a6bd8;font-weight:bold;margin:24px 0 12px 0;">—— 解答 ——</div>
-
-<div style="background:#ffffff;border:1px solid #d9cdf5;border-radius:12px;padding:16px 18px;">
-
-<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A1</b>　Authentication（認證）＝「你是誰」，失敗回 <b>401</b>；Authorization（授權）＝「你能做什麼」，失敗回 <b>403</b>。永遠<b>先認證、再授權</b>。</p>
-
-<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A2</b>　設定 <code>logging.structured.format.console</code>，可選 <code>ecs</code>、<code>logstash</code>、<code>gelf</code>。MDC 的 <code>requestId</code> 會自動成為 JSON 的一個欄位，日誌平台就能依欄位搜尋。</p>
-
-<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A3</b>　它是放在 Controller 前面的 <b>Filter Chain</b>（過濾器鏈），每個請求都要先通過；認證與授權都在鏈上完成。用 <code>SecurityFilterChain</code> bean 設定，<code>permitAll</code> 放行、<code>authenticated</code> 需登入。</p>
-
-<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A4</b>　直接印整個物件，會呼叫 <code>toString()</code>，把 <code>password</code>、<code>token</code> 一起寫進 log，造成敏感資料外洩。改法：只記 <code>userId</code> 這類內部編號，例如 <code>log.info("user login: userId={}", user.getId())</code>；真的必須記就先遮罩；也可以讓 <code>toString()</code> 排除敏感欄位。</p>
-
-<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A5</b>　原文存放一旦資料庫外洩，所有密碼立刻曝光。存檔（註冊／改密碼）時用 <code>encode()</code> 轉成<b>帶 salt 的不可逆雜湊</b>；登入時用 <code>matches(輸入密碼, 資料庫雜湊)</code> 比對。salt 是隨機加進去的值，讓<b>相同密碼產生不同雜湊</b>，無法用彩虹表（rainbow table，預先算好的雜湊對照表）一次破解。</p>
-
-<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A6</b>　實作 <code>UserDetailsService</code> 的 <code>loadUserByUsername(帳號)</code>，回傳含<b>密碼雜湊</b>的 <code>UserDetails</code>；找不到就丟 <code>UsernameNotFoundException</code>。之後由 Spring 用 <code>PasswordEncoder.matches()</code> 比對密碼，你不用自己比。</p>
-
-<p style="margin:0 0 10px 0;"><b style="color:#6b3bf6;">A7</b>　規則是<b>由上往下</b>比對，第一個符合就採用。<code>anyRequest()</code> 會吃掉所有請求，後面的 <code>/admin/**</code> 規則永遠不會生效（新版 Spring Security 甚至會在啟動時直接報錯）。正確：先寫具體的 <code>requestMatchers("/admin/**").hasRole("ADMIN")</code>，<code>anyRequest().authenticated()</code> <b>放最後</b>。</p>
-
-<p style="margin:0;"><b style="color:#6b3bf6;">A8</b>　(a) <b>403</b>：Amy 已通過認證（知道她是誰），但角色 <code>USER</code> 不夠，屬於授權失敗。(b) 沒登入＝認證失敗，回 <b>401</b>（先認證再授權，根本還沒走到角色判斷）。(c) 記 <code>requestId</code>（MDC 自動帶）、<code>userId</code>、路徑、HTTP 方法、結果狀態碼；<b>不要記</b>密碼、token、卡號，也別直接印整個 user 物件。</p>
-
-</div>
-
-<p style="margin:16px 0 0 0;text-align:center;color:#8a6bd8;font-size:13px;">答對幾題不重要，卡住的那題就是明天最值得回頭看的地方。下週繼續加油 💪</p>
 
 </div>
