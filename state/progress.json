@@ -1,5 +1,5 @@
 {
-  "current_index": 0,
+  "current_index": 1,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -142,6 +142,11 @@
       "topic": "Spring Security 入門：認證與授權概念",
       "finished": "2026-10-13",
       "steps": 9
+    },
+    {
+      "topic": "IoC 與依賴注入：為什麼不要自己 new",
+      "finished": "2026-10-23",
+      "steps": 1
     }
   ]
 }
