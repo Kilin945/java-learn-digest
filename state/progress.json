@@ -1,5 +1,5 @@
 {
-  "current_index": 1,
+  "current_index": 2,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -146,6 +146,11 @@
     {
       "topic": "IoC 與依賴注入：為什麼不要自己 new",
       "finished": "2026-10-23",
+      "steps": 1
+    },
+    {
+      "topic": "Bean 是什麼：@Component / @Service / @Repository",
+      "finished": "2026-10-24",
       "steps": 1
     }
   ]
