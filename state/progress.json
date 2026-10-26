@@ -1,5 +1,5 @@
 {
-  "current_index": 3,
+  "current_index": 4,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -156,6 +156,11 @@
     {
       "topic": "建構子注入 vs 欄位注入 vs setter 注入",
       "finished": "2026-10-25",
+      "steps": 1
+    },
+    {
+      "topic": "@Configuration 與 @Bean：手動定義 Bean",
+      "finished": "2026-10-26",
       "steps": 1
     }
   ]
