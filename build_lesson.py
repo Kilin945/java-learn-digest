@@ -7,7 +7,7 @@
 每日：找出目前主題與第幾步、昨日重點、今日配色，印出 context；課綱走完則印 STATUS: FINISHED。
 每週：印出本週（7 天內）教過的條目。
 goal 取自環境變數 LEARN_GOAL。配色取自一年中的第幾天。
-syllabus 一行寫成「題號｜題目」時，用題號去題庫（QUESTION_BANK，預設 career-2026 的
+syllabus 一行寫成「題號｜題目」或「題號-篇號｜本篇範圍」時，用題號去題庫（QUESTION_BANK，預設 career-2026 的
 questions.json）撈錨點與參考答案一併餵進去；撈不到就只給題目，不擋產課。
 """
 import os
@@ -24,14 +24,27 @@ DEFAULT_GOAL = "已有基本程式/Groovy 經驗，想系統性學會用 Spring 
 DEFAULT_BANK = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "..", "..", "career-2026", "quiz", "questions.json")
 # 題庫欄位 → context 標籤。code 多行，放最後單獨成段。
-BANK_FIELDS = [("id", "QUESTION_ID"), ("anchor", "ANCHOR"), ("answer_30s", "REFERENCE_ANSWER"),
+BANK_FIELDS = [("id", "QUESTION_ID"), ("q", "QUESTION"), ("anchor", "ANCHOR"), ("answer_30s", "REFERENCE_ANSWER"),
                ("trap", "TRAP"), ("trap_answer", "TRAP_ANSWER")]
 
 
 def question_id(topic):
-    """「B8｜題目」→ "B8"；沒有全形豎線的舊式主題回 None。"""
+    """「B8｜題目」→ "B8"、「G1-2｜範圍」→ "G1"；沒有全形豎線的舊式主題回 None。"""
     head, sep, _ = topic.partition("｜")
-    return head.strip() if sep else None
+    return head.strip().split("-")[0] if sep else None
+
+
+def part_info(syllabus, topic):
+    """一題拆成多篇時，回傳這篇是第幾篇、共幾篇、本篇範圍、其他篇的範圍；整題一篇回 None。
+    其他篇的範圍一起給，產課時才知道哪些留給別篇、不要搶先講。"""
+    qid = question_id(topic)
+    parts = [t for t in syllabus if question_id(t) == qid]
+    if len(parts) < 2:
+        return None
+    scope = lambda t: t.partition("｜")[2].strip()
+    n = parts.index(topic) + 1
+    return {"part": n, "total": len(parts), "scope": scope(topic),
+            "others": [f"第 {i} 篇：{scope(t)}" for i, t in enumerate(parts, 1) if i != n]}
 
 
 def load_question(bank_path, qid):
@@ -44,7 +57,7 @@ def load_question(bank_path, qid):
     return next((q for q in questions if q.get("id") == qid), None)
 
 
-def format_daily_context(goal, topic, step, covered, yesterday, color, today, question=None):
+def format_daily_context(goal, topic, step, covered, yesterday, color, today, question=None, part=None):
     bg, bar, txt = color
     covered_block = "\n".join(f"- {c}" for c in covered) if covered else "（尚無，這是這個主題的第一步）"
     yest = yesterday if yesterday else "（無，這是第一課）"
@@ -59,7 +72,13 @@ def format_daily_context(goal, topic, step, covered, yesterday, color, today, qu
         f"COLOR_BAR: {bar}\n"
         f"COLOR_TXT: {txt}"
         + (format_question(question) if question else "")
+        + (format_part(part) if part else "")
     )
+
+
+def format_part(p):
+    others = "\n".join(f"- {o}" for o in p["others"])
+    return f"\nPART: {p['part']}/{p['total']}\nPART_SCOPE: {p['scope']}\nOTHER_PARTS:\n{others}"
 
 
 def format_question(q):
@@ -124,6 +143,7 @@ def main(argv=None):
             covered=progress.get("covered", []),
             yesterday=ss.last_summary(history),
             color=color, today=today_s, question=question,
+            part=part_info(syllabus, topic),
         ))
     else:
         history = ss.load_history(args.history)

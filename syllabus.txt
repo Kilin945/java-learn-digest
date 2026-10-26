@@ -1,54 +1,88 @@
-# java-learn-digest 課綱：career-2026 本職題庫 36 題，一天一題。
-# 一行「題號｜題目」；題號用來去 career-2026/quiz/questions.json 撈錨點與參考答案（見 build_lesson.py）。
-# 題目文字以題庫為準，這裡只是排順序。想跳過某題就把那行加 # 註解掉。
-# 上一輪（M1 Spring 核心 ~ M6 Spring Security，2026-06 ~ 2026-10-13）的課綱見 git 歷史。
+# java-learn-digest 課綱：career-2026 本職題庫 36 題拆成 69 篇，一天一篇。
+# 一行「題號-篇號｜本篇範圍」；題號用來去 career-2026/quiz/questions.json 撈題目、錨點與參考答案，
+# 同題號的其他行會一起交給產課的 AI，讓它知道哪些留給別篇（見 build_lesson.py）。
+# 整題一篇的寫「題號｜本篇範圍」。想跳過某篇就把那行加 # 註解掉。
+# 上一輪課綱（M1 Spring 核心 ~ M6 Spring Security，2026-06 ~ 2026-10-13）見 git 歷史。
 
 # ── DBS 投遞前優先序 ──
-G1｜給一個 Integer[]（裡面可能有 null），把它排序。盡量不用內建 function。15 分鐘。
-B8｜abstract class 與 interface 差在哪？什麼時候用哪個？
-B9｜deadlock 是什麼？怎麼避免、怎麼查？
-A1｜IoC / DI 是什麼？好處是什麼？
-A7｜Spring MVC 和 Spring Boot 差在哪？
-B1｜equals/hashCode 契約？為什麼要一起覆寫？
-B4｜JVM 記憶體區與 OOM 常見成因？
-B6｜String vs StringBuilder vs StringBuffer？
+G1-1｜先把 null 分出去：原地把非 null 往前搬，n 順手變成非 null 的個數
+G1-2｜手寫插入排序，只排前 n 個；int key = arr[i] 為什麼不會 NPE
+G1-3｜變形：null 改放前面怎麼寫；為什麼不用 Arrays.sort
+B8-1｜interface＝約定「能做什麼」，一個類別可以實作多個
+B8-2｜abstract class＝半成品骨架：共用流程寫在父類別，差異留給子類別（電文解析骨架）
+B8-3｜Java 8 有 default method 之後，abstract class 還剩什麼：欄位、建構子、單一繼承
+B9-1｜兩條執行緒兩把鎖：一段跑了就卡死的 code
+B9-2｜死結的四個條件；固定上鎖順序、tryLock 逾時來解
+B9-3｜怎麼查：jstack 抓 thread dump，怎麼讀出卡在哪兩把鎖
+A1-1｜自己 new 的問題 vs 交給 Spring 容器建立與組裝
+A1-2｜容器怎麼把依賴注入進來；測試時換成假物件
+A7-1｜Controller 外面那一圈：web.xml／XML 設定／WAR＋外部 Tomcat vs @SpringBootApplication／starter／內嵌 Tomcat
+A7-2｜自動配置怎麼運作：@ConditionalOnClass、@ConditionalOnMissingBean；自己的設定為什麼優先
+B1-1｜HashMap 怎麼找東西：hashCode 找桶、equals 比對；只覆寫 equals 會出什麼 bug
+B1-2｜拿會變的欄位算 hashCode：放進 Set 後改欄位就再也找不到
+B4-1｜heap／stack／Metaspace 各放什麼，用一段 code 對應
+B4-2｜OOM 常見成因：靜態 Map 忘了清、沒上限的快取、沒關的串流
+B4-3｜怎麼查 OOM：HeapDumpOnOutOfMemoryError 怎麼開、heap dump 怎麼讀；Metaspace OOM 跟 heap OOM 的差別
+B6-1｜String 不可變：迴圈裡相加的代價；改用 StringBuilder（電文 FILL 補齊組字串）
+B6-2｜StringBuffer 的同步差在哪；String 為什麼要設計成不可變
 
 # ── A Spring 核心 ──
-A2｜@Autowired 欄位注入為什麼 IDE 給黃線？建構子注入好在哪？
-A3｜Bean 生命週期與 scope？singleton 預設代表什麼？
-A4｜AOP 是什麼？Spring 怎麼實作？
-A5｜@Transactional 什麼時候會失效？
-A6｜Spring MVC 一個請求從進到出的流程？
+A2-1｜欄位注入 vs 建構子注入：測試時 new 不出來、依賴藏起來
+A2-2｜建構子注入的 final；循環依賴時啟動就失敗為什麼是好事
+A3-1｜Bean 生命週期：建構 → 注入 → @PostConstruct → @PreDestroy
+A3-2｜scope：singleton／prototype／request；singleton 裡注入 prototype 只會注入一次
+A4-1｜沒有 AOP 時：交易、log、權限檢查在每個方法重複寫
+A4-2｜動態代理怎麼包住方法：手寫一個 proxy 示意；@Transactional、@Secured 就是這樣做的
+A5-1｜同類內部呼叫（self-invocation）為什麼不會觸發 @Transactional
+A5-2｜其他失效情況：非 public、例外被自己吃掉、checked 例外預設不回滾；各自怎麼解
+A6-1｜一個請求進來：DispatcherServlet → HandlerMapping → 你的 Controller 方法
+A6-2｜參數怎麼變成物件（@RequestBody）、回傳值怎麼變成 JSON
+A6-3｜攔截器 vs Filter；@ControllerAdvice 統一處理例外
 
 # ── B Java 核心 ──
-B2｜Java 序列化是什麼？哪裡會炸？
-B3｜checked vs unchecked 例外？try-with-resources？
-B5｜synchronized、volatile、執行緒池的基礎？
-B7｜前端怎麼打後端？（一條鏈講清楚）
+B2-1｜序列化與反序列化：物件變成位元組再變回來的 code
+B2-2｜serialVersionUID、transient；Redis session 改版後讀不回來、權限欄位掉了
+B3-1｜checked vs unchecked：編譯器逼你處理 vs 不管；什麼時候用哪個
+B3-2｜try-with-resources；catch 了只印 log 的問題；finally 裡 return 會怎樣
+B5-1｜count++ 為什麼多執行緒會算錯；synchronized 怎麼解
+B5-2｜volatile 管得到「看得到最新值」、管不到「一串動作一體」；AtomicInteger
+B5-3｜執行緒池的參數；為什麼佇列不能沒上限（Executors 預設工廠的坑）
+B7-1｜一條鏈：$.ajax → HTTP 請求 → Controller → 回 JSON → 前端渲染（qa-ask）
+B7-2｜CORS 是什麼、什麼時候撞到；同步 vs 非同步
 
 # ── C 資料庫與持久層 ──
-C1｜ORM 是什麼？N+1 問題？
-C2｜交易 ACID？隔離級別？
-C3｜schema migration 為什麼要工具（Flyway）？
-C4｜index 原理？什麼時候失效？
+C1-1｜ORM：Entity 怎麼對到資料表，不用自己寫 SQL 和轉欄位
+C1-2｜N+1 怎麼發生；join fetch；lazy vs eager 各自的代價
+C2-1｜用一段轉帳 code 講 ACID 四個保證
+C2-2｜髒讀、不可重複讀、幻讀；四個隔離級別各擋掉哪一個
+C3｜Flyway 版本化腳本 vs 啟動自檢補欄位 vs hbm2ddl auto
+C4-1｜索引像書的目錄：B+ 樹；用 EXPLAIN 看有沒有走索引
+C4-2｜索引失效的情況；複合索引的最左前綴；回表與覆蓋索引
 
 # ── D 技術棧深挖 ──
-D1｜Hazelcast 是什麼？跟 Redis 差在哪？
-D2｜WebSocket vs HTTP polling？斷線重連要處理什麼？
-D3｜RabbitMQ 在系統裡做什麼？
-D4｜Solr 是什麼？關鍵字掃描怎麼跑？
-D5｜金鑰管理的正解？（KMS）
-D6｜生產環境怎麼看 log、怎麼除錯？（集中式日誌與可觀測性）
-D7｜HTTPS 的信任是怎麼建立的？自簽憑證為什麼連不上、正解是什麼？
+D1-1｜Hazelcast 內嵌在程式裡 vs Redis 獨立伺服器
+D1-2｜Hazelcast 節點掛掉資料怎麼辦（備份數）；跟 Redis pub/sub 比
+D2-1｜HTTP 輪詢 vs WebSocket 長連線
+D2-2｜斷線重連：退避、補回斷線期間的訊息、去重、心跳
+D3-1｜訊息佇列做什麼：削峰、解耦、重試
+D3-2｜ack 什麼時候送；重複投遞要冪等；死信佇列
+D4-1｜倒排索引：為什麼 Solr 查得比逐列比對快
+D4-2｜相關性分數怎麼排序；中文沒有空格怎麼斷詞
+D5｜金鑰編進 WAR 防得了什麼、防不了什麼；KMS／Vault 的正解
+D6-1｜集中式日誌；敏感欄位在寫入時就遮罩（卡號遮罩）
+D6-2｜可觀測性三本柱：logs／metrics／traces
+D7-1｜HTTPS 憑證鏈怎麼驗；自簽憑證為什麼連不上
+D7-2｜trust-all 到底關掉了什麼；正解是把自簽 CA 加進 truststore
 
 # ── R RAG／檢索 ──
-R1｜為什麼 RAG 要把文件切塊，不整篇丟給模型？
-R2｜為什麼用向量搜尋，而不是關鍵字／全文檢索（Solr）？
-R3｜塊（chunk）大小怎麼決定？切太大、太小分別會怎樣？
-R4｜檢索回來的內容怎麼進 prompt？塞太多會發生什麼事？
+R1｜為什麼文件要切塊、不整篇丟給模型；切開後語意斷掉怎麼辦
+R2-1｜關鍵字是字面比對、向量是意思比對；各自擅長什麼
+R2-2｜混合檢索；換 embedding 模型為什麼要整個索引重算
+R3｜chunk 切太大、太小各會怎樣；怎麼評估切得好不好
+R4｜檢索結果怎麼放進 prompt；塞太多會怎樣；模型還是亂編怎麼辦
 
-# ── F Case interview 設計題 ──
-F1｜多節點快取不一致，你怎麼設計失效機制？
-F2｜回應被資安設備擋下或改寫，你怎麼排查與繞開？
-F3｜設計一個多方即時會談的後端（訊息路由、狀態管理）
-F4｜不能改 DB schema（銀行不給 ALTER），需求還是要上，怎麼辦？
+# ── F 設計題 ──
+F1｜多節點快取不一致：失效廣播的設計與取捨
+F2｜回應被資安設備擋下或改寫：怎麼排查、怎麼繞開
+F3｜多方即時會談的後端：參與者模型、訊息路由、轉接互斥
+F4｜不能改 DB schema 但需求要上：彈性欄位／附掛表的折衷

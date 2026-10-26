@@ -62,8 +62,37 @@ def test_question_id_parses_prefix_before_fullwidth_bar():
     assert bl.question_id("B8｜abstract class 與 interface 差在哪？") == "B8"
 
 
+def test_question_id_strips_part_number():
+    assert bl.question_id("G1-2｜手寫插入排序") == "G1"
+
+
 def test_question_id_none_for_plain_topic():
     assert bl.question_id("IoC 與依賴注入：為什麼不要自己 new") is None
+
+
+def test_part_info_numbers_this_part_among_same_question():
+    syl = ["G1-1｜分出 null", "G1-2｜插入排序", "G1-3｜變形", "B8-1｜interface"]
+    info = bl.part_info(syl, "G1-2｜插入排序")
+    assert info["part"] == 2 and info["total"] == 3
+    assert info["scope"] == "插入排序"
+    assert info["others"] == ["第 1 篇：分出 null", "第 3 篇：變形"]
+
+
+def test_part_info_none_for_single_line_question():
+    assert bl.part_info(["B8｜整題"], "B8｜整題") is None
+
+
+def test_daily_context_includes_part_fields():
+    ctx = bl.format_daily_context(
+        goal="g", topic="G1-2｜插入排序", step=1, covered=[], yesterday=None,
+        color=("#a", "#b", "#c"), today="2026-10-27",
+        question={"id": "G1", "q": "排序含 null"},
+        part={"part": 2, "total": 3, "scope": "插入排序", "others": ["第 1 篇：分出 null"]},
+    )
+    assert "QUESTION: 排序含 null" in ctx
+    assert "PART: 2/3" in ctx
+    assert "PART_SCOPE: 插入排序" in ctx
+    assert "- 第 1 篇：分出 null" in ctx
 
 
 def test_load_question_finds_by_id(tmp_path):
