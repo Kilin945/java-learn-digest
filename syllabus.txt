@@ -1,43 +1,54 @@
-# java-learn-digest 課綱：目標 = 已有基本程式/Groovy 經驗，系統性學會用 Spring Boot 開發後端 REST API
-# 一行一主題，# 為註解/分章。每天教「目前主題的下一小步」，主題走完才換下一行。
-# 想跳過某主題，直接把那行刪掉或加 # 註解掉即可。
+# java-learn-digest 課綱：career-2026 本職題庫 36 題，一天一題。
+# 一行「題號｜題目」；題號用來去 career-2026/quiz/questions.json 撈錨點與參考答案（見 build_lesson.py）。
+# 題目文字以題庫為準，這裡只是排順序。想跳過某題就把那行加 # 註解掉。
+# 上一輪（M1 Spring 核心 ~ M6 Spring Security，2026-06 ~ 2026-10-13）的課綱見 git 歷史。
 
-# ── M1 Spring 核心：容器與依賴注入 ──
-IoC 與依賴注入：為什麼不要自己 new
-Bean 是什麼：@Component / @Service / @Repository
-建構子注入 vs 欄位注入 vs setter 注入
-@Configuration 與 @Bean：手動定義 Bean
-Bean 的 scope 與生命週期
-@Autowired、@Qualifier 與多個候選 Bean 的解析
-@Value 與 application.properties 讀設定
-Profiles：dev / prod 用不同設定
+# ── DBS 投遞前優先序 ──
+G1｜給一個 Integer[]（裡面可能有 null），把它排序。盡量不用內建 function。15 分鐘。
+B8｜abstract class 與 interface 差在哪？什麼時候用哪個？
+B9｜deadlock 是什麼？怎麼避免、怎麼查？
+A1｜IoC / DI 是什麼？好處是什麼？
+A7｜Spring MVC 和 Spring Boot 差在哪？
+B1｜equals/hashCode 契約？為什麼要一起覆寫？
+B4｜JVM 記憶體區與 OOM 常見成因？
+B6｜String vs StringBuilder vs StringBuffer？
 
-# ── M2 Spring Boot：少寫設定就能跑 ──
-@SpringBootApplication 與自動組態的原理
-Starter 依賴：spring-boot-starter-web 幫你帶了什麼
-application.yml 結構與設定優先序
-內嵌 Tomcat 與 main() 啟動流程
+# ── A Spring 核心 ──
+A2｜@Autowired 欄位注入為什麼 IDE 給黃線？建構子注入好在哪？
+A3｜Bean 生命週期與 scope？singleton 預設代表什麼？
+A4｜AOP 是什麼？Spring 怎麼實作？
+A5｜@Transactional 什麼時候會失效？
+A6｜Spring MVC 一個請求從進到出的流程？
 
-# ── M3 Web 層：寫出 REST API ──
-@RestController 與 @RequestMapping 家族
-路徑參數、查詢參數、@RequestBody
-DTO 與 entity 為什麼要分開
-Bean Validation：@Valid 與 @NotNull
-統一例外處理：@RestControllerAdvice
+# ── B Java 核心 ──
+B2｜Java 序列化是什麼？哪裡會炸？
+B3｜checked vs unchecked 例外？try-with-resources？
+B5｜synchronized、volatile、執行緒池的基礎？
+B7｜前端怎麼打後端？（一條鏈講清楚）
 
-# ── M4 資料層：存進資料庫 ──
-Spring Data JPA 與 Repository 介面
-Entity 對應：@Entity / @Id / 關聯
-衍生查詢 vs @Query
-交易：@Transactional 的邊界與陷阱
+# ── C 資料庫與持久層 ──
+C1｜ORM 是什麼？N+1 問題？
+C2｜交易 ACID？隔離級別？
+C3｜schema migration 為什麼要工具（Flyway）？
+C4｜index 原理？什麼時候失效？
 
-# ── M5 測試 ──
-單元測試 vs @SpringBootTest 整合測試
-MockMvc 測 Controller
-@DataJpaTest 等測試切片
+# ── D 技術棧深挖 ──
+D1｜Hazelcast 是什麼？跟 Redis 差在哪？
+D2｜WebSocket vs HTTP polling？斷線重連要處理什麼？
+D3｜RabbitMQ 在系統裡做什麼？
+D4｜Solr 是什麼？關鍵字掃描怎麼跑？
+D5｜金鑰管理的正解？（KMS）
+D6｜生產環境怎麼看 log、怎麼除錯？（集中式日誌與可觀測性）
+D7｜HTTPS 的信任是怎麼建立的？自簽憑證為什麼連不上、正解是什麼？
 
-# ── M6 上 production 前該懂的 ──
-Actuator：健康檢查與指標
-設定外部化與機密管理
-Logging 與結構化日誌
-Spring Security 入門：認證與授權概念
+# ── R RAG／檢索 ──
+R1｜為什麼 RAG 要把文件切塊，不整篇丟給模型？
+R2｜為什麼用向量搜尋，而不是關鍵字／全文檢索（Solr）？
+R3｜塊（chunk）大小怎麼決定？切太大、太小分別會怎樣？
+R4｜檢索回來的內容怎麼進 prompt？塞太多會發生什麼事？
+
+# ── F Case interview 設計題 ──
+F1｜多節點快取不一致，你怎麼設計失效機制？
+F2｜回應被資安設備擋下或改寫，你怎麼排查與繞開？
+F3｜設計一個多方即時會談的後端（訊息路由、狀態管理）
+F4｜不能改 DB schema（銀行不給 ALTER），需求還是要上，怎麼辦？

@@ -7,8 +7,11 @@
 每日：找出目前主題與第幾步、昨日重點、今日配色，印出 context；課綱走完則印 STATUS: FINISHED。
 每週：印出本週（7 天內）教過的條目。
 goal 取自環境變數 LEARN_GOAL。配色取自一年中的第幾天。
+syllabus 一行寫成「題號｜題目」時，用題號去題庫（QUESTION_BANK，預設 career-2026 的
+questions.json）撈錨點與參考答案一併餵進去；撈不到就只給題目，不擋產課。
 """
 import os
+import json
 import sys
 import argparse
 from datetime import date, timedelta
@@ -17,9 +20,31 @@ import state_store as ss
 from palette import daily_color
 
 DEFAULT_GOAL = "已有基本程式/Groovy 經驗，想系統性學會用 Spring Boot 開發後端 REST API"
+# digest 在 <Workspace>/java-learn/digest，題庫在 <Workspace>/career-2026/quiz。
+DEFAULT_BANK = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "..", "..", "career-2026", "quiz", "questions.json")
+# 題庫欄位 → context 標籤。code 多行，放最後單獨成段。
+BANK_FIELDS = [("id", "QUESTION_ID"), ("anchor", "ANCHOR"), ("answer_30s", "REFERENCE_ANSWER"),
+               ("trap", "TRAP"), ("trap_answer", "TRAP_ANSWER")]
 
 
-def format_daily_context(goal, topic, step, covered, yesterday, color, today):
+def question_id(topic):
+    """「B8｜題目」→ "B8"；沒有全形豎線的舊式主題回 None。"""
+    head, sep, _ = topic.partition("｜")
+    return head.strip() if sep else None
+
+
+def load_question(bank_path, qid):
+    """從題庫撈一題；檔案不在、壞掉或查無此題都回 None。"""
+    try:
+        with open(bank_path, encoding="utf-8") as f:
+            questions = json.load(f).get("questions", [])
+    except (OSError, ValueError):
+        return None
+    return next((q for q in questions if q.get("id") == qid), None)
+
+
+def format_daily_context(goal, topic, step, covered, yesterday, color, today, question=None):
     bg, bar, txt = color
     covered_block = "\n".join(f"- {c}" for c in covered) if covered else "（尚無，這是這個主題的第一步）"
     yest = yesterday if yesterday else "（無，這是第一課）"
@@ -33,7 +58,15 @@ def format_daily_context(goal, topic, step, covered, yesterday, color, today):
         f"COLOR_BG: {bg}\n"
         f"COLOR_BAR: {bar}\n"
         f"COLOR_TXT: {txt}"
+        + (format_question(question) if question else "")
     )
+
+
+def format_question(q):
+    lines = [f"\n{label}: {q[key]}" for key, label in BANK_FIELDS if q.get(key)]
+    if q.get("code"):
+        lines.append(f"\nREFERENCE_CODE:\n{q['code']}")
+    return "".join(lines)
 
 
 def format_finished():
@@ -82,11 +115,15 @@ def main(argv=None):
             print(format_finished())
             return
         history = ss.load_history(args.history)
+        qid = question_id(topic)
+        question = load_question(os.environ.get("QUESTION_BANK") or DEFAULT_BANK, qid) if qid else None
+        if qid and question is None:
+            print(f"WARN: 題庫查無 {qid}，本課只依題目產生。", file=sys.stderr)
         print(format_daily_context(
             goal=goal, topic=topic, step=progress.get("step", 1),
             covered=progress.get("covered", []),
             yesterday=ss.last_summary(history),
-            color=color, today=today_s,
+            color=color, today=today_s, question=question,
         ))
     else:
         history = ss.load_history(args.history)
