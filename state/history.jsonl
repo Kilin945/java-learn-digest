@@ -127,3 +127,4 @@
 {"date": "2026-10-24", "topic": "B8｜abstract class 與 interface 差在哪？什麼時候用哪個？", "step": 1, "summary": "interface 約定「能做什麼」、可實作多個；abstract class 是「共用狀態與流程骨架的半成品」、只能繼承一個。實作間重複多就用 abstract（如電文解析骨架），只約定行為就用 interface；default method 取代不了 abstract 的狀態、建構子與單一繼承語意。"}
 {"date": "2026-10-25", "topic": "B9｜deadlock 是什麼？怎麼避免、怎麼查？", "step": 1, "summary": "死結是兩條執行緒各握對方要的鎖互等；四條件（互斥、持有並等待、不可搶奪、循環等待）同時成立才發生，打破一個即可，實務上用固定上鎖順序打破循環等待，輔以 tryLock 逾時；查法是抓 thread dump 找 Found one Java-level deadlock。"}
 {"date": "2026-10-26", "topic": "A1｜IoC / DI 是什麼？好處是什麼？", "step": 1, "summary": "IoC 是把物件的建立與組裝交給 Spring 容器，DI 是容器把依賴注入進來；好處是解耦、好測試；建構子注入比欄位注入好，因為依賴寫在簽章上、可 final、測試能自己 new。"}
+{"date": "2026-10-27", "topic": "G1-1｜先把 null 分出去：原地把非 null 往前搬，n 順手變成非 null 的個數", "step": 1, "summary": "排序前先用 arr[n++] = v 原地把非 null 往前搬,n 同時是非 null 的個數與下一個寫入位置,讓後面的排序不會碰到 null。"}

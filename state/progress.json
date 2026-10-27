@@ -1,5 +1,5 @@
 {
-  "current_index": 0,
+  "current_index": 1,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -161,6 +161,11 @@
     {
       "topic": "@Configuration 與 @Bean：手動定義 Bean",
       "finished": "2026-10-26",
+      "steps": 1
+    },
+    {
+      "topic": "G1-1｜先把 null 分出去：原地把非 null 往前搬，n 順手變成非 null 的個數",
+      "finished": "2026-10-27",
       "steps": 1
     }
   ]
