@@ -128,3 +128,4 @@
 {"date": "2026-10-25", "topic": "B9｜deadlock 是什麼？怎麼避免、怎麼查？", "step": 1, "summary": "死結是兩條執行緒各握對方要的鎖互等；四條件（互斥、持有並等待、不可搶奪、循環等待）同時成立才發生，打破一個即可，實務上用固定上鎖順序打破循環等待，輔以 tryLock 逾時；查法是抓 thread dump 找 Found one Java-level deadlock。"}
 {"date": "2026-10-26", "topic": "A1｜IoC / DI 是什麼？好處是什麼？", "step": 1, "summary": "IoC 是把物件的建立與組裝交給 Spring 容器，DI 是容器把依賴注入進來；好處是解耦、好測試；建構子注入比欄位注入好，因為依賴寫在簽章上、可 final、測試能自己 new。"}
 {"date": "2026-10-27", "topic": "G1-1｜先把 null 分出去：原地把非 null 往前搬，n 順手變成非 null 的個數", "step": 1, "summary": "排序前先用 arr[n++] = v 原地把非 null 往前搬,n 同時是非 null 的個數與下一個寫入位置,讓後面的排序不會碰到 null。"}
+{"date": "2026-10-28", "topic": "G1-2｜手寫插入排序，只排前 n 個；int key = arr[i] 為什麼不會 NPE", "step": 1, "summary": "①之後前 n 格保證非 null，所以插入排序只在 [0, n) 跑，int key = arr[i] 的自動拆箱（intValue()）不會 NPE，排序裡也不需要 null 判斷。"}
