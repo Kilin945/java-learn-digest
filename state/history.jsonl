@@ -129,3 +129,4 @@
 {"date": "2026-10-26", "topic": "A1｜IoC / DI 是什麼？好處是什麼？", "step": 1, "summary": "IoC 是把物件的建立與組裝交給 Spring 容器，DI 是容器把依賴注入進來；好處是解耦、好測試；建構子注入比欄位注入好，因為依賴寫在簽章上、可 final、測試能自己 new。"}
 {"date": "2026-10-27", "topic": "G1-1｜先把 null 分出去：原地把非 null 往前搬，n 順手變成非 null 的個數", "step": 1, "summary": "排序前先用 arr[n++] = v 原地把非 null 往前搬,n 同時是非 null 的個數與下一個寫入位置,讓後面的排序不會碰到 null。"}
 {"date": "2026-10-28", "topic": "G1-2｜手寫插入排序，只排前 n 個；int key = arr[i] 為什麼不會 NPE", "step": 1, "summary": "①之後前 n 格保證非 null，所以插入排序只在 [0, n) 跑，int key = arr[i] 的自動拆箱（intValue()）不會 NPE，排序裡也不需要 null 判斷。"}
+{"date": "2026-10-29", "topic": "G1-3｜變形：null 改放前面怎麼寫；為什麼不用 Arrays.sort", "step": 1, "summary": "null 改放前面時，只把 ① 改成從尾端往前搬、② 的範圍改成 [k, length)、③ 改成補前 k 格 null，排序邏輯不變；不用 Arrays.sort 只是題目限制，正式專案用 Arrays.sort 配 Comparator.nullsFirst/nullsLast。"}

@@ -1,5 +1,5 @@
 {
-  "current_index": 2,
+  "current_index": 3,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -171,6 +171,11 @@
     {
       "topic": "G1-2｜手寫插入排序，只排前 n 個；int key = arr[i] 為什麼不會 NPE",
       "finished": "2026-10-28",
+      "steps": 1
+    },
+    {
+      "topic": "G1-3｜變形：null 改放前面怎麼寫；為什麼不用 Arrays.sort",
+      "finished": "2026-10-29",
       "steps": 1
     }
   ]
