@@ -1,40 +1,52 @@
-<div style="max-width:680px;margin:0 auto;padding:16px;background:#edeefb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;color:#333;line-height:1.7;font-size:15px;">
+<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;color:#333;line-height:1.7;font-size:15px;">
 
-<div style="border-left:6px solid #6b72d6;padding:8px 14px;margin-bottom:16px;background:#ffffff;border-radius:0 10px 10px 0;font-size:17px;font-weight:bold;color:#5159c9;">
-📘 每週回顧 · Java / Spring Boot · 2026-10-23
+<div style="border-left:6px solid #2bb0a6;padding:8px 14px;margin-bottom:16px;font-size:17px;font-weight:bold;color:#0f9b9b;">
+📘 每週回顧 · Java / Spring Boot · 2026-10-30
 </div>
 
-<div style="background:#ffffff;border-radius:12px;padding:18px 20px;margin-bottom:16px;">
-<p style="margin:0 0 10px 0;">這週目前只有一課：<b style="color:#5159c9;">IoC 與依賴注入：為什麼不要自己 new</b>，外加一題手寫排序練習（<code>Integer[]</code> 含 null）。下面 6 題由淺入深，先自己想，再看信末解答。</p>
-<p style="margin:0;color:#777;font-size:13px;">小提醒：先在腦中或紙上寫出答案，再往下拉，主動回想效果最好。</p>
+<div style="background:#e8f6f5;border-radius:10px;padding:14px 18px;margin-bottom:16px;">
+本週你學了 OOP 設計（abstract class vs interface）、並行（deadlock）、Spring 核心（IoC / DI），還有一組手寫排序的 null 處理題。先別翻到最後，每題在心裡（或寫下來）答一遍，再對解答。
 </div>
 
-<div style="background:#ffffff;border-radius:12px;padding:18px 20px;margin-bottom:16px;">
-<p style="margin:0 0 12px 0;"><b style="color:#5159c9;">Q1.</b> 在 Spring 裡，<b>IoC（Inversion of Control，控制反轉）</b>反轉的是什麼？誰把控制權拿走了？</p>
-<p style="margin:0 0 12px 0;"><b style="color:#5159c9;">Q2.</b> 在 <code>OrderService</code> 裡直接寫 <code>new PaymentGateway()</code>，會帶來哪兩個主要問題？（提示：測試、替換實作）</p>
-<p style="margin:0 0 12px 0;"><b style="color:#5159c9;">Q3.</b> <b>Dependency Injection（DI，依賴注入）</b>常見有三種方式：constructor、setter、field。Spring 官方比較推薦哪一種？為什麼？</p>
-<p style="margin:0 0 12px 0;"><b style="color:#5159c9;">Q4.</b> 手寫排序 <code>Integer[]</code>（可能含 null）時，動手前第一件事應該先問什麼？為什麼這個問題不能跳過？</p>
-<p style="margin:0 0 12px 0;"><b style="color:#5159c9;">Q5.</b> 承 Q4，若要「null 放最後」，整體做法分成哪三步？為什麼只對前 n 個元素做插入排序，就不會 NPE？</p>
-<p style="margin:0;"><b style="color:#5159c9;">Q6.</b> 承 Q5，若改成「null 放最前面」，要怎麼調整？另外請回想：這題跟 IoC／DI 的共同精神是什麼？（開放式，說出你的想法即可）</p>
+<div style="background:#e8f6f5;border-radius:10px;padding:14px 18px;margin-bottom:16px;">
+<div style="font-weight:bold;color:#0f9b9b;margin-bottom:8px;">🧠 回想題</div>
+
+<p style="margin:0 0 12px;"><b>Q1（淺）</b>　interface 是「約定什麼」？為什麼一個類別可以 implements 很多個 interface，卻只能 extends 一個 class？</p>
+
+<p style="margin:0 0 12px;"><b>Q2（淺）</b>　IoC 與 DI 各是什麼？兩者的關係是什麼？</p>
+
+<p style="margin:0 0 12px;"><b>Q3（中）</b>　電文解析有好幾種格式，解析流程骨架相同、只有欄位切法不同。你會選 abstract class 還是 interface？為什麼 default method 取代不了 abstract class？</p>
+
+<p style="margin:0 0 12px;"><b>Q4（中）</b>　Spring 裡建構子注入為什麼比欄位注入好？請至少說出三點。</p>
+
+<p style="margin:0 0 12px;"><b>Q5（中）</b>　deadlock 發生的四個必要條件是什麼？實務上最常打破哪一個、怎麼打破？</p>
+
+<p style="margin:0 0 12px;"><b>Q6（中）</b>　線上服務卡住，你懷疑是 deadlock，要怎麼確認？thread dump 裡要找什麼關鍵字？</p>
+
+<p style="margin:0 0 12px;"><b>Q7（中深）</b>　寫 <code>int key = arr[i]</code> 時，如果 <code>arr</code> 是 <code>Integer[]</code> 而元素是 null，會發生什麼事？為什麼上週的插入排序題不用在迴圈裡判斷 null？</p>
+
+<p style="margin:0 0 0;"><b>Q8（深）</b>　題目要求「null 放前面」，相較於「null 放後面」，三個步驟（搬移、排序範圍、補 null）各要怎麼改？正式專案為什麼不手寫，而改用什麼？</p>
 </div>
 
-<div style="background:#ffffff;border-radius:12px;padding:18px 20px;border-top:4px solid #6b72d6;">
-<p style="margin:0 0 12px 0;text-align:center;font-weight:bold;color:#5159c9;">—— 解答 ——</p>
+<div style="text-align:center;color:#0f9b9b;font-weight:bold;margin:20px 0 12px;">—— 解答 ——</div>
 
-<p style="margin:0 0 10px 0;"><b style="color:#5159c9;">A1.</b> 反轉的是「物件的建立與依賴組裝」的控制權。原本由我們的程式碼自己 <code>new</code>，現在交給 Spring 容器（IoC container）負責建立、組裝、管理生命週期。</p>
+<div style="background:#e8f6f5;border-radius:10px;padding:14px 18px;">
 
-<p style="margin:0 0 10px 0;"><b style="color:#5159c9;">A2.</b> (1) <b>緊耦合（tight coupling）</b>：<code>OrderService</code> 綁死具體類別，想換成別的實作就得改原始碼。(2) <b>難以測試</b>：沒辦法輕易塞 mock／stub，單元測試會連到真的外部服務。</p>
+<p style="margin:0 0 12px;"><b>A1</b>　interface 只約定「能做什麼」（方法簽章），沒有內容、沒有狀態，所以多實作不會衝突、可以 implements 很多個。class 帶有狀態與實作，繼承多個會有衝突（菱形問題），所以只能 extends 一個。呼叫端只認約定，不在乎誰實作。</p>
 
-<p style="margin:0 0 10px 0;"><b style="color:#5159c9;">A3.</b> 推薦 <b>constructor injection</b>。依賴可以宣告成 <code>final</code>（不可變）、物件建好就是完整狀態、缺依賴時啟動即失敗，測試時也能直接用 <code>new</code> 傳入 mock，不需要 Spring。</p>
+<p style="margin:0 0 12px;"><b>A2</b>　IoC（Inversion of Control，控制反轉）：物件的建立與組裝交給 Spring 容器，不是自己 new。DI（Dependency Injection，依賴注入）：容器把依賴注入進來。DI 是實現 IoC 的具體手法。</p>
 
-<p style="margin:0 0 10px 0;"><b style="color:#5159c9;">A4.</b> 先問「null 要放前面還是後面？」。這是規格（需求）問題，不同答案會讓實作方向不同；沒先問清楚就寫，容易做出不符需求的版本。</p>
+<p style="margin:0 0 12px;"><b>A3</b>　選 abstract class：各實作之間重複多（解析流程骨架），把共用的流程與狀態放在父類別，子類別只填差異（template method）。default method 沒有狀態、沒有建構子，也不具備單一繼承的語意，所以取代不了。若只是約定行為、實作彼此無關，才用 interface。</p>
 
-<p style="margin:0 0 10px 0;"><b style="color:#5159c9;">A5.</b> 三步：(1) <b>分離</b>：把非 null 元素依序搬到陣列前面，n 就是非 null 個數；(2) 只對前 n 個做<b>插入排序</b>；(3) 把 n 之後的位置<b>補回 null</b>。因為前 n 個全是非 null，比較時的拆箱（unboxing，<code>Integer</code> 轉 <code>int</code>）不會遇到 null，所以不會 NPE。</p>
+<p style="margin:0 0 12px;"><b>A4</b>　①依賴寫在建構子簽章上，一眼看得出需要什麼；②欄位可宣告 <code>final</code>，不可變；③測試時可以自己 <code>new</code> 並傳入 mock，不需要 Spring 容器或反射。</p>
 
-<p style="margin:0 0 10px 0;"><b style="color:#5159c9;">A6.</b> 改成<b>從尾端往前填</b>：非 null 元素從陣列尾端往前放，前面剩下的位置補 null，再只對後 n 個做插入排序。<br>
-共同精神（參考答案）：<b>把「變動、危險的部分」隔離開</b>。IoC 把「怎麼建立物件」交給容器；排序題把 null 先隔離出去，核心邏輯只面對乾淨的資料。職責清楚、核心邏輯單純，就更好測、更穩。</p>
+<p style="margin:0 0 12px;"><b>A5</b>　互斥、持有並等待、不可搶奪、循環等待，四個同時成立才會死結。實務上打破「循環等待」：所有執行緒用固定的上鎖順序；輔以 <code>tryLock</code> 加逾時，拿不到就放掉已持有的鎖。</p>
 
-<p style="margin:12px 0 0 0;color:#777;font-size:13px;">答對幾題都沒關係，卡住的那題明天回頭看一次就好。下週繼續 💪</p>
+<p style="margin:0 0 12px;"><b>A6</b>　抓 thread dump（例如 <code>jstack &lt;pid&gt;</code> 或 <code>jcmd &lt;pid&gt; Thread.print</code>），搜尋 <code>Found one Java-level deadlock</code>，下面會列出互相等待的執行緒與鎖。</p>
+
+<p style="margin:0 0 12px;"><b>A7</b>　null 自動拆箱（呼叫 <code>intValue()</code>）會丟 NPE。上週的做法是排序前先用 <code>arr[n++] = v</code> 把非 null 原地往前搬，讓前 n 格保證非 null；插入排序只跑 [0, n)，所以不需要 null 判斷。</p>
+
+<p style="margin:0 0 12px;"><b>A8</b>　①改成從尾端往前搬非 null；②排序範圍改成 [k, length)（k 為 null 的個數）；③補前 k 格為 null。排序邏輯本身不變。正式專案用 <code>Arrays.sort</code> 配 <code>Comparator.nullsFirst</code> / <code>nullsLast</code>，不手寫只是題目限制。</p>
 </div>
 
 </div>
