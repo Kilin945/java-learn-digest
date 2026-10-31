@@ -1,5 +1,5 @@
 {
-  "current_index": 4,
+  "current_index": 5,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -181,6 +181,11 @@
     {
       "topic": "B8-1｜interface＝約定「能做什麼」，一個類別可以實作多個",
       "finished": "2026-10-30",
+      "steps": 1
+    },
+    {
+      "topic": "B8-2｜abstract class＝半成品骨架：共用流程寫在父類別，差異留給子類別（電文解析骨架）",
+      "finished": "2026-10-31",
       "steps": 1
     }
   ]

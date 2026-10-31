@@ -131,3 +131,4 @@
 {"date": "2026-10-28", "topic": "G1-2｜手寫插入排序，只排前 n 個；int key = arr[i] 為什麼不會 NPE", "step": 1, "summary": "①之後前 n 格保證非 null，所以插入排序只在 [0, n) 跑，int key = arr[i] 的自動拆箱（intValue()）不會 NPE，排序裡也不需要 null 判斷。"}
 {"date": "2026-10-29", "topic": "G1-3｜變形：null 改放前面怎麼寫；為什麼不用 Arrays.sort", "step": 1, "summary": "null 改放前面時，只把 ① 改成從尾端往前搬、② 的範圍改成 [k, length)、③ 改成補前 k 格 null，排序邏輯不變；不用 Arrays.sort 只是題目限制，正式專案用 Arrays.sort 配 Comparator.nullsFirst/nullsLast。"}
 {"date": "2026-10-30", "topic": "B8-1｜interface＝約定「能做什麼」，一個類別可以實作多個", "step": 1, "summary": "interface 是只列「能做什麼」的約定、沒有內容也沒有狀態，所以一個類別可以 implements 很多個；呼叫端只認約定，實作彼此無關時就用它。"}
+{"date": "2026-10-31", "topic": "B8-2｜abstract class＝半成品骨架：共用流程寫在父類別，差異留給子類別（電文解析骨架）", "step": 1, "summary": "abstract class 是半成品：共用流程寫在父類別（用 final 鎖順序），只把各子類別不同的地方留成 abstract 方法；實作之間重複流程多就用它，電文解析骨架就是這個用法。"}
