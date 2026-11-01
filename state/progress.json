@@ -1,5 +1,5 @@
 {
-  "current_index": 5,
+  "current_index": 6,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -186,6 +186,11 @@
     {
       "topic": "B8-2｜abstract class＝半成品骨架：共用流程寫在父類別，差異留給子類別（電文解析骨架）",
       "finished": "2026-10-31",
+      "steps": 1
+    },
+    {
+      "topic": "B8-3｜Java 8 有 default method 之後，abstract class 還剩什麼：欄位、建構子、單一繼承",
+      "finished": "2026-11-01",
       "steps": 1
     }
   ]
