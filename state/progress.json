@@ -1,5 +1,5 @@
 {
-  "current_index": 6,
+  "current_index": 7,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -191,6 +191,11 @@
     {
       "topic": "B8-3｜Java 8 有 default method 之後，abstract class 還剩什麼：欄位、建構子、單一繼承",
       "finished": "2026-11-01",
+      "steps": 1
+    },
+    {
+      "topic": "B9-1｜兩條執行緒兩把鎖：一段跑了就卡死的 code",
+      "finished": "2026-11-02",
       "steps": 1
     }
   ]

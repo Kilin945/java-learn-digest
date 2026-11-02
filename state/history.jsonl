@@ -133,3 +133,4 @@
 {"date": "2026-10-30", "topic": "B8-1｜interface＝約定「能做什麼」，一個類別可以實作多個", "step": 1, "summary": "interface 是只列「能做什麼」的約定、沒有內容也沒有狀態，所以一個類別可以 implements 很多個；呼叫端只認約定，實作彼此無關時就用它。"}
 {"date": "2026-10-31", "topic": "B8-2｜abstract class＝半成品骨架：共用流程寫在父類別，差異留給子類別（電文解析骨架）", "step": 1, "summary": "abstract class 是半成品：共用流程寫在父類別（用 final 鎖順序），只把各子類別不同的地方留成 abstract 方法；實作之間重複流程多就用它，電文解析骨架就是這個用法。"}
 {"date": "2026-11-01", "topic": "B8-3｜Java 8 有 default method 之後，abstract class 還剩什麼：欄位、建構子、單一繼承", "step": 1, "summary": "Java 8 的 default method 只補了行為，interface 仍沒有實例欄位與建構子，也能疊多個；abstract class 剩下欄位（狀態）、建構子、單一繼承（是一種什麼）三件事，要共用資料加流程骨架就用它。"}
+{"date": "2026-11-02", "topic": "B9-1｜兩條執行緒兩把鎖：一段跑了就卡死的 code", "step": 1, "summary": "死結是兩條執行緒各握一把鎖、又都在等對方那把，繞成一圈永遠停住；它只在時間點剛好交錯時發生，所以測試常測不出來。"}
