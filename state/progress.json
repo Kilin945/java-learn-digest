@@ -1,5 +1,5 @@
 {
-  "current_index": 7,
+  "current_index": 8,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -196,6 +196,11 @@
     {
       "topic": "B9-1｜兩條執行緒兩把鎖：一段跑了就卡死的 code",
       "finished": "2026-11-02",
+      "steps": 1
+    },
+    {
+      "topic": "B9-2｜死結的四個條件；固定上鎖順序、tryLock 逾時來解",
+      "finished": "2026-11-03",
       "steps": 1
     }
   ]
