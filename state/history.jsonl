@@ -135,3 +135,4 @@
 {"date": "2026-11-01", "topic": "B8-3｜Java 8 有 default method 之後，abstract class 還剩什麼：欄位、建構子、單一繼承", "step": 1, "summary": "Java 8 的 default method 只補了行為，interface 仍沒有實例欄位與建構子，也能疊多個；abstract class 剩下欄位（狀態）、建構子、單一繼承（是一種什麼）三件事，要共用資料加流程骨架就用它。"}
 {"date": "2026-11-02", "topic": "B9-1｜兩條執行緒兩把鎖：一段跑了就卡死的 code", "step": 1, "summary": "死結是兩條執行緒各握一把鎖、又都在等對方那把，繞成一圈永遠停住；它只在時間點剛好交錯時發生，所以測試常測不出來。"}
 {"date": "2026-11-03", "topic": "B9-2｜死結的四個條件；固定上鎖順序、tryLock 逾時來解", "step": 1, "summary": "死結要互斥、持有並等待、不可搶奪、循環等待四個條件同時成立，拆掉任一個就不會發生；實務上最常用固定上鎖順序打破循環等待，順序排不出來時用 tryLock 加逾時，等不到就放手。"}
+{"date": "2026-11-04", "topic": "B9-3｜怎麼查：jstack 抓 thread dump，怎麼讀出卡在哪兩把鎖", "step": 1, "summary": "用 jps 找 PID、jstack 拍 thread dump，拉到最底看「Found one Java-level deadlock」，再用 waiting to lock 與 locked 的鎖位址對出哪兩條執行緒互等；沒有這行時要再排除資料庫鎖、j.u.c 鎖與單純變慢。"}

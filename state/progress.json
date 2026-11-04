@@ -1,5 +1,5 @@
 {
-  "current_index": 8,
+  "current_index": 9,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -201,6 +201,11 @@
     {
       "topic": "B9-2｜死結的四個條件；固定上鎖順序、tryLock 逾時來解",
       "finished": "2026-11-03",
+      "steps": 1
+    },
+    {
+      "topic": "B9-3｜怎麼查：jstack 抓 thread dump，怎麼讀出卡在哪兩把鎖",
+      "finished": "2026-11-04",
       "steps": 1
     }
   ]
