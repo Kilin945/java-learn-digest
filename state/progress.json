@@ -1,5 +1,5 @@
 {
-  "current_index": 9,
+  "current_index": 10,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -206,6 +206,11 @@
     {
       "topic": "B9-3｜怎麼查：jstack 抓 thread dump，怎麼讀出卡在哪兩把鎖",
       "finished": "2026-11-04",
+      "steps": 1
+    },
+    {
+      "topic": "A1-1｜自己 new 的問題 vs 交給 Spring 容器建立與組裝",
+      "finished": "2026-11-05",
       "steps": 1
     }
   ]
