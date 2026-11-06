@@ -1,52 +1,51 @@
-<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;color:#333;line-height:1.7;font-size:15px;">
+<div style="max-width:680px;margin:0 auto;font-family:-apple-system,'Segoe UI','Noto Sans TC',sans-serif;font-size:15px;line-height:1.7;color:#333;">
 
-<div style="border-left:6px solid #2bb0a6;padding:8px 14px;margin-bottom:16px;font-size:17px;font-weight:bold;color:#0f9b9b;">
-📘 每週回顧 · Java / Spring Boot · 2026-10-30
+<div style="border-left:6px solid #5b8def;background:#eef4ff;padding:12px 16px;border-radius:8px;margin-bottom:16px;">
+<span style="font-size:17px;font-weight:bold;color:#3b6cf6;">📘 每週回顧 · Java / Spring Boot · 2026-11-06</span>
 </div>
 
-<div style="background:#e8f6f5;border-radius:10px;padding:14px 18px;margin-bottom:16px;">
-本週你學了 OOP 設計（abstract class vs interface）、並行（deadlock）、Spring 核心（IoC / DI），還有一組手寫排序的 null 處理題。先別翻到最後，每題在心裡（或寫下來）答一遍，再對解答。
+<div style="background:#eef4ff;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+<p style="margin:0 0 6px 0;">這週你走過三個主題：<b>abstract class vs interface</b>、<b>死結（deadlock）</b>、<b>Spring IoC / DI</b>。先不要往下看解答，每題自己在腦中（或紙上）回答一次，再對答案。</p>
 </div>
 
-<div style="background:#e8f6f5;border-radius:10px;padding:14px 18px;margin-bottom:16px;">
-<div style="font-weight:bold;color:#0f9b9b;margin-bottom:8px;">🧠 回想題</div>
+<div style="background:#ffffff;border:1px solid #d6e4ff;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+<p style="margin:0 0 10px 0;font-weight:bold;color:#3b6cf6;">✏️ 回想題</p>
 
-<p style="margin:0 0 12px;"><b>Q1（淺）</b>　interface 是「約定什麼」？為什麼一個類別可以 implements 很多個 interface，卻只能 extends 一個 class？</p>
+<p style="margin:0 0 12px 0;"><b>Q1.</b> abstract class 被稱為「半成品骨架」。在電文解析的例子裡，哪些東西該寫在父類別、哪些該留成 abstract 方法？為什麼流程方法常加 <code>final</code>？</p>
 
-<p style="margin:0 0 12px;"><b>Q2（淺）</b>　IoC 與 DI 各是什麼？兩者的關係是什麼？</p>
+<p style="margin:0 0 12px 0;"><b>Q2.</b> Java 8 有了 default method，interface 已經能寫行為。那 abstract class 還有哪三件事是 interface 做不到的？</p>
 
-<p style="margin:0 0 12px;"><b>Q3（中）</b>　電文解析有好幾種格式，解析流程骨架相同、只有欄位切法不同。你會選 abstract class 還是 interface？為什麼 default method 取代不了 abstract class？</p>
+<p style="margin:0 0 12px 0;"><b>Q3.</b> 用一句話描述「死結」是怎麼形成的。為什麼死結的測試常常測不出來？</p>
 
-<p style="margin:0 0 12px;"><b>Q4（中）</b>　Spring 裡建構子注入為什麼比欄位注入好？請至少說出三點。</p>
+<p style="margin:0 0 12px 0;"><b>Q4.</b> 死結需要哪四個條件同時成立？只要拆掉其中一個就不會發生——實務上最常拆哪一個，怎麼拆？</p>
 
-<p style="margin:0 0 12px;"><b>Q5（中）</b>　deadlock 發生的四個必要條件是什麼？實務上最常打破哪一個、怎麼打破？</p>
+<p style="margin:0 0 12px 0;"><b>Q5.</b> 順序排不出來（沒辦法固定上鎖順序）時，還有什麼招可以避開死結？</p>
 
-<p style="margin:0 0 12px;"><b>Q6（中）</b>　線上服務卡住，你懷疑是 deadlock，要怎麼確認？thread dump 裡要找什麼關鍵字？</p>
+<p style="margin:0 0 12px 0;"><b>Q6.</b> 線上程式卡死，你懷疑是死結。請說出用 <code>jps</code>、<code>jstack</code> 查它的步驟，以及怎麼從輸出對出「哪兩條執行緒互等」。</p>
 
-<p style="margin:0 0 12px;"><b>Q7（中深）</b>　寫 <code>int key = arr[i]</code> 時，如果 <code>arr</code> 是 <code>Integer[]</code> 而元素是 null，會發生什麼事？為什麼上週的插入排序題不用在迴圈裡判斷 null？</p>
+<p style="margin:0 0 12px 0;"><b>Q7.</b> 自己 <code>new</code> 物件有哪三個問題？Spring 容器（IoC）是怎麼解決的？</p>
 
-<p style="margin:0 0 0;"><b>Q8（深）</b>　題目要求「null 放前面」，相較於「null 放後面」，三個步驟（搬移、排序範圍、補 null）各要怎麼改？正式專案為什麼不手寫，而改用什麼？</p>
+<p style="margin:0 0 0 0;"><b>Q8.</b>（綜合）同一個 interface 有兩個實作 Bean，建構子注入時 Spring 不知道選哪個，你有哪兩種指定方式？另外，為什麼建構子注入比欄位注入更好測試？</p>
 </div>
 
-<div style="text-align:center;color:#0f9b9b;font-weight:bold;margin:20px 0 12px;">—— 解答 ——</div>
+<div style="background:#eef4ff;border-radius:10px;padding:16px 20px;">
+<p style="margin:0 0 10px 0;font-weight:bold;color:#3b6cf6;text-align:center;">—— 解答 ——</p>
 
-<div style="background:#e8f6f5;border-radius:10px;padding:14px 18px;">
+<p style="margin:0 0 10px 0;"><b>A1.</b> 共用流程（例如：收電文 → 驗證 → 解析 → 回傳）寫在父類別；各電文格式不同的那一步（例如欄位怎麼切）留成 abstract 方法給子類別實作。流程方法加 <code>final</code>，是為了鎖住執行順序，子類別只能填空、不能改流程。這就是 Template Method 的做法。</p>
 
-<p style="margin:0 0 12px;"><b>A1</b>　interface 只約定「能做什麼」（方法簽章），沒有內容、沒有狀態，所以多實作不會衝突、可以 implements 很多個。class 帶有狀態與實作，繼承多個會有衝突（菱形問題），所以只能 extends 一個。呼叫端只認約定，不在乎誰實作。</p>
+<p style="margin:0 0 10px 0;"><b>A2.</b> ① 實例欄位（狀態）　② 建構子　③ 單一繼承（表達「是一種什麼」）。interface 沒有實例欄位與建構子，而且一個類別可以實作多個 interface。要「共用資料＋流程骨架」就用 abstract class。</p>
 
-<p style="margin:0 0 12px;"><b>A2</b>　IoC（Inversion of Control，控制反轉）：物件的建立與組裝交給 Spring 容器，不是自己 new。DI（Dependency Injection，依賴注入）：容器把依賴注入進來。DI 是實現 IoC 的具體手法。</p>
+<p style="margin:0 0 10px 0;"><b>A3.</b> 兩條執行緒各握一把鎖，又都在等對方手上那把，繞成一圈永遠停住。它只在時間點剛好交錯時才發生，所以測試時常剛好沒撞上，正式環境才爆。</p>
 
-<p style="margin:0 0 12px;"><b>A3</b>　選 abstract class：各實作之間重複多（解析流程骨架），把共用的流程與狀態放在父類別，子類別只填差異（template method）。default method 沒有狀態、沒有建構子，也不具備單一繼承的語意，所以取代不了。若只是約定行為、實作彼此無關，才用 interface。</p>
+<p style="margin:0 0 10px 0;"><b>A4.</b> 互斥、持有並等待、不可搶奪、循環等待。最常拆「循環等待」：讓所有執行緒都用<b>固定的上鎖順序</b>（例如永遠先鎖 A 再鎖 B）。</p>
 
-<p style="margin:0 0 12px;"><b>A4</b>　①依賴寫在建構子簽章上，一眼看得出需要什麼；②欄位可宣告 <code>final</code>，不可變；③測試時可以自己 <code>new</code> 並傳入 mock，不需要 Spring 容器或反射。</p>
+<p style="margin:0 0 10px 0;"><b>A5.</b> 用 <code>tryLock</code> 加逾時：等不到鎖就放手（釋放已持有的鎖），之後重試或回報失敗。這是拆掉「持有並等待」。</p>
 
-<p style="margin:0 0 12px;"><b>A5</b>　互斥、持有並等待、不可搶奪、循環等待，四個同時成立才會死結。實務上打破「循環等待」：所有執行緒用固定的上鎖順序；輔以 <code>tryLock</code> 加逾時，拿不到就放掉已持有的鎖。</p>
+<p style="margin:0 0 10px 0;"><b>A6.</b> <code>jps</code> 找 Java 程序的 PID → <code>jstack &lt;PID&gt;</code> 拍 thread dump → 拉到最底找「Found one Java-level deadlock」。再看每條執行緒的 <code>waiting to lock</code>（想要的鎖位址）與 <code>locked</code>（已握的鎖位址），把位址對起來，就知道 T1 握 A 等 B、T2 握 B 等 A。若沒有這行，要再排除資料庫鎖、<code>java.util.concurrent</code> 的鎖、或單純變慢。</p>
 
-<p style="margin:0 0 12px;"><b>A6</b>　抓 thread dump（例如 <code>jstack &lt;pid&gt;</code> 或 <code>jcmd &lt;pid&gt; Thread.print</code>），搜尋 <code>Found one Java-level deadlock</code>，下面會列出互相等待的執行緒與鎖。</p>
+<p style="margin:0 0 10px 0;"><b>A7.</b> 問題：① 寫死實作（換實作要改程式）　② 組裝鏈越來越長（A 要 new B、B 要 new C…）　③ 沒人管份數（到底該一份還一堆）。IoC 把「建立與組裝」交給容器：啟動時掃描、建立並存放 Bean，要用時由容器給你。</p>
 
-<p style="margin:0 0 12px;"><b>A7</b>　null 自動拆箱（呼叫 <code>intValue()</code>）會丟 NPE。上週的做法是排序前先用 <code>arr[n++] = v</code> 把非 null 原地往前搬，讓前 n 格保證非 null；插入排序只跑 [0, n)，所以不需要 null 判斷。</p>
-
-<p style="margin:0 0 12px;"><b>A8</b>　①改成從尾端往前搬非 null；②排序範圍改成 [k, length)（k 為 null 的個數）；③補前 k 格為 null。排序邏輯本身不變。正式專案用 <code>Arrays.sort</code> 配 <code>Comparator.nullsFirst</code> / <code>nullsLast</code>，不手寫只是題目限制。</p>
+<p style="margin:0 0 0 0;"><b>A8.</b> 指定方式：<code>@Primary</code>（標預設那個）或 <code>@Qualifier("名稱")</code>（在注入點指名）。建構子注入的依賴是從外面傳進來，測試時可以直接 <code>new</code> 並傳入假物件（mock / fake），不用啟動 Spring；欄位注入通常得靠反射或啟動容器才塞得進去。</p>
 </div>
 
 </div>
