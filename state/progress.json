@@ -1,5 +1,5 @@
 {
-  "current_index": 10,
+  "current_index": 11,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -211,6 +211,11 @@
     {
       "topic": "A1-1｜自己 new 的問題 vs 交給 Spring 容器建立與組裝",
       "finished": "2026-11-05",
+      "steps": 1
+    },
+    {
+      "topic": "A1-2｜容器怎麼把依賴注入進來；測試時換成假物件",
+      "finished": "2026-11-06",
       "steps": 1
     }
   ]

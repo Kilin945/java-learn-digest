@@ -137,3 +137,4 @@
 {"date": "2026-11-03", "topic": "B9-2｜死結的四個條件；固定上鎖順序、tryLock 逾時來解", "step": 1, "summary": "死結要互斥、持有並等待、不可搶奪、循環等待四個條件同時成立，拆掉任一個就不會發生；實務上最常用固定上鎖順序打破循環等待，順序排不出來時用 tryLock 加逾時，等不到就放手。"}
 {"date": "2026-11-04", "topic": "B9-3｜怎麼查：jstack 抓 thread dump，怎麼讀出卡在哪兩把鎖", "step": 1, "summary": "用 jps 找 PID、jstack 拍 thread dump，拉到最底看「Found one Java-level deadlock」，再用 waiting to lock 與 locked 的鎖位址對出哪兩條執行緒互等；沒有這行時要再排除資料庫鎖、j.u.c 鎖與單純變慢。"}
 {"date": "2026-11-05", "topic": "A1-1｜自己 new 的問題 vs 交給 Spring 容器建立與組裝", "step": 1, "summary": "IoC 是把「建立與組裝物件」從自己 new 轉交給 Spring 容器；自己 new 會寫死實作、組裝鏈變長、沒人管份數，容器則在啟動時掃描、建立並存放 Bean。"}
+{"date": "2026-11-06", "topic": "A1-2｜容器怎麼把依賴注入進來；測試時換成假物件", "step": 1, "summary": "DI 就是容器在建立 Bean 時，依建構子需要的型別找對應的 Bean 傳進去（型別對到多個時用 @Primary／@Qualifier 指定）；依賴從外面進來，測試就能自己 new 並傳入假物件，所以建構子注入優於欄位注入。"}
