@@ -138,3 +138,4 @@
 {"date": "2026-11-04", "topic": "B9-3｜怎麼查：jstack 抓 thread dump，怎麼讀出卡在哪兩把鎖", "step": 1, "summary": "用 jps 找 PID、jstack 拍 thread dump，拉到最底看「Found one Java-level deadlock」，再用 waiting to lock 與 locked 的鎖位址對出哪兩條執行緒互等；沒有這行時要再排除資料庫鎖、j.u.c 鎖與單純變慢。"}
 {"date": "2026-11-05", "topic": "A1-1｜自己 new 的問題 vs 交給 Spring 容器建立與組裝", "step": 1, "summary": "IoC 是把「建立與組裝物件」從自己 new 轉交給 Spring 容器；自己 new 會寫死實作、組裝鏈變長、沒人管份數，容器則在啟動時掃描、建立並存放 Bean。"}
 {"date": "2026-11-06", "topic": "A1-2｜容器怎麼把依賴注入進來；測試時換成假物件", "step": 1, "summary": "DI 就是容器在建立 Bean 時，依建構子需要的型別找對應的 Bean 傳進去（型別對到多個時用 @Primary／@Qualifier 指定）；依賴從外面進來，測試就能自己 new 並傳入假物件，所以建構子注入優於欄位注入。"}
+{"date": "2026-11-07", "topic": "A7-1｜Controller 外面那一圈：web.xml／XML 設定／WAR＋外部 Tomcat vs @SpringBootApplication／starter／內嵌 Tomcat", "step": 1, "summary": "Spring MVC 是 web 框架本體，Boot 是外面的腳手架：@SpringBootApplication 取代 web.xml／XML、starter 管相依版本、內嵌 Tomcat 讓 jar 直接 java -jar 跑；Controller 寫法兩邊相同。"}
