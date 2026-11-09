@@ -1,5 +1,5 @@
 {
-  "current_index": 13,
+  "current_index": 14,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -226,6 +226,11 @@
     {
       "topic": "A7-2｜自動配置怎麼運作：@ConditionalOnClass、@ConditionalOnMissingBean；自己的設定為什麼優先",
       "finished": "2026-11-08",
+      "steps": 1
+    },
+    {
+      "topic": "B1-1｜HashMap 怎麼找東西：hashCode 找桶、equals 比對；只覆寫 equals 會出什麼 bug",
+      "finished": "2026-11-09",
       "steps": 1
     }
   ]
