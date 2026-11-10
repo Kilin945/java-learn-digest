@@ -1,5 +1,5 @@
 {
-  "current_index": 14,
+  "current_index": 15,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -231,6 +231,11 @@
     {
       "topic": "B1-1｜HashMap 怎麼找東西：hashCode 找桶、equals 比對；只覆寫 equals 會出什麼 bug",
       "finished": "2026-11-09",
+      "steps": 1
+    },
+    {
+      "topic": "B1-2｜拿會變的欄位算 hashCode：放進 Set 後改欄位就再也找不到",
+      "finished": "2026-11-10",
       "steps": 1
     }
   ]
