@@ -1,5 +1,5 @@
 {
-  "current_index": 15,
+  "current_index": 16,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -236,6 +236,11 @@
     {
       "topic": "B1-2｜拿會變的欄位算 hashCode：放進 Set 後改欄位就再也找不到",
       "finished": "2026-11-10",
+      "steps": 1
+    },
+    {
+      "topic": "B4-1｜heap／stack／Metaspace 各放什麼，用一段 code 對應",
+      "finished": "2026-11-11",
       "steps": 1
     }
   ]

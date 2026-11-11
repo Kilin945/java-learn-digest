@@ -142,3 +142,4 @@
 {"date": "2026-11-08", "topic": "A7-2｜自動配置怎麼運作：@ConditionalOnClass、@ConditionalOnMissingBean；自己的設定為什麼優先", "step": 1, "summary": "Boot 啟動時讀自動設定清單，每項掛 @ConditionalOnClass（classpath 有依賴才啟用）與 @ConditionalOnMissingBean（你沒定義才建），且排在你的設定之後判斷，所以你自己定義的永遠優先。"}
 {"date": "2026-11-09", "topic": "B1-1｜HashMap 怎麼找東西：hashCode 找桶、equals 比對；只覆寫 equals 會出什麼 bug", "step": 1, "summary": "HashMap 先用 hashCode 算桶、再用 equals 在桶裡比對，所以 equals 相等的物件 hashCode 必須相同；只覆寫 equals 會讓內容一樣的物件進不同桶，導致 get 查不到、Set 去不了重。"}
 {"date": "2026-11-10", "topic": "B1-2｜拿會變的欄位算 hashCode：放進 Set 後改欄位就再也找不到", "step": 1, "summary": "HashMap/HashSet 只在放進去那一刻算一次 hashCode 決定桶子，之後改了參與 hashCode 的欄位，物件不會搬家，contains/get/remove 都走錯桶子找不到，變成孤兒；所以 hashCode 要用不會變的欄位（如 id），真的要改就先 remove 再 add。"}
+{"date": "2026-11-11", "topic": "B4-1｜heap／stack／Metaspace 各放什麼，用一段 code 對應", "step": 1, "summary": "物件本體放 heap（全執行緒共用、GC 回收）；區域變數與方法呼叫放各執行緒自己的 stack（方法結束就消失）；class 的結構資訊放 Metaspace；OOM 先看錯誤訊息判斷是哪一區爆。"}
