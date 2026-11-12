@@ -1,5 +1,5 @@
 {
-  "current_index": 16,
+  "current_index": 17,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -241,6 +241,11 @@
     {
       "topic": "B4-1｜heap／stack／Metaspace 各放什麼，用一段 code 對應",
       "finished": "2026-11-11",
+      "steps": 1
+    },
+    {
+      "topic": "B4-2｜OOM 常見成因：靜態 Map 忘了清、沒上限的快取、沒關的串流",
+      "finished": "2026-11-12",
       "steps": 1
     }
   ]
