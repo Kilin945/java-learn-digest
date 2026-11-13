@@ -144,3 +144,4 @@
 {"date": "2026-11-10", "topic": "B1-2｜拿會變的欄位算 hashCode：放進 Set 後改欄位就再也找不到", "step": 1, "summary": "HashMap/HashSet 只在放進去那一刻算一次 hashCode 決定桶子，之後改了參與 hashCode 的欄位，物件不會搬家，contains/get/remove 都走錯桶子找不到，變成孤兒；所以 hashCode 要用不會變的欄位（如 id），真的要改就先 remove 再 add。"}
 {"date": "2026-11-11", "topic": "B4-1｜heap／stack／Metaspace 各放什麼，用一段 code 對應", "step": 1, "summary": "物件本體放 heap（全執行緒共用、GC 回收）；區域變數與方法呼叫放各執行緒自己的 stack（方法結束就消失）；class 的結構資訊放 Metaspace；OOM 先看錯誤訊息判斷是哪一區爆。"}
 {"date": "2026-11-12", "topic": "B4-2｜OOM 常見成因：靜態 Map 忘了清、沒上限的快取、沒關的串流", "step": 1, "summary": "heap OOM 多半是該回收的被抓著不放：static Map 忘了清、快取沒上限、串流或連線沒關，因為 GC 從 GC Root 一直走得到它們。"}
+{"date": "2026-11-13", "topic": "B4-3｜怎麼查 OOM：HeapDumpOnOutOfMemoryError 怎麼開、heap dump 怎麼讀；Metaspace OOM 跟 heap OOM 的差別", "step": 1, "summary": "OOM 先看 log 訊息判斷哪一區爆；事先加 -XX:+HeapDumpOnOutOfMemoryError 與 -XX:HeapDumpPath 留現場，用 MAT 看 Dominator Tree 與 Path to GC Roots 找出誰抓著不放；Metaspace 爆是類別（ClassLoader）累積，heap 爆是物件累積。"}

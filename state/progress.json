@@ -1,5 +1,5 @@
 {
-  "current_index": 17,
+  "current_index": 18,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -246,6 +246,11 @@
     {
       "topic": "B4-2｜OOM 常見成因：靜態 Map 忘了清、沒上限的快取、沒關的串流",
       "finished": "2026-11-12",
+      "steps": 1
+    },
+    {
+      "topic": "B4-3｜怎麼查 OOM：HeapDumpOnOutOfMemoryError 怎麼開、heap dump 怎麼讀；Metaspace OOM 跟 heap OOM 的差別",
+      "finished": "2026-11-13",
       "steps": 1
     }
   ]
