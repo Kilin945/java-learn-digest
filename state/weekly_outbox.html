@@ -1,51 +1,51 @@
-<div style="max-width:680px;margin:0 auto;font-family:-apple-system,'Segoe UI','Noto Sans TC',sans-serif;font-size:15px;line-height:1.7;color:#333;">
+<div style="max-width:680px;margin:0 auto;padding:16px;background:#e8f4fb;font-family:-apple-system,'Segoe UI','Noto Sans TC',sans-serif;color:#333;line-height:1.7;font-size:15px;">
 
-<div style="border-left:6px solid #5b8def;background:#eef4ff;padding:12px 16px;border-radius:8px;margin-bottom:16px;">
-<span style="font-size:17px;font-weight:bold;color:#3b6cf6;">📘 每週回顧 · Java / Spring Boot · 2026-11-06</span>
+<div style="border-left:6px solid #3f97c9;background:#ffffff;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+<span style="font-size:17px;font-weight:bold;color:#2b7fb0;">📘 每週回顧 · Java / Spring Boot · 2026-11-13</span>
 </div>
 
-<div style="background:#eef4ff;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
-<p style="margin:0 0 6px 0;">這週你走過三個主題：<b>abstract class vs interface</b>、<b>死結（deadlock）</b>、<b>Spring IoC / DI</b>。先不要往下看解答，每題自己在腦中（或紙上）回答一次，再對答案。</p>
+<div style="background:#ffffff;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+<p style="margin:0;">這週你走過三個主題：<b style="color:#2b7fb0;">Spring Boot 的外圍與自動配置</b>、<b style="color:#2b7fb0;">HashMap／hashCode／equals</b>、<b style="color:#2b7fb0;">JVM 記憶體與 OOM</b>。先不要往下看解答，每題試著用自己的話回答，答不出來的就是今天最值得複習的地方。</p>
 </div>
 
-<div style="background:#ffffff;border:1px solid #d6e4ff;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
-<p style="margin:0 0 10px 0;font-weight:bold;color:#3b6cf6;">✏️ 回想題</p>
+<div style="background:#ffffff;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+<p style="margin:0 0 12px 0;font-weight:bold;color:#2b7fb0;">🧠 回想題（由淺入深）</p>
 
-<p style="margin:0 0 12px 0;"><b>Q1.</b> abstract class 被稱為「半成品骨架」。在電文解析的例子裡，哪些東西該寫在父類別、哪些該留成 abstract 方法？為什麼流程方法常加 <code>final</code>？</p>
+<p style="margin:0 0 12px 0;"><b>Q1.</b> Spring MVC 和 Spring Boot 的關係是什麼？Controller 的寫法在傳統 WAR＋外部 Tomcat 與 Boot 之間有差嗎？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q2.</b> Java 8 有了 default method，interface 已經能寫行為。那 abstract class 還有哪三件事是 interface 做不到的？</p>
+<p style="margin:0 0 12px 0;"><b>Q2.</b> <code>@SpringBootApplication</code>、starter、內嵌 Tomcat 各自取代了傳統做法裡的哪一塊？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q3.</b> 用一句話描述「死結」是怎麼形成的。為什麼死結的測試常常測不出來？</p>
+<p style="margin:0 0 12px 0;"><b>Q3.</b> 自動配置裡的 <code>@ConditionalOnClass</code> 與 <code>@ConditionalOnMissingBean</code> 各自判斷什麼？為什麼你自己定義的 Bean 永遠優先？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q4.</b> 死結需要哪四個條件同時成立？只要拆掉其中一個就不會發生——實務上最常拆哪一個，怎麼拆？</p>
+<p style="margin:0 0 12px 0;"><b>Q4.</b> HashMap 的 <code>get(key)</code> 是怎麼找到東西的？如果只覆寫 <code>equals</code> 沒覆寫 <code>hashCode</code>，會出現什麼 bug？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q5.</b> 順序排不出來（沒辦法固定上鎖順序）時，還有什麼招可以避開死結？</p>
+<p style="margin:0 0 12px 0;"><b>Q5.</b> 把物件放進 <code>HashSet</code> 之後，修改了參與 <code>hashCode</code> 的欄位，再呼叫 <code>contains</code> 會怎樣？為什麼？該怎麼設計或處理才安全？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q6.</b> 線上程式卡死，你懷疑是死結。請說出用 <code>jps</code>、<code>jstack</code> 查它的步驟，以及怎麼從輸出對出「哪兩條執行緒互等」。</p>
+<p style="margin:0 0 12px 0;"><b>Q6.</b> 說出 heap、stack、Metaspace 各放什麼。<code>Object o = new Object();</code> 這行裡，<code>o</code> 和那個物件各在哪？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q7.</b> 自己 <code>new</code> 物件有哪三個問題？Spring 容器（IoC）是怎麼解決的？</p>
+<p style="margin:0 0 12px 0;"><b>Q7.</b> 舉出三種常見造成 heap OOM 的寫法，並說明為什麼 GC 救不了它們。</p>
 
-<p style="margin:0 0 0 0;"><b>Q8.</b>（綜合）同一個 interface 有兩個實作 Bean，建構子注入時 Spring 不知道選哪個，你有哪兩種指定方式？另外，為什麼建構子注入比欄位注入更好測試？</p>
+<p style="margin:0 0 0 0;"><b>Q8.</b> 線上發生 OOM，你要怎麼事先準備、事後調查？Metaspace OOM 與 heap OOM 的成因與判讀有什麼差別？（串聯題：想想第 5 題的「孤兒物件」與這題的 GC Root 有沒有關係。）</p>
 </div>
 
-<div style="background:#eef4ff;border-radius:10px;padding:16px 20px;">
-<p style="margin:0 0 10px 0;font-weight:bold;color:#3b6cf6;text-align:center;">—— 解答 ——</p>
+<div style="background:#ffffff;border-radius:10px;padding:16px 20px;">
+<p style="margin:0 0 12px 0;font-weight:bold;color:#2b7fb0;text-align:center;">—— 解答 ——</p>
 
-<p style="margin:0 0 10px 0;"><b>A1.</b> 共用流程（例如：收電文 → 驗證 → 解析 → 回傳）寫在父類別；各電文格式不同的那一步（例如欄位怎麼切）留成 abstract 方法給子類別實作。流程方法加 <code>final</code>，是為了鎖住執行順序，子類別只能填空、不能改流程。這就是 Template Method 的做法。</p>
+<p style="margin:0 0 10px 0;"><b>A1.</b> Spring MVC 是 web 框架本體，Boot 是外面的腳手架（設定、相依、啟動方式）。Controller 的寫法（<code>@RestController</code>、<code>@GetMapping</code> 等）兩邊完全相同。</p>
 
-<p style="margin:0 0 10px 0;"><b>A2.</b> ① 實例欄位（狀態）　② 建構子　③ 單一繼承（表達「是一種什麼」）。interface 沒有實例欄位與建構子，而且一個類別可以實作多個 interface。要「共用資料＋流程骨架」就用 abstract class。</p>
+<p style="margin:0 0 10px 0;"><b>A2.</b> <code>@SpringBootApplication</code> 取代 <code>web.xml</code>／XML 設定；starter 把一組相依與版本打包管好；內嵌 Tomcat 讓 jar 直接 <code>java -jar</code> 跑，不用再打 WAR 丟外部 Tomcat。</p>
 
-<p style="margin:0 0 10px 0;"><b>A3.</b> 兩條執行緒各握一把鎖，又都在等對方手上那把，繞成一圈永遠停住。它只在時間點剛好交錯時才發生，所以測試時常剛好沒撞上，正式環境才爆。</p>
+<p style="margin:0 0 10px 0;"><b>A3.</b> <code>@ConditionalOnClass</code>：classpath 有該依賴才啟用；<code>@ConditionalOnMissingBean</code>：你沒定義同類 Bean 才幫你建。自動設定排在你的設定之後才判斷，所以你定義了它就退讓。</p>
 
-<p style="margin:0 0 10px 0;"><b>A4.</b> 互斥、持有並等待、不可搶奪、循環等待。最常拆「循環等待」：讓所有執行緒都用<b>固定的上鎖順序</b>（例如永遠先鎖 A 再鎖 B）。</p>
+<p style="margin:0 0 10px 0;"><b>A4.</b> 先用 <code>hashCode</code> 算出桶（bucket），再在桶內用 <code>equals</code> 比對。只覆寫 <code>equals</code> 會讓「內容相同」的物件算出不同 hashCode、進不同桶，結果 <code>get</code> 查不到、Set 去不了重。規則：equals 相等 ⇒ hashCode 必須相同。</p>
 
-<p style="margin:0 0 10px 0;"><b>A5.</b> 用 <code>tryLock</code> 加逾時：等不到鎖就放手（釋放已持有的鎖），之後重試或回報失敗。這是拆掉「持有並等待」。</p>
+<p style="margin:0 0 10px 0;"><b>A5.</b> 找不到（<code>false</code>）。hashCode 只在放入時算一次決定桶子，改欄位後物件不會搬家，但之後查詢會用新 hashCode 走去別的桶，<code>contains</code>／<code>get</code>／<code>remove</code> 都失敗，物件變孤兒。解法：hashCode 只用不會變的欄位（如 id）；真的要改就先 remove 再 add。</p>
 
-<p style="margin:0 0 10px 0;"><b>A6.</b> <code>jps</code> 找 Java 程序的 PID → <code>jstack &lt;PID&gt;</code> 拍 thread dump → 拉到最底找「Found one Java-level deadlock」。再看每條執行緒的 <code>waiting to lock</code>（想要的鎖位址）與 <code>locked</code>（已握的鎖位址），把位址對起來，就知道 T1 握 A 等 B、T2 握 B 等 A。若沒有這行，要再排除資料庫鎖、<code>java.util.concurrent</code> 的鎖、或單純變慢。</p>
+<p style="margin:0 0 10px 0;"><b>A6.</b> heap：物件本體，全執行緒共用、由 GC 回收；stack：每個執行緒各自的區域變數與方法呼叫，方法結束就消失；Metaspace：class 的結構資訊。<code>o</code>（參考變數）在 stack，<code>new Object()</code> 的物件在 heap。</p>
 
-<p style="margin:0 0 10px 0;"><b>A7.</b> 問題：① 寫死實作（換實作要改程式）　② 組裝鏈越來越長（A 要 new B、B 要 new C…）　③ 沒人管份數（到底該一份還一堆）。IoC 把「建立與組裝」交給容器：啟動時掃描、建立並存放 Bean，要用時由容器給你。</p>
+<p style="margin:0 0 10px 0;"><b>A7.</b> ① <code>static Map</code> 一直塞不清；② 沒上限的快取；③ 沒關的串流／連線。共同點：GC 從 GC Root 仍然走得到它們，被視為「還在用」，所以不會回收。</p>
 
-<p style="margin:0 0 0 0;"><b>A8.</b> 指定方式：<code>@Primary</code>（標預設那個）或 <code>@Qualifier("名稱")</code>（在注入點指名）。建構子注入的依賴是從外面傳進來，測試時可以直接 <code>new</code> 並傳入假物件（mock / fake），不用啟動 Spring；欄位注入通常得靠反射或啟動容器才塞得進去。</p>
+<p style="margin:0 0 0 0;"><b>A8.</b> 事先加 <code>-XX:+HeapDumpOnOutOfMemoryError</code> 與 <code>-XX:HeapDumpPath=...</code> 留現場；事後用 MAT 看 <b>Dominator Tree</b>（誰佔最多）與 <b>Path to GC Roots</b>（誰抓著不放）。先看 log 錯誤訊息判斷哪一區爆：heap OOM 是<b>物件</b>累積；Metaspace OOM 是<b>類別（ClassLoader）</b>累積。串聯：第 5 題的孤兒物件還被 Set 抓著，就是「GC Root 走得到、卻沒人在用」的一種，長期累積就會走向 heap OOM。</p>
 </div>
 
 </div>
