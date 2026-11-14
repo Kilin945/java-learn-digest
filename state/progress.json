@@ -1,5 +1,5 @@
 {
-  "current_index": 18,
+  "current_index": 19,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -251,6 +251,11 @@
     {
       "topic": "B4-3｜怎麼查 OOM：HeapDumpOnOutOfMemoryError 怎麼開、heap dump 怎麼讀；Metaspace OOM 跟 heap OOM 的差別",
       "finished": "2026-11-13",
+      "steps": 1
+    },
+    {
+      "topic": "B6-1｜String 不可變：迴圈裡相加的代價；改用 StringBuilder（電文 FILL 補齊組字串）",
+      "finished": "2026-11-14",
       "steps": 1
     }
   ]
