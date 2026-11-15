@@ -1,5 +1,5 @@
 {
-  "current_index": 19,
+  "current_index": 20,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -256,6 +256,11 @@
     {
       "topic": "B6-1｜String 不可變：迴圈裡相加的代價；改用 StringBuilder（電文 FILL 補齊組字串）",
       "finished": "2026-11-14",
+      "steps": 1
+    },
+    {
+      "topic": "B6-2｜StringBuffer 的同步差在哪；String 為什麼要設計成不可變",
+      "finished": "2026-11-15",
       "steps": 1
     }
   ]
