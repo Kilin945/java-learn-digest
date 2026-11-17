@@ -1,5 +1,5 @@
 {
-  "current_index": 21,
+  "current_index": 22,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -266,6 +266,11 @@
     {
       "topic": "A2-1｜欄位注入 vs 建構子注入：測試時 new 不出來、依賴藏起來",
       "finished": "2026-11-16",
+      "steps": 1
+    },
+    {
+      "topic": "A2-2｜建構子注入的 final；循環依賴時啟動就失敗為什麼是好事",
+      "finished": "2026-11-17",
       "steps": 1
     }
   ]
