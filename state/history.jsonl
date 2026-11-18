@@ -149,3 +149,4 @@
 {"date": "2026-11-15", "topic": "B6-2｜StringBuffer 的同步差在哪；String 為什麼要設計成不可變", "step": 1, "summary": "StringBuffer 與 StringBuilder 只差 synchronized 這把鎖（安全但慢）；區域變數組字串用 StringBuilder；String 不可變帶來安全、可當 HashMap key（hashCode 可快取）、天生執行緒安全，字串池也因此成立。"}
 {"date": "2026-11-16", "topic": "A2-1｜欄位注入 vs 建構子注入：測試時 new 不出來、依賴藏起來", "step": 1, "summary": "欄位注入把依賴藏在 private 欄位裡：外面看不出類別要幾樣東西，測試時 new 出來欄位是 null、非得靠 Spring 或反射才能塞；建構子注入把依賴寫在簽章上，缺什麼一眼看到，測試直接 new 並塞 mock。"}
 {"date": "2026-11-17", "topic": "A2-2｜建構子注入的 final；循環依賴時啟動就失敗為什麼是好事", "step": 1, "summary": "建構子注入可把依賴宣告成 final(物件建好就定死、不可能是 null);循環依賴時建構子注入讓 Spring 啟動當場失敗,問題在上線前爆出,解法是拆職責、抽第三個 Bean,不是用欄位注入或 @Lazy 繞過。"}
+{"date": "2026-11-18", "topic": "A3-1｜Bean 生命週期：建構 → 注入 → @PostConstruct → @PreDestroy", "step": 1, "summary": "Bean 依序經過建構、注入、@PostConstruct（依賴到齊後的初始化）、使用、@PreDestroy（關閉前清理）；ErrorCodeService 的啟動自檢只跑一次，是因為它只有一個物件、生命週期只走一遍。"}

@@ -1,5 +1,5 @@
 {
-  "current_index": 22,
+  "current_index": 23,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -271,6 +271,11 @@
     {
       "topic": "A2-2｜建構子注入的 final；循環依賴時啟動就失敗為什麼是好事",
       "finished": "2026-11-17",
+      "steps": 1
+    },
+    {
+      "topic": "A3-1｜Bean 生命週期：建構 → 注入 → @PostConstruct → @PreDestroy",
+      "finished": "2026-11-18",
       "steps": 1
     }
   ]
