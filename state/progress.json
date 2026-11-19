@@ -1,5 +1,5 @@
 {
-  "current_index": 23,
+  "current_index": 24,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -276,6 +276,11 @@
     {
       "topic": "A3-1｜Bean 生命週期：建構 → 注入 → @PostConstruct → @PreDestroy",
       "finished": "2026-11-18",
+      "steps": 1
+    },
+    {
+      "topic": "A3-2｜scope：singleton／prototype／request；singleton 裡注入 prototype 只會注入一次",
+      "finished": "2026-11-19",
       "steps": 1
     }
   ]
