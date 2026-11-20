@@ -1,51 +1,53 @@
-<div style="max-width:680px;margin:0 auto;padding:16px;background:#e8f4fb;font-family:-apple-system,'Segoe UI','Noto Sans TC',sans-serif;color:#333;line-height:1.7;font-size:15px;">
+<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;font-size:15px;line-height:1.7;color:#333;">
 
-<div style="border-left:6px solid #3f97c9;background:#ffffff;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
-<span style="font-size:17px;font-weight:bold;color:#2b7fb0;">📘 每週回顧 · Java / Spring Boot · 2026-11-13</span>
+<div style="border-left:6px solid #d99b3f;padding:8px 14px;margin-bottom:16px;font-size:17px;font-weight:bold;color:#b9791f;">
+📘 每週回顧 · Java / Spring Boot · 2026-11-20
 </div>
 
-<div style="background:#ffffff;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
-<p style="margin:0;">這週你走過三個主題：<b style="color:#2b7fb0;">Spring Boot 的外圍與自動配置</b>、<b style="color:#2b7fb0;">HashMap／hashCode／equals</b>、<b style="color:#2b7fb0;">JVM 記憶體與 OOM</b>。先不要往下看解答，每題試著用自己的話回答，答不出來的就是今天最值得複習的地方。</p>
+<div style="background:#fbf3e3;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+<p style="margin:0 0 6px 0;color:#b9791f;font-weight:bold;">本週走過的路</p>
+<p style="margin:0;">String 不可變與 StringBuilder → 建構子注入 vs 欄位注入 → Bean 生命週期與 scope → AOP 的起點。先自己想一遍答案，再往下看解答。</p>
 </div>
 
-<div style="background:#ffffff;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
-<p style="margin:0 0 12px 0;font-weight:bold;color:#2b7fb0;">🧠 回想題（由淺入深）</p>
+<div style="background:#fbf3e3;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+<p style="margin:0 0 10px 0;color:#b9791f;font-weight:bold;">🧠 回想題</p>
 
-<p style="margin:0 0 12px 0;"><b>Q1.</b> Spring MVC 和 Spring Boot 的關係是什麼？Controller 的寫法在傳統 WAR＋外部 Tomcat 與 Boot 之間有差嗎？</p>
+<p style="margin:0 0 12px 0;"><b>Q1.</b> 在 for 迴圈裡用 <code>s = s + x</code> 組一份電文字串，為什麼會產生大量垃圾？改用 StringBuilder 後，什麼時候才呼叫 <code>toString()</code>？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q2.</b> <code>@SpringBootApplication</code>、starter、內嵌 Tomcat 各自取代了傳統做法裡的哪一塊？</p>
+<p style="margin:0 0 12px 0;"><b>Q2.</b> StringBuffer 和 StringBuilder 的差別是什麼？一個方法內的區域變數組字串，該選哪個？為什麼？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q3.</b> 自動配置裡的 <code>@ConditionalOnClass</code> 與 <code>@ConditionalOnMissingBean</code> 各自判斷什麼？為什麼你自己定義的 Bean 永遠優先？</p>
+<p style="margin:0 0 12px 0;"><b>Q3.</b> String 設計成 immutable，至少說出三個好處（提示：HashMap key、執行緒、字串池）。</p>
 
-<p style="margin:0 0 12px 0;"><b>Q4.</b> HashMap 的 <code>get(key)</code> 是怎麼找到東西的？如果只覆寫 <code>equals</code> 沒覆寫 <code>hashCode</code>，會出現什麼 bug？</p>
+<p style="margin:0 0 12px 0;"><b>Q4.</b> 欄位注入（<code>@Autowired private</code>）在寫單元測試時會遇到什麼麻煩？建構子注入怎麼解決？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q5.</b> 把物件放進 <code>HashSet</code> 之後，修改了參與 <code>hashCode</code> 的欄位，再呼叫 <code>contains</code> 會怎樣？為什麼？該怎麼設計或處理才安全？</p>
+<p style="margin:0 0 12px 0;"><b>Q5.</b> 建構子注入可以把依賴宣告成 <code>final</code>，這帶來什麼保證？如果兩個 Bean 循環依賴，建構子注入會發生什麼事？你覺得這是好事還是壞事？正確的解法是什麼？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q6.</b> 說出 heap、stack、Metaspace 各放什麼。<code>Object o = new Object();</code> 這行裡，<code>o</code> 和那個物件各在哪？</p>
+<p style="margin:0 0 12px 0;"><b>Q6.</b> 請依序寫出 Bean 的生命週期四個階段（含 <code>@PostConstruct</code>、<code>@PreDestroy</code> 各在什麼時間點）。為什麼 ErrorCodeService 的啟動自檢只跑一次？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q7.</b> 舉出三種常見造成 heap OOM 的寫法，並說明為什麼 GC 救不了它們。</p>
+<p style="margin:0 0 12px 0;"><b>Q7.</b> singleton、prototype、request 三種 scope 各是什麼意思？如果 singleton Bean 裡注入了一個 prototype Bean，每次呼叫會拿到新物件嗎？要怎麼修？</p>
 
-<p style="margin:0 0 0 0;"><b>Q8.</b> 線上發生 OOM，你要怎麼事先準備、事後調查？Metaspace OOM 與 heap OOM 的成因與判讀有什麼差別？（串聯題：想想第 5 題的「孤兒物件」與這題的 GC Root 有沒有關係。）</p>
+<p style="margin:0;"><b>Q8.</b>（綜合）假設有個 singleton 的 Service，欄位注入一個 prototype 的 Bean，裡面存了「目前請求的使用者 ID」。請指出這段設計有哪兩個問題，並說明 AOP 想解決的是哪一類重複（以今天學的交易、log、權限檢查為例）。</p>
 </div>
 
-<div style="background:#ffffff;border-radius:10px;padding:16px 20px;">
-<p style="margin:0 0 12px 0;font-weight:bold;color:#2b7fb0;text-align:center;">—— 解答 ——</p>
+<div style="background:#fbf3e3;border-radius:10px;padding:16px 20px;">
+<p style="margin:0 0 10px 0;color:#b9791f;font-weight:bold;">—— 解答 ——</p>
 
-<p style="margin:0 0 10px 0;"><b>A1.</b> Spring MVC 是 web 框架本體，Boot 是外面的腳手架（設定、相依、啟動方式）。Controller 的寫法（<code>@RestController</code>、<code>@GetMapping</code> 等）兩邊完全相同。</p>
+<p style="margin:0 0 10px 0;"><b>A1.</b> String 內容不可變，每次相加都新造一個物件並複製整串舊內容，迴圈跑 N 次就產生 N 個中間物件，變成垃圾等 GC。編譯器只優化「單行」的相加，迴圈內不會幫你優化。改用 StringBuilder 在迴圈中 <code>append</code>，<b>最後只呼叫一次 <code>toString()</code></b>。</p>
 
-<p style="margin:0 0 10px 0;"><b>A2.</b> <code>@SpringBootApplication</code> 取代 <code>web.xml</code>／XML 設定；starter 把一組相依與版本打包管好；內嵌 Tomcat 讓 jar 直接 <code>java -jar</code> 跑，不用再打 WAR 丟外部 Tomcat。</p>
+<p style="margin:0 0 10px 0;"><b>A2.</b> 兩者只差 <code>synchronized</code> 這把鎖：StringBuffer 有鎖（執行緒安全但慢），StringBuilder 沒鎖（快）。區域變數只有自己的執行緒看得到，不需要鎖，所以選 <b>StringBuilder</b>。</p>
 
-<p style="margin:0 0 10px 0;"><b>A3.</b> <code>@ConditionalOnClass</code>：classpath 有該依賴才啟用；<code>@ConditionalOnMissingBean</code>：你沒定義同類 Bean 才幫你建。自動設定排在你的設定之後才判斷，所以你定義了它就退讓。</p>
+<p style="margin:0 0 10px 0;"><b>A3.</b> ① 安全：內容不會被偷改（例如當作參數或設定值傳遞）。② 可當 HashMap key：內容不變，<code>hashCode</code> 可以快取，不會放進去後 hash 值變了就找不到。③ 天生 thread-safe：不可變就不用同步。④ 字串池（String Pool）因為不可變才能放心共用同一個物件。</p>
 
-<p style="margin:0 0 10px 0;"><b>A4.</b> 先用 <code>hashCode</code> 算出桶（bucket），再在桶內用 <code>equals</code> 比對。只覆寫 <code>equals</code> 會讓「內容相同」的物件算出不同 hashCode、進不同桶，結果 <code>get</code> 查不到、Set 去不了重。規則：equals 相等 ⇒ hashCode 必須相同。</p>
+<p style="margin:0 0 10px 0;"><b>A4.</b> 欄位注入把依賴藏在 private 欄位，外面看不出類別需要什麼；測試時 <code>new</code> 出來欄位是 null，得靠 Spring 容器或反射才塞得進去。建構子注入把依賴寫在簽章上，缺什麼一眼看到，測試直接 <code>new Service(mockA, mockB)</code> 即可。</p>
 
-<p style="margin:0 0 10px 0;"><b>A5.</b> 找不到（<code>false</code>）。hashCode 只在放入時算一次決定桶子，改欄位後物件不會搬家，但之後查詢會用新 hashCode 走去別的桶，<code>contains</code>／<code>get</code>／<code>remove</code> 都失敗，物件變孤兒。解法：hashCode 只用不會變的欄位（如 id）；真的要改就先 remove 再 add。</p>
+<p style="margin:0 0 10px 0;"><b>A5.</b> <code>final</code> 保證物件建好後依賴就定死、不可能是 null、也不會被中途換掉。循環依賴時，建構子注入讓 Spring <b>啟動當場失敗</b>——這是好事，問題在上線前就爆出來，而不是跑到一半才出事。正確解法是<b>拆職責、抽出第三個 Bean</b>，而不是改成欄位注入或用 <code>@Lazy</code> 繞過去。</p>
 
-<p style="margin:0 0 10px 0;"><b>A6.</b> heap：物件本體，全執行緒共用、由 GC 回收；stack：每個執行緒各自的區域變數與方法呼叫，方法結束就消失；Metaspace：class 的結構資訊。<code>o</code>（參考變數）在 stack，<code>new Object()</code> 的物件在 heap。</p>
+<p style="margin:0 0 10px 0;"><b>A6.</b> ① 建構（new 出物件）→ ② 注入（依賴塞進來）→ ③ <code>@PostConstruct</code>（依賴到齊後的初始化，在使用前跑）→ ④ 使用 → ⑤ <code>@PreDestroy</code>（容器關閉前的清理）。ErrorCodeService 是 singleton，整個容器只有一個物件，生命週期只走一遍，所以啟動自檢只跑一次。</p>
 
-<p style="margin:0 0 10px 0;"><b>A7.</b> ① <code>static Map</code> 一直塞不清；② 沒上限的快取；③ 沒關的串流／連線。共同點：GC 從 GC Root 仍然走得到它們，被視為「還在用」，所以不會回收。</p>
+<p style="margin:0 0 10px 0;"><b>A7.</b> singleton（預設）：整個容器一份；prototype：每次跟容器要都給新的；request：每個 HTTP 請求一份。singleton 裡注入 prototype，只會在<b>建 singleton 的那一次</b>注入，之後永遠是同一個，不會每次新的。修法：用 <code>ObjectProvider</code>（或 lookup method）在需要時現拿。</p>
 
-<p style="margin:0 0 0 0;"><b>A8.</b> 事先加 <code>-XX:+HeapDumpOnOutOfMemoryError</code> 與 <code>-XX:HeapDumpPath=...</code> 留現場；事後用 MAT 看 <b>Dominator Tree</b>（誰佔最多）與 <b>Path to GC Roots</b>（誰抓著不放）。先看 log 錯誤訊息判斷哪一區爆：heap OOM 是<b>物件</b>累積；Metaspace OOM 是<b>類別（ClassLoader）</b>累積。串聯：第 5 題的孤兒物件還被 Set 抓著，就是「GC Root 走得到、卻沒人在用」的一種，長期累積就會走向 heap OOM。</p>
+<p style="margin:0 0 10px 0;"><b>A8.</b> 問題一：prototype 只注入一次，所以名義上是「每次新的」，實際上被 singleton 綁死成同一份。問題二：singleton 全容器共用，<b>不能放請求專屬狀態</b>（使用者 ID），多個請求同時進來會互相覆蓋。請求專屬資料應放 request scope 或當參數傳遞。<br>
+AOP 解決的是「橫切邏輯」的重複：沒有 AOP 時，每個業務方法都要手寫權限檢查、log、開交易與 commit/rollback，容易漏寫、難統一修改、還淹沒業務邏輯。AOP 把它們抽成一份統一套用，<code>@Transactional</code>、<code>@Secured</code> 就是這樣取代手寫行。</p>
 </div>
 
 </div>
