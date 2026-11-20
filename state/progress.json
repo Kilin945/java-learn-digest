@@ -1,5 +1,5 @@
 {
-  "current_index": 24,
+  "current_index": 25,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -281,6 +281,11 @@
     {
       "topic": "A3-2｜scope：singleton／prototype／request；singleton 裡注入 prototype 只會注入一次",
       "finished": "2026-11-19",
+      "steps": 1
+    },
+    {
+      "topic": "A4-1｜沒有 AOP 時：交易、log、權限檢查在每個方法重複寫",
+      "finished": "2026-11-20",
       "steps": 1
     }
   ]

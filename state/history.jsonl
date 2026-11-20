@@ -151,3 +151,4 @@
 {"date": "2026-11-17", "topic": "A2-2｜建構子注入的 final；循環依賴時啟動就失敗為什麼是好事", "step": 1, "summary": "建構子注入可把依賴宣告成 final(物件建好就定死、不可能是 null);循環依賴時建構子注入讓 Spring 啟動當場失敗,問題在上線前爆出,解法是拆職責、抽第三個 Bean,不是用欄位注入或 @Lazy 繞過。"}
 {"date": "2026-11-18", "topic": "A3-1｜Bean 生命週期：建構 → 注入 → @PostConstruct → @PreDestroy", "step": 1, "summary": "Bean 依序經過建構、注入、@PostConstruct（依賴到齊後的初始化）、使用、@PreDestroy（關閉前清理）；ErrorCodeService 的啟動自檢只跑一次，是因為它只有一個物件、生命週期只走一遍。"}
 {"date": "2026-11-19", "topic": "A3-2｜scope：singleton／prototype／request；singleton 裡注入 prototype 只會注入一次", "step": 1, "summary": "scope 決定容器造幾個物件：singleton（預設）整個容器一份、prototype 每次要都新的、request 每個 HTTP 請求一份；singleton 裡注入 prototype 只在建 singleton 時注入一次，要每次新的得用 ObjectProvider 或 lookup method 現拿，且 singleton 不能放請求專屬狀態。"}
+{"date": "2026-11-20", "topic": "A4-1｜沒有 AOP 時：交易、log、權限檢查在每個方法重複寫", "step": 1, "summary": "沒有 AOP 時，每個業務方法都要手寫權限檢查、log、開交易與 commit/rollback 這些橫切邏輯，容易漏寫、難統一修改、淹沒業務；AOP 就是把它們抽成一份統一套用，@Transactional、@Secured 正是這樣取代手寫行。"}
