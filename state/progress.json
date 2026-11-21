@@ -1,5 +1,5 @@
 {
-  "current_index": 25,
+  "current_index": 26,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -286,6 +286,11 @@
     {
       "topic": "A4-1｜沒有 AOP 時：交易、log、權限檢查在每個方法重複寫",
       "finished": "2026-11-20",
+      "steps": 1
+    },
+    {
+      "topic": "A4-2｜動態代理怎麼包住方法：手寫一個 proxy 示意；@Transactional、@Secured 就是這樣做的",
+      "finished": "2026-11-21",
       "steps": 1
     }
   ]
