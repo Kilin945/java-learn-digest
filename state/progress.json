@@ -1,5 +1,5 @@
 {
-  "current_index": 26,
+  "current_index": 27,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -291,6 +291,11 @@
     {
       "topic": "A4-2｜動態代理怎麼包住方法：手寫一個 proxy 示意；@Transactional、@Secured 就是這樣做的",
       "finished": "2026-11-21",
+      "steps": 1
+    },
+    {
+      "topic": "A5-1｜同類內部呼叫（self-invocation）為什麼不會觸發 @Transactional",
+      "finished": "2026-11-22",
       "steps": 1
     }
   ]
