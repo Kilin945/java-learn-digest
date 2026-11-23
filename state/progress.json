@@ -1,5 +1,5 @@
 {
-  "current_index": 27,
+  "current_index": 28,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -296,6 +296,11 @@
     {
       "topic": "A5-1｜同類內部呼叫（self-invocation）為什麼不會觸發 @Transactional",
       "finished": "2026-11-22",
+      "steps": 1
+    },
+    {
+      "topic": "A5-2｜其他失效情況：非 public、例外被自己吃掉、checked 例外預設不回滾；各自怎麼解",
+      "finished": "2026-11-23",
       "steps": 1
     }
   ]
