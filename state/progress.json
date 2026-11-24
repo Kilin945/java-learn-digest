@@ -1,5 +1,5 @@
 {
-  "current_index": 28,
+  "current_index": 29,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -301,6 +301,11 @@
     {
       "topic": "A5-2｜其他失效情況：非 public、例外被自己吃掉、checked 例外預設不回滾；各自怎麼解",
       "finished": "2026-11-23",
+      "steps": 1
+    },
+    {
+      "topic": "A6-1｜一個請求進來：DispatcherServlet → HandlerMapping → 你的 Controller 方法",
+      "finished": "2026-11-24",
       "steps": 1
     }
   ]
