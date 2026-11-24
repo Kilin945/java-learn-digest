@@ -23,6 +23,9 @@ import urllib.error
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NOTION_VERSION = "2022-06-28"
+# 建頁時指定插入位置（position）要較新的 API 版本；只有建頁這一個呼叫用它，
+# 其他呼叫維持舊版，避免回應格式變動波及去重與分批 append。
+NOTION_VERSION_CREATE = "2026-03-11"
 API = "https://api.notion.com/v1"
 
 
@@ -73,11 +76,11 @@ def get_token():
 
 # ── HTTP ──
 
-def _req(method, url, token, payload=None):
+def _req(method, url, token, payload=None, version=NOTION_VERSION):
     data = json.dumps(payload).encode("utf-8") if payload is not None else None
     req = urllib.request.Request(url, data=data, method=method)
     req.add_header("Authorization", f"Bearer {token}")
-    req.add_header("Notion-Version", NOTION_VERSION)
+    req.add_header("Notion-Version", version)
     req.add_header("Content-Type", "application/json")
     try:
         with urllib.request.urlopen(req, timeout=60) as resp:
@@ -269,33 +272,58 @@ def derive_title(md, date_str):
     return date_str
 
 
-# ── 去重：父頁是否已有同日子頁 ──
+# ── 讀父頁的第一層區塊（去重與決定插入位置共用，只抓一次）──
 
-def child_exists(token, parent_id, title, date_str):
+def list_children(token, parent_id):
+    out = []
     url = f"{API}/blocks/{parent_id}/children?page_size=100"
     while url:
         res = _req("GET", url, token)
-        for b in res.get("results", []):
-            if b.get("type") == "child_page":
-                t = b["child_page"].get("title", "")
-                if t == title or t.startswith(date_str):
-                    return True
+        out.extend(res.get("results", []))
         if res.get("has_more") and res.get("next_cursor"):
             url = f"{API}/blocks/{parent_id}/children?page_size=100&start_cursor={res['next_cursor']}"
         else:
             url = None
+    return out
+
+
+# ── 去重：父頁是否已有同日子頁 ──
+
+def child_exists(children, title, date_str):
+    for b in children:
+        if b.get("type") == "child_page":
+            t = b["child_page"].get("title", "")
+            if t == title or t.startswith(date_str):
+                return True
     return False
+
+
+# ── 新頁插入位置：最新的放最上面 ──
+# 父頁開頭可能有說明文字，新頁要插在「說明文字之後、第一個子頁之前」，
+# 也就是第一個子頁前面那個區塊之後；第一個區塊就是子頁時插在最上面。
+# 父頁還沒有任何子頁時回 None，照預設加在最後（接在說明文字後面）。
+
+def top_position(children):
+    for i, b in enumerate(children):
+        if b.get("type") == "child_page":
+            if i == 0:
+                return {"type": "page_start"}
+            return {"type": "after_block", "after_block": {"id": children[i - 1]["id"]}}
+    return None
 
 
 # ── 建立子頁（>100 區塊自動分批 append）──
 
-def create_child_page(token, parent_id, title, blocks):
+def create_child_page(token, parent_id, title, blocks, position=None):
     first, rest = blocks[:100], blocks[100:]
-    page = _req("POST", f"{API}/pages", token, {
+    body = {
         "parent": {"page_id": parent_id},
         "properties": {"title": {"title": [{"text": {"content": title[:2000]}}]}},
         "children": first,
-    })
+    }
+    if position:
+        body["position"] = position
+    page = _req("POST", f"{API}/pages", token, body, version=NOTION_VERSION_CREATE)
     page_id = page["id"]
     while rest:
         batch, rest = rest[:100], rest[100:]
@@ -324,12 +352,13 @@ def main():
     token = get_token()
     title = derive_title(md, args.date)
 
-    if child_exists(token, parent_id, title, args.date):
+    children = list_children(token, parent_id)
+    if child_exists(children, title, args.date):
         print(f"SKIP: 「{title}」已存在，跳過。", file=sys.stderr)
         return
 
     blocks = md_to_blocks(md)
-    url = create_child_page(token, parent_id, title, blocks)
+    url = create_child_page(token, parent_id, title, blocks, position=top_position(children))
     print(f"OK: 已建立子頁「{title}」 → {url}", file=sys.stderr)
 
 

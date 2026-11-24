@@ -100,14 +100,14 @@ replay 出「全部寄完後會走到哪」，寫成一份暫存 state 給 `buil
 編輯 `syllabus.txt`（一行一主題，`#` 為註解/分章）。想跳過某主題就刪掉或註解該行。
 
 ## 自動同步到 Notion
-每天寄信成功後，`sync_notion.py` 會把該課建成 Notion「Spring 學習筆記」頁面底下的一個**子頁面**（標題＝`日期 · 主題`）。內建去重：同日已存在就跳過，重跑安全。背景排程用不了互動式 Notion MCP，所以走 **Notion 內部整合 (internal integration) + REST API**。
+每天寄信成功後，`sync_notion.py` 會把該課建成 Notion「Java 本職題庫」頁面底下的一個**子頁面**（標題＝`日期 · 主題`），插在最上面（最新的在上）。舊課綱（2026-06～10-13）的頁面留在「Spring 學習筆記」。內建去重：同日已存在就跳過，重跑安全。背景排程用不了互動式 Notion MCP，所以走 **Notion 內部整合 (internal integration) + REST API**。
 
 一次性設定：
 1. 到 <https://www.notion.so/my-integrations> → New integration（internal）→ 複製 token（`ntn_...`）。
-2. 打開 Notion「Spring 學習筆記」頁面 → 右上 `•••` → Connections → 加入剛建的整合（**沒分享頁面，API 會 404**）。
+2. 打開 Notion「Java 本職題庫」頁面 → 右上 `•••` → Connections → 加入剛建的整合（**沒分享頁面，API 會 404**）。
 3. 把 token 存進 Keychain：
    `security add-generic-password -a "$GMAIL_USER" -s "java-learn-notion" -w`
-4. `config.env` 填 `NOTION_PARENT_PAGE_ID`（「Spring 學習筆記」頁面 ID）。
+4. `config.env` 與 GitHub repo secret 都填 `NOTION_PARENT_PAGE_ID`（「Java 本職題庫」頁面 ID）。
 5. 測試：`python3 sync_notion.py --md lessons/<date>.md --date <date>`
 
 不設 `NOTION_PARENT_PAGE_ID` / token 則略過同步（不影響寄信）。
