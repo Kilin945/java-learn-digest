@@ -1,5 +1,5 @@
 {
-  "current_index": 29,
+  "current_index": 30,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -306,6 +306,11 @@
     {
       "topic": "A6-1｜一個請求進來：DispatcherServlet → HandlerMapping → 你的 Controller 方法",
       "finished": "2026-11-24",
+      "steps": 1
+    },
+    {
+      "topic": "A6-2｜參數怎麼變成物件（@RequestBody）、回傳值怎麼變成 JSON",
+      "finished": "2026-11-25",
       "steps": 1
     }
   ]
