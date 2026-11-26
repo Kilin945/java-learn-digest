@@ -1,5 +1,5 @@
 {
-  "current_index": 30,
+  "current_index": 31,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -311,6 +311,11 @@
     {
       "topic": "A6-2｜參數怎麼變成物件（@RequestBody）、回傳值怎麼變成 JSON",
       "finished": "2026-11-25",
+      "steps": 1
+    },
+    {
+      "topic": "A6-3｜攔截器 vs Filter；@ControllerAdvice 統一處理例外",
+      "finished": "2026-11-26",
       "steps": 1
     }
   ]
