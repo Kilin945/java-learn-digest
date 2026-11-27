@@ -1,53 +1,54 @@
-<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;font-size:15px;line-height:1.7;color:#333;">
+<div style="max-width:680px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;font-size:15px;line-height:1.7;color:#333;background:#ecf7ef;padding:16px;">
 
-<div style="border-left:6px solid #d99b3f;padding:8px 14px;margin-bottom:16px;font-size:17px;font-weight:bold;color:#b9791f;">
-📘 每週回顧 · Java / Spring Boot · 2026-11-20
+<div style="border-left:6px solid #4caf72;background:#ffffff;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:17px;font-weight:bold;color:#1e9e57;">
+📘 每週回顧 · Java / Spring Boot · 2026-11-27
 </div>
 
-<div style="background:#fbf3e3;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
-<p style="margin:0 0 6px 0;color:#b9791f;font-weight:bold;">本週走過的路</p>
-<p style="margin:0;">String 不可變與 StringBuilder → 建構子注入 vs 欄位注入 → Bean 生命週期與 scope → AOP 的起點。先自己想一遍答案，再往下看解答。</p>
+<div style="background:#ffffff;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+<p style="margin:0;">這週你從「Spring 怎麼包住方法」一路走到「請求怎麼進來」，最後碰了 Java 序列化。先別翻解答，每題在腦中（或紙上）講出答案，再對照信末。</p>
 </div>
 
-<div style="background:#fbf3e3;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
-<p style="margin:0 0 10px 0;color:#b9791f;font-weight:bold;">🧠 回想題</p>
+<div style="background:#ffffff;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+<div style="font-weight:bold;color:#1e9e57;margin-bottom:10px;">📝 回想題</div>
 
-<p style="margin:0 0 12px 0;"><b>Q1.</b> 在 for 迴圈裡用 <code>s = s + x</code> 組一份電文字串，為什麼會產生大量垃圾？改用 StringBuilder 後，什麼時候才呼叫 <code>toString()</code>？</p>
+<p style="margin:0 0 12px;"><b>Q1（淺）</b>　Spring 的 <code>@Transactional</code>、<code>@Secured</code> 是怎麼「生效」的？用「替身（proxy）」這個詞說一遍：替身在真方法的前後做了什麼？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q2.</b> StringBuffer 和 StringBuilder 的差別是什麼？一個方法內的區域變數組字串，該選哪個？為什麼？</p>
+<p style="margin:0 0 12px;"><b>Q2</b>　同一個 class 裡，方法 <code>a()</code> 呼叫自己的 <code>b()</code>，而 <code>b()</code> 標了 <code>@Transactional</code>，為什麼交易沒開？你可以用哪個方法在執行時驗證？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q3.</b> String 設計成 immutable，至少說出三個好處（提示：HashMap key、執行緒、字串池）。</p>
+<p style="margin:0 0 12px;"><b>Q3</b>　下面這段，資料庫最後是 commit 還是 rollback？為什麼？如果要讓它 rollback，有哪兩種改法？
+<br><code>@Transactional public void save() { try { repo.save(x); throw new RuntimeException(); } catch (Exception e) { log.error("fail", e); } }</code></p>
 
-<p style="margin:0 0 12px 0;"><b>Q4.</b> 欄位注入（<code>@Autowired private</code>）在寫單元測試時會遇到什麼麻煩？建構子注入怎麼解決？</p>
+<p style="margin:0 0 12px;"><b>Q4</b>　方法丟出 <code>IOException</code>（checked exception），<code>@Transactional</code> 預設會 commit 還是 rollback？要怎麼改？另外，<code>private</code> 方法標 <code>@Transactional</code> 為什麼沒用？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q5.</b> 建構子注入可以把依賴宣告成 <code>final</code>，這帶來什麼保證？如果兩個 Bean 循環依賴，建構子注入會發生什麼事？你覺得這是好事還是壞事？正確的解法是什麼？</p>
+<p style="margin:0 0 12px;"><b>Q5</b>　一個 <code>POST /orders</code> 請求進來，依序經過哪幾個角色才到你的 Controller 方法？如果網址查不到、或網址對但 HTTP 方法不對，各回什麼狀態碼？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q6.</b> 請依序寫出 Bean 的生命週期四個階段（含 <code>@PostConstruct</code>、<code>@PreDestroy</code> 各在什麼時間點）。為什麼 ErrorCodeService 的啟動自檢只跑一次？</p>
+<p style="margin:0 0 12px;"><b>Q6</b>　<code>@RequestBody</code> 與 <code>@RestController</code> 背後都用了什麼元件？請求的 <code>Content-Type</code> 不對、JSON 格式壞掉，各回幾號錯誤？如果忘了寫 <code>@RequestBody</code>，會發生什麼事？</p>
 
-<p style="margin:0 0 12px 0;"><b>Q7.</b> singleton、prototype、request 三種 scope 各是什麼意思？如果 singleton Bean 裡注入了一個 prototype Bean，每次呼叫會拿到新物件嗎？要怎麼修？</p>
+<p style="margin:0 0 12px;"><b>Q7</b>　Filter 與 Interceptor 差在哪一層？哪一個拿得到 handler？如果例外是在 Filter 裡丟出來的，<code>@ControllerAdvice</code> 接得到嗎？</p>
 
-<p style="margin:0;"><b>Q8.</b>（綜合）假設有個 singleton 的 Service，欄位注入一個 prototype 的 Bean，裡面存了「目前請求的使用者 ID」。請指出這段設計有哪兩個問題，並說明 AOP 想解決的是哪一類重複（以今天學的交易、log、權限檢查為例）。</p>
+<p style="margin:0 0 4px;"><b>Q8（深）</b>　<code>class Order implements Serializable { private Customer customer; }</code>，其中 <code>Customer</code> 沒有 implements <code>Serializable</code>。呼叫 <code>writeObject(order)</code> 會怎樣？用哪兩個 API 完成「寫出去、讀回來」？再串起來想：Q2 的 proxy 概念跟這題有沒有關聯？（開放題，沒有標準答案，想想看就好。）</p>
 </div>
 
-<div style="background:#fbf3e3;border-radius:10px;padding:16px 20px;">
-<p style="margin:0 0 10px 0;color:#b9791f;font-weight:bold;">—— 解答 ——</p>
+<div style="background:#ffffff;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+<div style="font-weight:bold;color:#1e9e57;margin-bottom:10px;">—— 解答 ——</div>
 
-<p style="margin:0 0 10px 0;"><b>A1.</b> String 內容不可變，每次相加都新造一個物件並複製整串舊內容，迴圈跑 N 次就產生 N 個中間物件，變成垃圾等 GC。編譯器只優化「單行」的相加，迴圈內不會幫你優化。改用 StringBuilder 在迴圈中 <code>append</code>，<b>最後只呼叫一次 <code>toString()</code></b>。</p>
+<p style="margin:0 0 10px;"><b>A1</b>　Spring 產生一個長得跟原物件一樣的 proxy，呼叫時先經過 proxy：在真方法<b>之前</b>開交易／檢查權限，<b>之後</b>依結果 commit／rollback。註解只是「請替我包」的標記，真正的工作由 proxy 做。</p>
 
-<p style="margin:0 0 10px 0;"><b>A2.</b> 兩者只差 <code>synchronized</code> 這把鎖：StringBuffer 有鎖（執行緒安全但慢），StringBuilder 沒鎖（快）。區域變數只有自己的執行緒看得到，不需要鎖，所以選 <b>StringBuilder</b>。</p>
+<p style="margin:0 0 10px;"><b>A2</b>　同類內部呼叫是 <code>this.b()</code>，<code>this</code> 是真物件而不是 proxy，所以 proxy 沒機會開交易，<code>b()</code> 上的註解被略過（self-invocation）。驗證：在 <code>b()</code> 裡印 <code>TransactionSynchronizationManager.isActualTransactionActive()</code>，對照從外部呼叫與內部呼叫的結果。</p>
 
-<p style="margin:0 0 10px 0;"><b>A3.</b> ① 安全：內容不會被偷改（例如當作參數或設定值傳遞）。② 可當 HashMap key：內容不變，<code>hashCode</code> 可以快取，不會放進去後 hash 值變了就找不到。③ 天生 thread-safe：不可變就不用同步。④ 字串池（String Pool）因為不可變才能放心共用同一個物件。</p>
+<p style="margin:0 0 10px;"><b>A3</b>　<b>commit</b>。例外被自己 try-catch 吃掉了，沒穿出方法，proxy 看到的是「正常結束」。改法：(1) 在 catch 裡重新拋出（<code>throw e</code> 或包成 RuntimeException）；(2) 呼叫 <code>TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()</code>。</p>
 
-<p style="margin:0 0 10px 0;"><b>A4.</b> 欄位注入把依賴藏在 private 欄位，外面看不出類別需要什麼；測試時 <code>new</code> 出來欄位是 null，得靠 Spring 容器或反射才塞得進去。建構子注入把依賴寫在簽章上，缺什麼一眼看到，測試直接 <code>new Service(mockA, mockB)</code> 即可。</p>
+<p style="margin:0 0 10px;"><b>A4</b>　預設 <b>commit</b>，只有 RuntimeException 與 Error 才 rollback。解法：<code>@Transactional(rollbackFor = Exception.class)</code>。<code>private</code>（以及 final）方法 proxy 攔不到，所以註解無效；改成 <code>public</code>（非 final）。</p>
 
-<p style="margin:0 0 10px 0;"><b>A5.</b> <code>final</code> 保證物件建好後依賴就定死、不可能是 null、也不會被中途換掉。循環依賴時，建構子注入讓 Spring <b>啟動當場失敗</b>——這是好事，問題在上線前就爆出來，而不是跑到一半才出事。正確解法是<b>拆職責、抽出第三個 Bean</b>，而不是改成欄位注入或用 <code>@Lazy</code> 繞過去。</p>
+<p style="margin:0 0 10px;"><b>A5</b>　請求 → <code>DispatcherServlet</code>（Spring MVC 唯一入口）→ 問 <code>HandlerMapping</code>（啟動時由 <code>@RequestMapping</code> 系列註解建好的「HTTP 方法＋網址 → Controller 方法」對照表）→ 查到才呼叫你的 Controller 方法。網址查不到 <b>404</b>；網址對但方法不對 <b>405</b>。</p>
 
-<p style="margin:0 0 10px 0;"><b>A6.</b> ① 建構（new 出物件）→ ② 注入（依賴塞進來）→ ③ <code>@PostConstruct</code>（依賴到齊後的初始化，在使用前跑）→ ④ 使用 → ⑤ <code>@PreDestroy</code>（容器關閉前的清理）。ErrorCodeService 是 singleton，整個容器只有一個物件，生命週期只走一遍，所以啟動自檢只跑一次。</p>
+<p style="margin:0 0 10px;"><b>A6</b>　都靠 <code>HttpMessageConverter</code>（預設 JSON 用 Jackson）：<code>@RequestBody</code> 把 JSON 讀成物件（進），<code>@ResponseBody</code>／<code>@RestController</code> 把回傳物件寫成 JSON（出）。Content-Type 不對 <b>415</b>；JSON 壞掉 <b>400</b>。忘了 <code>@RequestBody</code> 會被當成 <code>@ModelAttribute</code>，物件欄位全是 <code>null</code>。</p>
 
-<p style="margin:0 0 10px 0;"><b>A7.</b> singleton（預設）：整個容器一份；prototype：每次跟容器要都給新的；request：每個 HTTP 請求一份。singleton 裡注入 prototype，只會在<b>建 singleton 的那一次</b>注入，之後永遠是同一個，不會每次新的。修法：用 <code>ObjectProvider</code>（或 lookup method）在需要時現拿。</p>
+<p style="margin:0 0 10px;"><b>A7</b>　Filter 在 Servlet 層、<code>DispatcherServlet</code> 之前，不知道 handler；Interceptor 在 Spring MVC 層，<b>拿得到 handler</b>，適合權限與記錄。Filter 裡丟出的例外在 <code>DispatcherServlet</code> 範圍之外，<code>@ControllerAdvice</code> <b>接不到</b>。</p>
 
-<p style="margin:0 0 10px 0;"><b>A8.</b> 問題一：prototype 只注入一次，所以名義上是「每次新的」，實際上被 singleton 綁死成同一份。問題二：singleton 全容器共用，<b>不能放請求專屬狀態</b>（使用者 ID），多個請求同時進來會互相覆蓋。請求專屬資料應放 request scope 或當參數傳遞。<br>
-AOP 解決的是「橫切邏輯」的重複：沒有 AOP 時，每個業務方法都要手寫權限檢查、log、開交易與 commit/rollback，容易漏寫、難統一修改、還淹沒業務邏輯。AOP 把它們抽成一份統一套用，<code>@Transactional</code>、<code>@Secured</code> 就是這樣取代手寫行。</p>
+<p style="margin:0;"><b>A8</b>　執行時丟 <code>NotSerializableException</code>（編譯不會報錯）；類別以及欄位裡的每個物件都要 implements <code>Serializable</code>。寫出用 <code>ObjectOutputStream.writeObject</code>，讀回用 <code>ObjectInputStream.readObject</code>。開放題的關聯：兩者都是「物件在記憶體中的樣子」與「外界看到的形式」之間的轉換，也都靠一個標記或約定（<code>Serializable</code>／註解）讓框架知道怎麼處理。</p>
 </div>
+
+<p style="margin:0;text-align:center;color:#1e9e57;font-size:13px;">答對幾題不重要，能用自己的話講出「為什麼」才算真的學會 🌱</p>
 
 </div>
