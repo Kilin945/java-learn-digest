@@ -1,5 +1,5 @@
 {
-  "current_index": 31,
+  "current_index": 32,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -316,6 +316,11 @@
     {
       "topic": "A6-3｜攔截器 vs Filter；@ControllerAdvice 統一處理例外",
       "finished": "2026-11-26",
+      "steps": 1
+    },
+    {
+      "topic": "B2-1｜序列化與反序列化：物件變成位元組再變回來的 code",
+      "finished": "2026-11-27",
       "steps": 1
     }
   ]
