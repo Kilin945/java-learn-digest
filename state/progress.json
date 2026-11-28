@@ -1,5 +1,5 @@
 {
-  "current_index": 32,
+  "current_index": 33,
   "step": 1,
   "covered": [],
   "completed_topics": [
@@ -321,6 +321,11 @@
     {
       "topic": "B2-1｜序列化與反序列化：物件變成位元組再變回來的 code",
       "finished": "2026-11-27",
+      "steps": 1
+    },
+    {
+      "topic": "B2-2｜serialVersionUID、transient；Redis session 改版後讀不回來、權限欄位掉了",
+      "finished": "2026-11-28",
       "steps": 1
     }
   ]
